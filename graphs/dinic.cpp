@@ -1,4 +1,4 @@
-// dc962c
+// 04538b
 constexpr int INF = numeric_limits<int>::max();
 struct Dinic {
 	struct edge {
@@ -20,7 +20,7 @@ struct Dinic {
 	}
 
 	bool BFS(int s, int t) {
-		fill(lvl.begin(), lvl.end(), INF);
+		fill(all(lvl), INF);
 		lvl[s] = 0;
 		queue<int> q{{s}};
 		while(!q.empty() && lvl[t] == INF) {
@@ -57,7 +57,7 @@ struct Dinic {
 		int total_flow = 0;
 		vector<int> start(g.size());
 		while(BFS(s,t)) {
-			fill(start.begin(), start.end(), 0);
+			fill(all(start), 0);
 			while(int pushed = DFS(s,INF,start.data(),t)) 
 				total_flow += pushed;
 		}
