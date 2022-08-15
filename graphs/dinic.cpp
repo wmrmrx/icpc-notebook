@@ -1,3 +1,7 @@
+// add_edge(s, t, cap): Adds a directed edge from s to t with capacity cap
+// max_flow(s, t): Returns max flow with source s and sink t
+//
+// Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
 // 04538b
 constexpr int INF = numeric_limits<int>::max();
 struct Dinic {

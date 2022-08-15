@@ -1,3 +1,10 @@
+// Find max matching of min/max weight
+// set(i, j, weight): add edge from left vertex i to right vertex j 
+// assign(): returns min/max weight max matching
+// Change w_t for edge weight type
+//
+// Complexity: O(V^3)
+
 template <typename T>
 using arr = unique_ptr<T[]>;
 
@@ -7,6 +14,8 @@ using w_t = double;
 constexpr w_t INF = 1e100;
 bool zero(w_t x) { return abs(x) < 1e-9; }
 
+// HASH FROM HERE
+// 51cdde
 template <bool MAXIMIZE> struct Hungarian {
 	int n, m;
 	arr<arr<w_t>> w;
