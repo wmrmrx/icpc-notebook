@@ -44,8 +44,7 @@ struct Gauss_xor {
                 basis[i] = mask;
                 return;
             }
-            if((1ll << i) & mask)
-                mask ^= basis[i];
+            mask ^= basis[i];
         }
     }
 };
