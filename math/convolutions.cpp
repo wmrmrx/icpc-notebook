@@ -1,20 +1,18 @@
-/*
-    fft - Fast Fourier Transform
-    Description: Multiply two polinomial
-    Complexity: O(N logN)
+//     fft - Fast Fourier Transform
+//     Description: Multiply two polinomial
+//     Complexity: O(N logN)
 
-    Functions:
-        multiply(a, b)
-        multiply_mod(a, b, m) - return answer modulo m
+//     Functions:
+//         multiply(a, b)
+//         multiply_mod(a, b, m) - return answer modulo m
 
-    Details:
-        For function multiply_mod, any modulo can be used. 
-        It is implemented using the technique of dividing 
-        in sqrt to use less fft. Function multiply may have
-        precision problems.
-        This code is faster than normal. So you may use it
-        if TL e tight.
-*/
+//     Details:
+//         For function multiply_mod, any modulo can be used. 
+//         It is implemented using the technique of dividing 
+//         in sqrt to use less fft. Function multiply may have
+//         precision problems.
+//         This code is faster than normal. So you may use it
+//         if TL e tight.
 
 // f79fe3
 const double PI=acos(-1.0);
