@@ -95,7 +95,7 @@ struct Treap {
 		merge({sl[0], sr[1]}, root);
 	}
 
-	T get(int idx) {
+	T operator[](int idx) {
 		no* x = root;
 		x->prop();
 		for(int ra = x->l(); ra != idx; ra += x->l()) {
