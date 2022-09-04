@@ -1,3 +1,4 @@
+// Works with double and integer
 // Complexity: O(NlogN)
 // c3b176
 template <bool UPPER>
