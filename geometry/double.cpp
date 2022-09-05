@@ -30,10 +30,12 @@ struct point {
 const point ccw90(1, 0), cw90(-1, 0);
 
 // angular comparison in [0, 2pi)
+// smallest is (1, 0)
 // CORNER CASE: a, b == (0, 0)
 bool ang_cmp(point a, point b) {
 	auto quad = [](point p) -> bool {
-		return p.x < 0 || (p.x == 0 && p.y > 0);
+		// 0 if ang in [0, pi), 1 if in [pi, 2pi)
+		return p.y < 0 || (p.y == 0 && p.x < 0);
 	};
 	using tup = tuple<bool, double>;
 	return tup{quad(a), 0} < tup{quad(b), a^b};
