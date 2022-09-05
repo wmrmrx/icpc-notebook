@@ -109,7 +109,7 @@ bool parallel(segment r, segment s) {
 	return parallel(r.v(), s.v());
 }
 
-point intersection(segment r, segment s) {
+point line_intersection(segment r, segment s) {
 	if(parallel(r, s)) return point(HUGE_VAL, HUGE_VAL);
 	point vr = r.v(), vs = s.v();
 	double cr = vr ^ r.a, cs = vs ^ s.a;
