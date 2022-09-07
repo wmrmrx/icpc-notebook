@@ -1,3 +1,5 @@
+#define int long long
+
 bool zero(int x) {
 	return x == 0;
 }
@@ -58,7 +60,7 @@ bool collinear(point a, point b, point c) {
 	return zero(area2(a,b,c));
 }
 
-// CORNER: POINT = (0, 0)
+// CORNER: a || b == (0, 0)
 int parallel(point a, point b) {
 	if((a ^ b) != 0) return 0;
 	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
