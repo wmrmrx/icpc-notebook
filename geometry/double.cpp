@@ -25,6 +25,10 @@ struct point {
 	bool operator<(const point& rhs) const {
 		return x < rhs.x - EPS || (zero(x-rhs.x) && y < rhs.y - EPS);
 	}
+
+	bool operator==(const point& rhs) const {
+		return zero(x-rhs.x) && zero(y-rhs.y);
+	}
 };
 
 const point ccw90(1, 0), cw90(-1, 0);
@@ -85,25 +89,13 @@ struct segment {
 	}
 
 	bool contains(point p) {
-		double lx = a.x, ux = b.x, ly = a.y, uy = b.y;
-		if(lx > ux) swap(lx, ux); 
-		if(ly > uy) swap(ly, uy);
-		return collinear(a, b, p)
-			&& lx-EPS < p.x && p.x < ux+EPS
-			&& ly-EPS < p.y && p.y < uy+EPS;
+		return a == p || b == p || parallel(a-p,b-p) == -1;
 	}
 
 	bool intersects(segment rhs) {
-		segment lhs = *this;
-		if(parallel(lhs.v(), rhs.v())) {
-			return lhs.contains(rhs.a) || lhs.contains(rhs.b)
-				|| rhs.contains(lhs.a) || rhs.contains(lhs.b);
-		}
-		auto sign = [](int x) { if(zero(x)) return 0; return x > 0 ? 1 : -1; };
-		if(sign(area2(lhs.a, lhs.b, rhs.a))*sign(area2(lhs.a, lhs.b, rhs.b)) == 1) return false;
-		swap(lhs, rhs);
-		if(sign(area2(lhs.a, lhs.b, rhs.a))*sign(area2(lhs.a, lhs.b, rhs.b)) == 1) return false;
-		return true;
+		if(contains(rhs.a) || contains(rhs.b) || rhs.contains(a) || rhs.contains(b)) return 1;
+		return left(a,b,rhs.a) != left(a,b,rhs.b) && 
+			left(rhs.a, rhs.b, a) != left(rhs.a, rhs.b, b);
 	}
 
 	point v() { return b - a; }
