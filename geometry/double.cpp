@@ -117,8 +117,7 @@ point line_intersection(segment r, segment s) {
 }
 
 point proj(segment r, point p) {
-	auto [a, b] = r;
-	p = p - a;
-	point v = b-a;
-	return a + v*((p*v)/(v*v));
+	p = p - r.a;
+	point v = r.v();
+	return r.a + v*((p*v)/(v*v));
 }
