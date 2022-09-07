@@ -1,6 +1,6 @@
 using c_t = int;
 
-// Returns minimum distance between two points
+// Returns minimum distance SQUARED between two points
 // Complexity: O(NlogN)
 // ce570b
 c_t nearest_points(vector<point> v) {
