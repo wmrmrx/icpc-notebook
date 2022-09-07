@@ -23,7 +23,7 @@ struct point {
 		return tup{x, y} < tup{rhs.x, rhs.y};
 	}
 	
-	bool operator==(const points& rhs) const {
+	bool operator==(const point& rhs) const {
 		return tup{x, y} == tup{rhs.x, rhs.y};
 	}
 };
