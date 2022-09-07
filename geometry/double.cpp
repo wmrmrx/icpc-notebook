@@ -31,7 +31,7 @@ const point ccw90(1, 0), cw90(-1, 0);
 
 // angular comparison in [0, 2pi)
 // smallest is (1, 0)
-// CORNER CASE: a, b == (0, 0)
+// CORNER: a || b == (0, 0)
 bool ang_cmp(point a, point b) {
 	auto quad = [](point p) -> bool {
 		// 0 if ang in [0, pi), 1 if in [pi, 2pi)
@@ -65,6 +65,7 @@ bool collinear(point a, point b, point c) {
 	return zero(area2(a,b,c));
 }
 
+// CORNER: a || b == (0, 0)
 int parallel(point a, point b) {
 	if((a ^ b) != 0) return 0;
 	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
@@ -94,6 +95,10 @@ struct segment {
 
 	bool intersects(segment rhs) {
 		segment lhs = *this;
+		if(parallel(lhs.v(), rhs.v())) {
+			return lhs.contains(rhs.a) || lhs.contains(rhs.b)
+				|| rhs.contains(lhs.a) || rhs.contains(lhs.b);
+		}
 		auto sign = [](int x) { if(zero(x)) return 0; return x > 0 ? 1 : -1; };
 		if(sign(area2(lhs.a, lhs.b, rhs.a))*sign(area2(lhs.a, lhs.b, rhs.b)) == 1) return false;
 		swap(lhs, rhs);
