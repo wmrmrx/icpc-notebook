@@ -81,13 +81,6 @@ struct segment {
 
 	segment(point a=point(), point b=point()): a(a), b(b) {}
 
-	//MAINTAIN a < b FOR SHAMOS-HOEY
-	//segment(point a=point(), point b=point()): a(min(a,b)), b(max(a,b)) {}
-	
-	segment sorted() {
-		return segment(min(a,b), max(a,b));
-	}
-
 	bool contains(point p) {
 		return a == p || b == p || parallel(a-p,b-p) == -1;
 	}
