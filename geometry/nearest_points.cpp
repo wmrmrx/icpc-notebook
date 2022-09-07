@@ -1,15 +1,14 @@
-using c_t = int;
-
 // Returns minimum distance SQUARED between two points
 // Complexity: O(NlogN)
-// ce570b
-c_t nearest_points(vector<point> v) {
-	using lim = numeric_limits<c_t>;
-	c_t res = lim::max(), sq = sqrt((double)res);
+// 719cd0
+template <typename C_T>
+C_T nearest_points(vector<point> v) {
+	using lim = numeric_limits<C_T>;
+	C_T res = lim::max(), sq = sqrt((double)res);
 	sort(all(v));
 	for(int i=1;i<v.size();i++) if(v[i] == v[i-1]) return 0;
 	auto by_y = [](const point& a, const point& b) {
-		using tup = tuple<c_t, c_t>;
+		using tup = tuple<C_T, C_T>;
 		return tup{a.y, a.x} < tup{b.y, b.x};
 	};
 	queue<point> active;
@@ -21,7 +20,7 @@ c_t nearest_points(vector<point> v) {
 		}
 		auto it = pts.lower_bound({lim::min(), p.y-sq});
 		while(it != pts.end() && it->y <= p.y + sq) {
-			c_t d = dist2(p, *it);
+			C_T d = dist2(p, *it);
 			if(d < res) {
 				res = d;
 				sq = sqrt((double)res);
