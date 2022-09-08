@@ -8,7 +8,7 @@
 //
 // Checa se existem segmentos que se intersectam
 // Complexidade: O(N logN)
-// f308c0
+// 365cc1
 template <typename C_T>
 bool shamos_hoey(vector<segment> seg) {
 	// create sweep segment events {x, type, seg_id}
