@@ -72,18 +72,18 @@ struct segment {
 
 	segment(point a=point(), point b=point()): a(a), b(b) {}
 
-	bool contains(point p) {
-		return a == p || b == p || parallel(a-p,b-p) == -1;
-	}
-
-	bool intersects(segment rhs) {
-		if(contains(rhs.a) || contains(rhs.b) || rhs.contains(a) || rhs.contains(b)) return 1;
-		return left(a,b,rhs.a) != left(a,b,rhs.b) && 
-			left(rhs.a, rhs.b, a) != left(rhs.a, rhs.b, b);
-	}
-
 	point v() { return b - a; }
 };
+
+bool contains(segment r, point p) {
+	return r.a==p || r.b==p || parallel(r.a-p,r.b-p) == -1;
+}
+
+bool intersects(segment r, segment s) {
+	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || s.contains(s, r.b)) return 1;
+	return left(r.a,r.b,s.a) != left(r.a,r.b,s.b) && 
+		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
+}
 
 bool parallel(segment r, segment s) {
 	return parallel(r.v(), s.v());
