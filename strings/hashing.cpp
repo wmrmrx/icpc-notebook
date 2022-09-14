@@ -41,7 +41,7 @@ struct str_hash {
 };
 template<int MOD> int str_hash<MOD>::P = uniform(256, MOD - 1); // l > |sigma|
 
-// 55260b
+// b31197
 struct Hash {
     // Uses 2 primes to better avoid colisions
     str_hash<mod1> H1;
@@ -50,7 +50,7 @@ struct Hash {
     Hash (string s) : H1(str_hash<mod1>(s)), H2(str_hash<mod2>(s)) {}
  
     ll operator()(int l, int r) {
-        ll ret1 = H1(l, r), ret2 = H1(l, r);
+        ll ret1 = H1(l, r), ret2 = H2(l, r);
         return (ret1 << 30) ^ (ret2);
     }
 };
