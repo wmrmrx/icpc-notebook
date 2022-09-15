@@ -1,7 +1,7 @@
 \documentclass{article}
 
 \title{ICPC Notebook}
-\author{pedroteosousa}
+\author{MWNWMWNNWMWNWN}
 \date{}
 
 \usepackage[utf8]{inputenc}
@@ -16,6 +16,148 @@
 \tableofcontents
 
 \section{Geometry}
+\subsection{Convex Hull}
+\begin{minted}{c++}
+// Works with double and integer
+// Complexity: O(NlogN)
+// c3b176
+template <bool UPPER>
+vector<point> hull(vector<point> v) {
+	vector<point> res;
+	if(UPPER) for(auto& p: v) p.y = -p.y;
+	sort(all(v));
+	for(auto& p: v) {
+		if(res.empty()) { res.push_back(p); continue; }
+		if(res.back().x == p.x) continue;
+		while(res.size() >= 2) {
+			point a = res[res.size()-2], b = res.back();
+			if(!right(a, b, p)) res.pop_back();
+			//to include collinear points
+			//if(right(a, b, p)) res.pop_back();
+			else break;
+		}
+		res.push_back(p);
+	}
+	if(UPPER) for(auto &p: res) p.y = -p.y;
+	return res;
+}
+\end{minted}
+\subsection{Double Basic}
+\begin{minted}{c++}
+constexpr double EPS = 1e-10;
+
+bool zero(double x) {
+	return abs(x) <= EPS;
+}
+
+// CORNER: point = (0, 0)
+struct point {
+	double x, y;
+	
+	point(double x=0, double y=0): x(x), y(y) {}
+	
+	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
+	point operator-(point rhs) { return point(x-rhs.x, y-rhs.y); }
+	point operator*(double k) { return point(x*k, y*k); }
+	point operator/(double k) { return point(x/k, y/k); }
+	double operator*(point rhs) { return x*rhs.x + y*rhs.y; }
+	double operator^(point rhs) { return x*rhs.y - y*rhs.x; }
+
+	point rotated(point p, point polar) { return point(*this^polar,*this*polar); }
+	point rotated(point p, double ang) { return rotated(p, point(sin(ang),cos(ang))); }
+	double norm2() { return *this * *this; }
+	double norm() { return sqrt(norm2()); }
+
+	bool operator<(const point& rhs) const {
+		return x < rhs.x - EPS || (zero(x-rhs.x) && y < rhs.y - EPS);
+	}
+
+	bool operator==(const point& rhs) const {
+		return zero(x-rhs.x) && zero(y-rhs.y);
+	}
+};
+
+const point ccw90(1, 0), cw90(-1, 0);
+
+// angular comparison in [0, 2pi)
+// smallest is (1, 0)
+// CORNER: a || b == (0, 0)
+bool ang_cmp(point a, point b) {
+	auto quad = [](point p) -> bool {
+		// 0 if ang in [0, pi), 1 if in [pi, 2pi)
+		return p.y < 0 || (p.y == 0 && p.x < 0);
+	};
+	using tup = tuple<bool, double>;
+	return tup{quad(a), 0} < tup{quad(b), a^b};
+}
+
+double dist2(point p, point q) { // squared distance
+    return (p - q)*(p - q);
+}
+
+double dist(point p, point q) {
+    return sqrt(dist2(p, q));
+}
+
+double area2(point a, point b, point c) { // two times signed area of triangle abc
+	return (b - a) ^ (c - a);
+}
+
+bool left(point a, point b, point c) {
+	return area2(a, b, c) > EPS; // counterclockwise
+}
+
+bool right(point a, point b, point c) {
+	return area2(a, b, c) < -EPS; // clockwise
+}
+
+bool collinear(point a, point b, point c) {
+	return zero(area2(a,b,c));
+}
+
+// CORNER: a || b == (0, 0)
+int parallel(point a, point b) {
+	if((a ^ b) != 0) return 0;
+	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
+}
+
+// CORNER: a == b
+struct segment {
+	point a, b;
+
+	segment(point a=point(), point b=point()): a(a), b(b) {}
+
+	point v() { return b - a; }
+
+};
+
+bool contains(segment r, point p) {
+	return r.a==p || r.b==p || parallel(r.a-p,r.b-p) == -1;
+}
+
+bool intersects(segment r, segment s) {
+	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
+	return left(r.a,r.b,s.a) != left(r.a,r.b,s.b) && 
+		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
+}
+
+bool parallel(segment r, segment s) {
+	return parallel(r.v(), s.v());
+}
+
+point line_intersection(segment r, segment s) {
+	if(parallel(r, s)) return point(HUGE_VAL, HUGE_VAL);
+	point vr = r.v(), vs = s.v();
+	double cr = vr ^ r.a, cs = vs ^ s.a;
+	return (vs*cr - vr*cs) / (vr ^ vs);
+}
+
+point proj(segment r, point p) {
+	p = p - r.a;
+	point v = r.v();
+	return r.a + v*((p*v)/(v*v));
+}
+\end{minted}
 \subsection{Integer Basic}
 \begin{minted}{c++}
 #define int long long
@@ -107,6 +249,639 @@ bool intersects(segment r, segment s) {
 
 bool parallel(segment r, segment s) {
 	return parallel(r.v(), s.v());
+}
+\end{minted}
+\subsection{Nearest Points}
+\begin{minted}{c++}
+// Returns minimum distance SQUARED between two points
+// Complexity: O(NlogN)
+// 719cd0
+template <typename C_T>
+C_T nearest_points(vector<point> v) {
+	using lim = numeric_limits<C_T>;
+	C_T res = lim::max(), sq = sqrt((double)res);
+	sort(all(v));
+	for(int i=1;i<v.size();i++) if(v[i] == v[i-1]) return 0;
+	auto by_y = [](const point& a, const point& b) {
+		using tup = tuple<C_T, C_T>;
+		return tup{a.y, a.x} < tup{b.y, b.x};
+	};
+	queue<point> active;
+	set<point, decltype(by_y)> pts(by_y);
+	for(auto& p: v) {
+		while(!active.empty() && p.x-active.front().x > sq) {
+			pts.erase(active.front());
+			active.pop();
+		}
+		auto it = pts.lower_bound({lim::min(), p.y-sq});
+		while(it != pts.end() && it->y <= p.y + sq) {
+			C_T d = dist2(p, *it);
+			if(d < res) {
+				res = d;
+				sq = sqrt((double)res);
+			}
+			it++;
+		}
+		active.push(p);
+		pts.insert(p);
+	}
+	return res;
+}
+\end{minted}
+\subsection{Shamos Hoey}
+\begin{minted}{c++}
+// NAO FUNCIONA BEM PARA DOUBLE
+//
+// MODIFICADO PARA SEGMENTOS VERTICAIS
+// RAZOAVELMENTE TESTADO
+//
+// TOLERA INTERSECÇÕES NAS EXTREMIDADES DOS SEGMENTOS
+// SEGMENTOS NÃO DEVEM SER DEGENERADOS
+//
+// Checa se existem segmentos que se intersectam
+// Complexidade: O(N logN)
+// 365cc1
+template <typename C_T>
+bool shamos_hoey(vector<segment> seg) {
+	// create sweep segment events {x, type, seg_id}
+	vector<tuple<C_T, bool, int>> ev;
+	for(int i=0; i<seg.size(); i++) {
+		if(seg[i].b < seg[i].a) swap(seg[i].a, seg[i].b);
+		ev.emplace_back(seg[i].a.x, 0, i);
+		ev.emplace_back(seg[i].b.x, 1, i);
+	}
+	sort(all(ev));
+	auto cmp = [](segment r, segment s) -> bool {
+		if(r.a == s.a) return left(r.a, r.b, s.b);
+		bool b = s.a < r.a;
+		if(b) swap(r, s);
+		if(!zero(r.v().x)) return b^left(r.a, r.b, s.a);
+		return b^(r.b.y < s.a.y);
+	};
+	set<segment, decltype(cmp)> s(cmp);
+	for(auto [_, b, id]: ev) {
+		segment at = seg[id];
+		if(!b) {
+			auto nxt = s.lower_bound(at);
+			if((nxt != s.end() && intersects(*nxt, at))
+				|| (nxt != s.begin() && intersects(*(--nxt), at)))
+					return 1;
+			s.insert(at);
+		} else {
+			s.erase(at);
+		}
+	}
+	return 0;
+}
+\end{minted}
+\section{Graphs}
+\subsection{2-SAT}
+\begin{minted}{c++}
+// 2-SAT
+// Description: Tells if a system is 2-Satisfiable
+// Complexity: O(|V| + |E|)
+// 
+// Functions:
+//     either (a, b) - (a | b) is true
+//     implies (a, b) - (a -> b) is true
+//     must (x) - x is true
+//     solve () - returns true if the system is possible. 
+//                ans[] is the answer for each variable.
+// 
+// Details:
+//      Not x is equivalente to ~x on this template.
+//      Did not test function atMostOne, but it add constraints
+//      so that only one of these variables can be true.
+// 46e497
+
+struct SCC {
+    int N, ti = 0; vector<vector<int>> adj;
+    vector<int> disc, comp, st, comps;
+    void init(int _N) { 
+        N = _N; 
+        adj.resize(N);
+        disc.resize(N);
+        comp = vector<int>(N,-1); 
+    }
+    void add_edge(int x, int y) { adj[x].push_back(y); }
+    int dfs(int x) {
+        int low = disc[x] = ++ti; st.push_back(x); // disc[y] != 0 -> in stack
+        for (auto y : adj[x]) if (comp[y] == -1) {
+            auto b = disc[y] ? : dfs(y); auto &a = low;
+            b < a ? a = b, 1 : 0;
+        } 
+        if (low == disc[x]) { // make new SCC, pop off stack until you find x
+            comps.push_back(x); for (int y = -1; y != x;) 
+                comp[y = st.back()] = x, st.pop_back();
+        }
+        return low;
+    }
+    void gen() {
+        for (int i = 0; i < N; i++) if (!disc[i]) dfs(i);
+        reverse(all(comps));
+    }
+};
+ 
+struct TwoSAT {
+    int N; SCC S; vector<bool> ans;
+    void init(int _N) { 
+        N = _N; 
+        S.init(2*N); 
+        ans.resize(N); 
+    }
+    int addVar() { 
+        return N++; 
+    }
+    void either(int x, int y) { 
+        x = max(2 * x, -1 - 2 * x), y = max(2 * y, -1 - 2 * y);
+        S.add_edge(x ^ 1, y); S.add_edge(y ^ 1, x); 
+    }
+    void implies(int x, int y) { 
+        either(~x, y); 
+    }
+    void must(int x) {
+        either(x, x); 
+    }
+    void atMostOne(const vector<int>& li) {
+        if (li.size() <= 1) return;
+        int cur = ~li[0];
+        for (int i = 2; i < li.size(); i++) {
+            int next = addVar();
+            either(cur, ~li[i]); either(cur, next);
+            either(~li[i], next); cur = ~next;
+        }
+        either(cur,~li[1]);
+    }
+    bool solve(int _N = -1) {
+        if (_N != -1) N = _N, S.init(2*N);
+        S.gen(); reverse(all(S.comps));
+        for (int i = 0; i < 2 * N; i += 2) 
+            if (S.comp[i] == S.comp[i^1]) return 0;
+        vector<int> tmp(2 * N); for (auto i : S.comps) if (!tmp[i]) 
+            tmp[i] = 1, tmp[S.comp[i ^ 1]] = -1;
+        for(int i = 0; i < N; i++) if (tmp[S.comp[2*i]] == 1) ans[i] = 1;
+        return 1;
+    }
+};
+\end{minted}
+\subsection{Dinic}
+\begin{minted}{c++}
+// add_edge(s, t, cap): Adds a directed edge from s to t with capacity cap
+// max_flow(s, t): Returns max flow with source s and sink t
+//
+// Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
+// 04538b
+constexpr int INF = numeric_limits<int>::max();
+struct Dinic {
+	struct edge {
+		int to, cap, flow;
+	};
+
+	vector<vector<int>> g;
+	vector<int> lvl;
+	vector<edge> e;
+
+	Dinic(int sz): g(sz), lvl(sz) {}
+
+	void add_edge(int s, int t, int cap) {
+		int id = e.size();
+		g[s].push_back(id);
+		e.push_back({t, cap, 0});
+		g[t].push_back(++id);
+		e.push_back({s, cap, cap});
+	}
+
+	bool BFS(int s, int t) {
+		fill(all(lvl), INF);
+		lvl[s] = 0;
+		queue<int> q{{s}};
+		while(!q.empty() && lvl[t] == INF) {
+			int cur = q.front();
+			q.pop();
+			for(int id: g[cur]) {
+				int prox = e[id].to;
+				if(lvl[prox] != INF || e[id].cap == e[id].flow)
+					continue;
+				lvl[prox] = lvl[cur] + 1;
+				q.push(prox);
+			}
+		}
+		return lvl[t] != INF;
+	}
+
+	int DFS(int v, int pool, int start[], int t) {
+		if(!pool) return 0;
+		if(v == t) return pool;
+		for(;start[v]<(int)g[v].size();start[v]++) {
+			int id = g[v][start[v]], prox = e[id].to;
+			if(lvl[v]+1 != lvl[prox] || e[id].cap == e[id].flow) continue;
+			int pushed = DFS(prox,min(e[id].cap-e[id].flow,pool),start,t);
+			if(pushed) {
+				e[id].flow += pushed;
+				e[id^1].flow -= pushed;
+				return pushed;
+			}
+		}
+		return 0;
+	}
+
+	int max_flow(int s, int t) {
+		int total_flow = 0;
+		vector<int> start(g.size());
+		while(BFS(s,t)) {
+			fill(all(start), 0);
+			while(int pushed = DFS(s,INF,start.data(),t)) 
+				total_flow += pushed;
+		}
+		//reset to initial state
+		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;
+		return total_flow;
+	}
+};
+\end{minted}
+\subsection{Euler Tour}
+\begin{minted}{c++}
+/*
+    Euler Tour
+    Description: Find a path that passes through all edges
+    Complexity: O(N + M)
+
+    Details:
+        It also works for directed graphs and it is supposed
+        that the first vertex is 1.
+
+    bb6db8
+*/
+
+template<int SZ, bool directed> 
+struct Euler {
+    int N, M;
+    vector< pair<int, int> > adj[SZ], circuit;
+    int out[SZ], in[SZ], deg[SZ];
+    bool used[SZ], bad;
+ 
+    void clr() {
+        for(int i = 0; i < N; i++) adj[i].clear();
+        circuit.clear();
+        for(int i = 0; i < N; i++) out[i] = in[i] = deg[i] = 0;
+        for(int i = 0; i < M; i++) used[i] = 0;
+        N = M = bad = 0;
+    }
+ 
+    void dfs(int pre, int cur) {
+        while (adj[cur].size()) {
+            pair<int, int> x = adj[cur].back(); adj[cur].pop_back();
+            if (used[x.second]) continue;
+            used[x.second] = 1; dfs(cur,x.first);
+        }
+        if (circuit.size() && circuit.back().first != cur) bad = 1;
+        circuit.pb({pre,cur}); // generate circuit in reverse order
+    }
+ 
+    void addEdge(int a, int b) {
+        if (directed) {
+            adj[a].pb({b,M});
+            out[a] ++, in[b] ++;
+        } else {
+            adj[a].pb({b,M}), adj[b].pb({a,M});
+            deg[a] ++, deg[b] ++;
+        }
+        M ++;
+    }
+ 
+    vector<int> solve(int _N) {
+        N = _N; // edges only involve vertices from 0 to N-1
+ 
+        int start = 1; 
+        for(int i = 1; i <= N; i++) if (deg[i]%2 != 0) return {};
+        dfs(-1,start);
+ 
+        if (circuit.size() != M+1 || bad) return {}; // return empty if no sol
+        vector<int> ans; 
+        for(int i = (int) circuit.size() - 1; i >= 0; i--) ans.pb(circuit[i].second);
+        return ans;
+    }
+};
+\end{minted}
+\subsection{Hungaro}
+\begin{minted}{c++}
+// Find max matching of min/max weight
+// set(i, j, weight): add edge from left vertex i to right vertex j 
+// assign(): returns min/max weight max matching
+// Change w_t for edge weight type
+//
+// Complexity: O(V^3)
+
+constexpr int NONE = numeric_limits<int>::max();
+
+using w_t = double;
+constexpr w_t INF = 1e100;
+bool zero(w_t x) { return abs(x) < 1e-9; }
+
+// HASH FROM HERE
+// e232a9
+template <bool MAXIMIZE> struct Hungarian {
+	int n, m;
+	vector<vector<w_t>> w;
+	vector<int> ml, mr; // ml: matched vertexes of left side
+	vector<w_t> y, z, d;
+	vector<bool> S, T;
+
+	Hungarian(int n, int m): n(n), m(m), w(n, vector<w_t>(m, MAXIMIZE?-INF:INF)), 
+	ml(n), mr(m), y(n), z(m), d(m), S(n), T(m) {}
+
+	void set(int i, int j, w_t weight) { w[i][j] = MAXIMIZE?weight:-weight; }
+
+	w_t assign() {
+		fill(all(ml), NONE); fill(all(mr), NONE);
+		for(int i=0;i<n;i++) y[i] = *max_element(all(w[i]));
+		fill(all(z), 0);
+		for(int i=0;i<n;i++) for(int j=0;j<m;j++) {
+			if(mr[j] == NONE && zero(y[i]+z[j]-w[i][j])) {
+				ml[i] = j; mr[j] = i;
+				break;
+			}
+		}
+		auto kuhn = [&](int s, auto&& self) -> bool {
+			if(S[s]) return false; S[s] = 1;
+			for(int t=0;t<m;t++) if(!T[t]) {
+				w_t diff = y[s]+z[t]-w[s][t];
+				if(zero(diff)) {
+					T[t] = 1;
+					if(mr[t] == NONE || self(mr[t], self)) {
+						mr[t] = s; ml[s] = t;
+						return true;
+					}
+				} else d[t] = min(d[t], diff);
+			}
+			return false;
+		};
+		for(int i=0;i<n;i++) if(ml[i] == NONE) {
+			fill(all(d), numeric_limits<w_t>::max());
+			while(true) {
+				fill(all(S), false); fill(all(T), false);
+				if(kuhn(i,kuhn)) break;
+				w_t delta = numeric_limits<w_t>::max();
+				for(int j=0;j<m;j++) if(!T[j]) delta=min(delta, d[j]);
+				for(int s=0;s<n;s++) if(S[s]) y[s] -= delta;
+				for(int j=0;j<m;j++) {
+					if(T[j]) z[j] += delta;
+					else d[j] -= delta;
+				}
+			}
+		}
+		w_t res = 0;
+		for(int i=0;i<n;i++) res += y[i];
+		for(int j=0;j<m;j++) res += z[j];
+		return MAXIMIZE?res:-res;
+	}
+};
+\end{minted}
+\section{Math}
+\subsection{Bit Hacks}
+\begin{minted}{c++}
+// iterator through all masks with n bits and m set bits
+// use: for(auto it: BitIterator(n,m) { int mask = *it; ... }
+// e7a130
+struct BitIterator {
+	struct Mask {
+		uint32_t mask;
+		Mask(uint32_t mask): mask(mask) {}
+		bool operator!=(const Mask& rhs) const { return mask < rhs.mask; };
+		void operator++(){const uint32_t t=mask|(mask-1);mask=(t+1)|(((~t&-~t)-1)>>__builtin_ffs(mask));}
+		uint32_t operator*() const { return mask; }
+	};
+	const uint32_t n, m;
+	BitIterator(const uint32_t n, const uint32_t m): n(n), m(m) {}
+	Mask begin() const { return Mask((1<<m)-1); }
+	Mask end() const { return Mask((1<<n)); }
+};
+\end{minted}
+\subsection{Convoluções}
+\begin{minted}{c++}
+//     fft - Fast Fourier Transform
+//     Description: Multiply two polinomial
+//     Complexity: O(N logN)
+
+//     Functions:
+//         multiply(a, b)
+//         multiply_mod(a, b, m) - return answer modulo m
+
+//     Details:
+//         For function multiply_mod, any modulo can be used. 
+//         It is implemented using the technique of dividing 
+//         in sqrt to use less fft. Function multiply may have
+//         precision problems.
+//         This code is faster than normal. So you may use it
+//         if TL e tight.
+
+// f79fe3
+const double PI=acos(-1.0);
+namespace fft {
+    struct num {
+        double x,y;
+        num() {x = y = 0;}
+        num(double x,double y): x(x), y(y){}
+    };
+    inline num operator+(num a, num b) {return num(a.x + b.x, a.y + b.y);}
+    inline num operator-(num a, num b) {return num(a.x - b.x, a.y - b.y);}
+    inline num operator*(num a, num b) {
+        return num(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+    }
+    inline num conj(num a) {return num(a.x, -a.y);}
+ 
+    int base = 1;
+    vector<num> roots={{0,0}, {1,0}};
+    vector<ll> rev={0, 1};
+    const double PI=acosl(-1.0);
+ 
+    // always try to increase the base
+    void ensure_base(int nbase) {
+        if(nbase <= base) return;
+        rev.resize(1 << nbase);
+        for (int i = 0; i < (1 << nbase); i++)
+            rev[i] = (rev[i>>1] >> 1) + ((i&1) << (nbase-1));
+        roots.resize(1<<nbase);
+        while(base<nbase) {
+            double angle = 2*PI / (1<<(base+1));
+            for(int i = 1<<(base-1); i < (1<<base); i++) {
+                roots[i<<1] = roots[i];
+                double angle_i = angle * (2*i+1-(1<<base));
+                roots[(i<<1)+1] = num(cos(angle_i),sin(angle_i));
+            }
+            base++;
+        }
+    }
+ 
+    void fft(vector<num> &a,int n=-1) {
+        if(n==-1) n=a.size();
+        assert((n&(n-1)) == 0);
+        int zeros = __builtin_ctz(n);
+        ensure_base(zeros);
+        int shift = base - zeros;
+        for (int i = 0; i < n; i++) {
+            if(i < (rev[i] >> shift)) {
+                swap(a[i],a[rev[i] >> shift]);
+            }
+        }
+        for(int k = 1; k < n; k <<= 1) {
+            for(int i = 0; i < n; i += 2*k) {
+                for(int j = 0; j < k; j++) {
+                    num z = a[i+j+k] * roots[j+k];
+                    a[i+j+k] = a[i+j] - z;
+                    a[i+j] = a[i+j] + z;
+                }
+            }
+        }
+    }
+ 
+    vector<num> fa, fb;
+    // multiply with less fft by using complex numbers.
+    vector<ll> multiply(vector<ll> &a, vector<ll> &b);
+ 
+    // using the technique of dividing in sqrt to use less fft.
+    vector<ll> multiply_mod(vector<ll> &a, vector<ll> &b, ll m, ll eq=0);
+    vector<ll> square_mod(vector<ll>&a, ll m);
+};
+
+// 16be45
+vector<ll> fft::multiply(vector<ll> &a, vector<ll> &b) {
+    int need = a.size() + b.size() - 1;
+
+    int nbase = 0;
+    while((1 << nbase) < need) nbase++;
+    ensure_base(nbase);
+
+    int sz = 1 << nbase;
+    if(sz > (int)fa.size()) fa.resize(sz);
+    for(int i = 0; i < sz; i++) {
+        ll x = (i < (int)a.size() ? a[i] : 0);
+        ll y = (i < (int)b.size() ? b[i] : 0);
+        fa[i] = num(x, y);
+    }
+
+    fft(fa, sz);
+    num r(0,-0.25/sz);
+    for(int i = 0; i <= (sz>>1); i++) {
+        int j = (sz-i) & (sz-1);
+        num z = (fa[j] * fa[j] - conj(fa[i] * fa[i])) * r;
+        if(i != j) fa[j] = (fa[i] * fa[i] - conj(fa[j] * fa[j])) * r;
+        fa[i] = z;
+    }
+
+    fft(fa, sz);
+    vector<ll> res(need);
+    for(int i = 0; i < need; i++) res[i] = fa[i].x + 0.5;
+    return res;
+}
+
+// 4eb347
+vector<ll> fft::multiply_mod(vector<ll> &a, vector<ll> &b, ll m, ll eq) {
+    int need = a.size() + b.size() - 1;
+    int nbase = 0;
+    while((1 << nbase) < need) nbase++;
+    ensure_base(nbase);
+    int sz = 1 << nbase;
+    if(sz > (int)fa.size()) fa.resize(sz);
+    for(int i = 0; i < (int)a.size(); i++) {
+        ll x = (a[i] % m + m) % m;
+        fa[i] = num(x & ((1 << 15) - 1), x >> 15);
+    }
+    fill(fa.begin() + a.size(), fa.begin() + sz, num{0,0});
+    fft(fa, sz);
+    if(sz > (int)fb.size()) fb.resize(sz);
+    if(eq) copy(fa.begin(), fa.begin() + sz, fb.begin());
+    else {
+        for(int i = 0; i < (int)b.size(); i++) {
+            ll x = (b[i] % m + m) % m;
+            fb[i] = num(x & ((1 << 15) - 1), x >> 15);
+        }
+        fill(fb.begin() + b.size(), fb.begin() + sz, num{0,0});
+        fft(fb,sz);
+    }
+    double ratio = 0.25 / sz;
+    num r2(0, -1), r3(ratio, 0), r4(0, -ratio), r5(0,1);
+    for(int i = 0; i <= (sz>>1); i++) {
+        int j = (sz - i) & (sz - 1);
+        num a1 = (fa[i] + conj(fa[j]));
+        num a2 = (fa[i] - conj(fa[j])) * r2;
+        num b1 = (fb[i] + conj(fb[j])) * r3;
+        num b2 = (fb[i] - conj(fb[j])) * r4;
+        if(i != j) {
+            num c1 = (fa[j] + conj(fa[i]));
+            num c2 = (fa[j] - conj(fa[i])) * r2;
+            num d1 = (fb[j] + conj(fb[i])) * r3;
+            num d2 = (fb[j] - conj(fb[i])) * r4;
+            fa[i] = c1 * d1 + c2 * d2 * r5;
+            fb[i] = c1 * d2 + c2 * d1;
+        }
+        fa[j] = a1 * b1 + a2 * b2 * r5;
+        fb[j] = a1 * b2 + a2 * b1;
+    }
+    fft(fa, sz); fft(fb, sz);
+    vector<ll> res(need);
+    for(int i = 0; i < need; i++) {
+        ll aa = fa[i].x + 0.5;
+        ll bb = fb[i].x + 0.5;
+        ll cc = fa[i].y + 0.5;
+        res[i] = (aa + ((bb%m) << 15) + ((cc%m) << 30))%m;
+    }
+    return res;
+}
+
+vector<ll> fft::square_mod(vector<ll> &a, ll m) {
+    return multiply_mod(a, a, m, 1);
+}\end{minted}
+\subsection{Coprimes/Mobius}
+\begin{minted}{c++}
+/*
+    Coprimes
+    Description: 
+        Given a set o integers, calculates the quantity of integers
+        in the set coprimes with x.
+    Complexity: 
+        precalc - O(n logn)
+        add - O(sigma(N))
+        coprime - O(sigma(N))
+    Details:
+        It uses Mobius Function. To add or remove an integer of the set
+        just change sign to +1 or -1.
+    e9bba1
+*/
+struct Coprimes {
+    int n;
+    vector<ll> U, cnt;
+    vector<vector<int>> fat;
+    Coprimes () {}
+    Coprimes (int n) : n(n), U(n), fat(n), cnt(n) {
+        precalc ();
+    }
+    void precalc () {
+        for (int i = 1; i < n; i++) {
+            for (int j = i; j < n; j += i) fat[j].pb(i); 
+            if (i == 1) U[i] = 1;
+            else if ((i / fat[i][1]) % fat[i][1] == 0) U[i] = 0;
+            else U[i] = -U[i / fat[i][1]];
+        }
+    }
+    void add(int x, int sign){
+        for(auto d : fat[x]) cnt[d] += sign;
+    }
+    int coprimo(int x){
+        int quant = 0;
+        for(auto d : fat[x]){
+            quant += U[d] * cnt[d];
+        }
+        return quant;
+    }
+};\end{minted}
+\subsection{MDC extendido}
+\begin{minted}{c++}
+// returns X, Y such that a*X + b*Y = gcd(a, b)
+pair<int,int> egcd(int a, int b) {
+	if(b == 0) return {1, 0};
+	auto [x, y] = egcd(b, a%b);
+	return {y, x - y * (a/b)};
 }
 \end{minted}
 
