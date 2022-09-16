@@ -23,7 +23,7 @@ math/NTT.cpp;NTT
 math/coprimes.cpp;Coprimes/Mobius
 math/extended_gcd.cpp;MDC extendido
 math/Gauss_mod2.cpp;Base Gauss
-math/Gauss_mod2eq.cpp;Gauss Elimination
+math/Gauss_mod2_eq.cpp;Gauss Elimination
 
 [Strings]
 strings/errtree.cpp;Eertree
