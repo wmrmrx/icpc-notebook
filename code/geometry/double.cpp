@@ -17,8 +17,8 @@ struct point {
 	double operator*(point rhs) { return x*rhs.x + y*rhs.y; }
 	double operator^(point rhs) { return x*rhs.y - y*rhs.x; }
 
-	point rotated(point p, point polar) { return point(*this^polar,*this*polar); }
-	point rotated(point p, double ang) { return rotated(p, point(sin(ang),cos(ang))); }
+	point rotated(point polar) { return point(*this^polar,*this*polar); }
+	point rotated(double ang) { return (*this).rotated(point(sin(ang),cos(ang))); }
 	double norm2() { return *this * *this; }
 	double norm() { return sqrt(norm2()); }
 
