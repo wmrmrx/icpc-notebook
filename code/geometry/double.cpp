@@ -1,3 +1,5 @@
+// WARNING: INPUT IN DOUBLE IS SLOW, IF POSSIBLE READ WITH INTEGER
+
 constexpr double EPS = 1e-10;
 
 bool zero(double x) {
