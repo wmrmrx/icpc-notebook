@@ -2,17 +2,17 @@
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 //
 // Complexity: O(N+M)
-// 02dbd8
+// 3abbaa
 struct SCC {
 	vector<bool> bridge; // bridge[e]: true if edge e is a bridge
 	vector<int> comp; // comp[v]: component of vertex v
 
 	int ncomp; // number of components
-	vector<int> sz; // sz[i]: size of component i
-	vector<vector<int>> gc; // gc[i]: list of adjacent componentes
+	vector<int> sz; // sz[c]: size of component i (number of vertexes)
+	vector<vector<pair<int, int>>> gc; // gc[i]: list of adjacent components
 				
 	SCC(int n, int m, vector<pair<int, int>> g[]): bridge(m), comp(n, -1), ncomp(0) {
-		vector<bool> vis(n, false);
+		vector<bool> vis(n);
 		vector<int> low(n), prof(n);
 
 		auto dfs = [&](auto& self, int v, int dad = -1) -> void {
@@ -40,8 +40,8 @@ struct SCC {
 				int pc = comp[p];
 				if(c != pc) {
 					bridge[e] = true;
-					gc[c].push_back(pc);
-					gc[pc].push_back(c);
+					gc[c].emplace_back(pc, e);
+					gc[pc].emplace_back(c, e);
 				}
 			}
 		};
