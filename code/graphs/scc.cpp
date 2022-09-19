@@ -1,20 +1,23 @@
 // Builds forest of strongly connected components for an UNDIRECTED graph
+// Constructor: SCC(|V|, |E|, [[v, e]; |V|])
+//
 // Complexity: O(N+M)
-// e15c9a
+// 02dbd8
 struct SCC {
+	vector<bool> bridge; // bridge[e]: true if edge e is a bridge
 	vector<int> comp; // comp[v]: component of vertex v
 
 	int ncomp; // number of components
 	vector<int> sz; // sz[i]: size of component i
 	vector<vector<int>> gc; // gc[i]: list of adjacent componentes
 				
-	SCC(int n, vector<int> g[]): comp(n, -1), ncomp(0) {
+	SCC(int n, int m, vector<pair<int, int>> g[]): bridge(m), comp(n, -1), ncomp(0) {
 		vector<bool> vis(n, false);
 		vector<int> low(n), prof(n);
 
 		auto dfs = [&](auto& self, int v, int dad = -1) -> void {
 			vis[v] = 1;
-			for(int p: g[v]) if(p != dad) {
+			for(auto [p, e]: g[v]) if(p != dad) {
 				if(!vis[p]) {
 					low[p] = prof[p] = prof[v] + 1;
 					self(self, p, v);
@@ -32,10 +35,11 @@ struct SCC {
 			if(low[v] == prof[v]) c = cnt++;
 			comp[v] = c;
 			sz[c]++;
-			for(int p: g[v]) if(comp[p] == -1) {
+			for(auto [p, e]: g[v]) if(comp[p] == -1) {
 				self(self, p, c);
 				int pc = comp[p];
 				if(c != pc) {
+					bridge[e] = true;
 					gc[c].push_back(pc);
 					gc[pc].push_back(c);
 				}
