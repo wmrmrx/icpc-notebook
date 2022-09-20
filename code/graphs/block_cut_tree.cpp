@@ -10,11 +10,11 @@ struct BlockCutTree {
 
 	int ncomp; // number of components
 	vector<int> sz; // sz[c]: size of component c (number of edges)
-	vector<vector<int>> gart; // gart[c]: list of articulation points a component c is adjacent to
-	vector<vector<int>> gc; // gc[v]: list of components an articulation point v is adjacent to
-				// if v is NOT an articulation point, then gc[v] is empty
+	vector<vector<int>> gc; // gc[c]: list of articulation points a component c is adjacent to
+	vector<vector<int>> gart; // gart[v]: list of components an articulation point v is adjacent to
+				  // if v is NOT an articulation point, then gc[v] is empty
 				
-	BlockCutTree(int n, int m, vector<pair<int, int>> g[]): art(n), comp(m, -1), ncomp(0), gc(n) {
+	BlockCutTree(int n, int m, vector<pair<int, int>> g[]): art(n), comp(m, -1), ncomp(0), gart(n) {
 		vector<bool> vis(n);
 		vector<int> low(n), prof(n);
 
@@ -35,7 +35,7 @@ struct BlockCutTree {
 		};
 		for(int i=0;i<n;i++) if(!vis[i]) dfs(dfs, i);
 
-		sz.resize(ncomp); gart.resize(ncomp);
+		sz.resize(ncomp); gc.resize(ncomp);
 		
 		vector<bool> vise(m);
 		int cnt = 0;
@@ -67,8 +67,8 @@ struct BlockCutTree {
 			for(auto [p, e]: g[v]) if(!vis[p]) {
 				int c = comp[e];
 				for(int a: {p, v}) if(art[a]) {
-					gc[a].push_back(c);
-					gart[c].push_back(a);
+					gc[c].push_back(a);
+					gart[a].push_back(c);
 				}
 				self(self, p, v);
 			}
