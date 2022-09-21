@@ -62,7 +62,7 @@ bool collinear(point a, point b, point c) {
 
 // CORNER: a || b == (0, 0)
 int parallel(point a, point b) {
-	if((a ^ b) != 0) return 0;
+	if(!zero(a ^ b)) return 0;
 	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
 }
 
