@@ -12,7 +12,7 @@ struct BlockCutTree {
 	vector<int> sz; // sz[c]: size of component c (number of edges)
 	vector<vector<int>> gc; // gc[c]: list of articulation points a component c is adjacent to
 	vector<vector<int>> gart; // gart[v]: list of components an articulation point v is adjacent to
-				  // if v is NOT an articulation point, then gc[v] is empty
+				  // if v is NOT an articulation point, then gart[v] is empty
 				
 	template <typename E>
 	BlockCutTree(int n, int m, vector<E> g[]): art(n), comp(m, -1), ncomp(0), gart(n) {
@@ -34,6 +34,7 @@ struct BlockCutTree {
 					low[v] = min(low[v], low[p]);
 				} else low[v] = min(low[v], prof[p]);
 				if(low[p] >= prof[v]) {
+					art[v] = 1;
 					gart[v].push_back(ncomp);
 					sz.push_back(0);
 					while(st.size() > in) {
@@ -46,7 +47,6 @@ struct BlockCutTree {
 					}
 					ncomp++;
 				}
-				if(low[p] >= prof[v]) art[v] = 1;
 			}
 			if(root && arb <= 1) {
 				art[v] = false;
