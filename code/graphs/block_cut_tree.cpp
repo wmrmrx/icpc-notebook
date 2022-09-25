@@ -3,7 +3,7 @@
 // Builds forest of block cut trees for an UNDIRECTED graph
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
-// 14ea89
+// ea9e08
 struct BlockCutTree {
 	vector<bool> art; // art[v]: true if v is an articulation point
 	vector<int> comp; // comp[e]: component of edge e
@@ -18,62 +18,44 @@ struct BlockCutTree {
 	BlockCutTree(int n, int m, vector<E> g[]): art(n), comp(m, -1), ncomp(0), gart(n) {
 		vector<bool> vis(n), vise(m);
 		vector<int> low(n), prof(n);
+		vector<pair<int,int>> st;
 
-		auto dfs = [&](auto& self, int v, int dad = -1) -> void {
+		auto dfs = [&](auto& self, int v, bool root = 0) -> void {
 			vis[v] = 1;
-			int cnt = 0;
-			for(auto [p, id]: g[v]) if(p != dad) {
+			int arb = 0; // arborescences
+			for(auto [p, e]: g[v]) if(!vise[e]) {
+				vise[e] = 1;
+				int in = st.size();
+				st.emplace_back(e, vis[p] ? -1 : p);
 				if(!vis[p]) {
-					cnt++;
+					arb++;
 					low[p] = prof[p] = prof[v] + 1;
-					self(self, p, v);
+					self(self, p);
 					low[v] = min(low[v], low[p]);
 				} else low[v] = min(low[v], prof[p]);
-				if(dad != -1 && low[p] >= prof[v]) art[v] = true;
-			}
-			if(dad == -1 && cnt > 1) art[v] = true;
-			if(dad == -1 || art[v]) ncomp += cnt;
-		};
-		for(int i=0;i<n;i++) if(!vis[i]) dfs(dfs, i);
-
-		sz.resize(ncomp); gc.resize(ncomp);
-		
-		int cnt = 0;
-		vector<int> st;
-		auto paint = [&](auto& self, int v) -> void {
-			vis[v] = 1;
-			for(auto [p, e]: g[v]) if(!vise[e]) {
-				int in = st.size();
-				st.push_back(e);
-				vise[e] = 1;
-				if(!vis[p]) {
-					self(self, p);
-					if(low[p] >= prof[v]) {
-						while(st.size() > in) {
-							comp[st.back()] = cnt;
-							sz[cnt]++;
-							st.pop_back();
-						}
-						cnt++;
+				if(low[p] >= prof[v]) {
+					gart[v].push_back(ncomp);
+					sz.push_back(0);
+					while(st.size() > in) {
+						auto [es, ps] = st.back();
+						sz[ncomp]++;
+						comp[es] = ncomp;
+						if(ps != -1 && art[ps])
+							gart[ps].push_back(ncomp);
+						st.pop_back();
 					}
+					ncomp++;
 				}
+				if(low[p] >= prof[v]) art[v] = 1;
+			}
+			if(root && arb <= 1) {
+				art[v] = false;
+				gart[v].clear();
 			}
 		};
-		fill(all(vis), false);
-		for(int i=0;i<n;i++) if(!vis[i]) paint(paint, i);
+		for(int v=0;v<n;v++) if(!vis[v]) dfs(dfs, v, 1);
 
-		auto build = [&](auto& self, int v) -> void {
-			vis[v] = 1;
-			for(auto [p, e]: g[v]) if(!vis[p]) {
-				int c = comp[e];
-				for(int a: {p, v}) if(art[a]) {
-					gc[c].push_back(a);
-					gart[a].push_back(c);
-				}
-				self(self, p);
-			}
-		};
-		fill(all(vis), false);
-		for(int i=0;i<n;i++) if(!vis[i]) build(build, i);
+		gc.resize(ncomp);
+		for(int v=0;v<n;v++) for(int c: gart[v]) gc[c].push_back(v);
 	}
 };
