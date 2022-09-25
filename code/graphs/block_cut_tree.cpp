@@ -3,7 +3,7 @@
 // Builds forest of block cut trees for an UNDIRECTED graph
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
-// 9a56c6
+// 14ea89
 struct BlockCutTree {
 	vector<bool> art; // art[v]: true if v is an articulation point
 	vector<int> comp; // comp[e]: component of edge e
@@ -16,7 +16,7 @@ struct BlockCutTree {
 				
 	template <typename E>
 	BlockCutTree(int n, int m, vector<E> g[]): art(n), comp(m, -1), ncomp(0), gart(n) {
-		vector<bool> vis(n);
+		vector<bool> vis(n), vise(m);
 		vector<int> low(n), prof(n);
 
 		auto dfs = [&](auto& self, int v, int dad = -1) -> void {
@@ -38,18 +38,17 @@ struct BlockCutTree {
 
 		sz.resize(ncomp); gc.resize(ncomp);
 		
-		vector<bool> vise(m);
 		int cnt = 0;
 		vector<int> st;
-		auto paint = [&](auto& self, int v, int dad = -1) -> void {
+		auto paint = [&](auto& self, int v) -> void {
 			vis[v] = 1;
 			for(auto [p, e]: g[v]) if(!vise[e]) {
 				int in = st.size();
 				st.push_back(e);
 				vise[e] = 1;
 				if(!vis[p]) {
-					self(self, p, v);
-					if(art[v] || dad == -1) {
+					self(self, p);
+					if(low[p] >= prof[v]) {
 						while(st.size() > in) {
 							comp[st.back()] = cnt;
 							sz[cnt]++;
@@ -63,7 +62,7 @@ struct BlockCutTree {
 		fill(all(vis), false);
 		for(int i=0;i<n;i++) if(!vis[i]) paint(paint, i);
 
-		auto build = [&](auto& self, int v, int dad = -1) -> void {
+		auto build = [&](auto& self, int v) -> void {
 			vis[v] = 1;
 			for(auto [p, e]: g[v]) if(!vis[p]) {
 				int c = comp[e];
@@ -71,7 +70,7 @@ struct BlockCutTree {
 					gc[c].push_back(a);
 					gart[a].push_back(c);
 				}
-				self(self, p, v);
+				self(self, p);
 			}
 		};
 		fill(all(vis), false);
