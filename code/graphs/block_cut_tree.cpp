@@ -3,14 +3,14 @@
 // Builds forest of block cut trees for an UNDIRECTED graph
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
-// f8962a
+// be9e10
 struct BlockCutTree {
 	int ncomp; // number of components
 	vector<int> comp; // comp[e]: component of edge e
 	vector<vector<int>> gart; // gart[v]: list of components an articulation point v is adjacent to
 			          // if v is NOT an articulation point, then gart[v] is empty
 				
-	template <typename E>
+	template <typename E> // assumes auto [neighbor_vertex, edge_id] = g[current_vertex][i]
 	BlockCutTree(int n, int m, vector<E> g[]): ncomp(0), comp(m), gart(n) {
 		vector<bool> vis(n), vise(m);
 		vector<int> low(n), prof(n);
@@ -41,9 +41,7 @@ struct BlockCutTree {
 					ncomp++;
 				}
 			}
-			if(root && arb <= 1) {
-				gart[v].clear();
-			}
+			if(root && arb <= 1) gart[v].clear();
 		};
 		for(int v=0;v<n;v++) if(!vis[v]) dfs(dfs, v, 1);
 	}
