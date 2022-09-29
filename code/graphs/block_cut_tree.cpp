@@ -1,5 +1,3 @@
-// TODO: TESTAR
-//
 // Builds forest of block cut trees for an UNDIRECTED graph
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
