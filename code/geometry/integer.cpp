@@ -88,3 +88,102 @@ bool intersects(segment r, segment s) {
 bool parallel(segment r, segment s) {
 	return parallel(r.v(), s.v());
 }
+
+struct polygon {
+	int n;
+	vector<point> vp;
+
+	polygon(vector<point> vp): n(vp.size()), vp(vp) {}
+
+	int nxt(int i) { return i+1<n ? i+1 : 0; }
+	int prv(int i) { return i ? i-1 : 0; }
+
+	// If positive, the polygon is in ccw order. It is in cw order otherwise.
+	int orientation() { // O(n
+		int acum = 0;
+		for(int i = 0; i < n; i++)
+			acum += vp[i] ^ vp[nxt(i)];
+		return acum;
+	}
+
+	int area2() { // O(n)
+		return abs(orientation());
+	}
+
+	void turnCcw() { // O(n)
+		if(orientation() < 0) reverse(all(vp));
+	}
+
+	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
+		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
+		int lo = 1, hi = n;
+		while(lo + 1 < hi) {
+			int mid = (lo + hi) / 2;
+			if(!right(vp[0], vp[mid], p)) lo = mid;
+			else hi = mid;
+		}
+		return hi != n ? !right(vp[lo], vp[hi], p) : dist2(vp[0], p) <= dist2(vp[0], vp[n-1]);
+	}
+
+	int calipers() { // O(n). The polygon must be convex and in ccw order.
+		int ans = 0;
+		for(int i = 0, j = 1; i < n; i++) {
+			point v = vp[nxt(i)] - vp[i];
+			while((v ^ (vp[nxt(j)] - vp[j])) > 0) j = nxt(j);
+			ans = max(ans, dist2(vp[i], vp[j])); // Example with polygon diameter squared
+		}
+		return ans;
+	}
+
+	int extreme(const function<bool(point, point)> &cmp) {
+		auto isExtreme = [&](int i, bool& curDir) -> bool {
+			curDir = cmp(vp[nxt(i)], vp[i]);
+			return !cmp(vp[prv(i)], vp[i]) && !curDir;
+		};
+		bool lastDir, curDir;
+		if(isExtreme(0, lastDir)) return 0;
+		int lo = 0, hi = n; 
+		while(lo + 1 < hi) {
+			int m = (lo + hi) / 2;
+			if(isExtreme(m, curDir)) return m;
+			bool relDir = cmp(vp[m], vp[lo]);
+			if((!lastDir && curDir) || (lastDir == curDir && relDir == curDir)) {
+				lo = m;
+				lastDir = curDir;
+			} else hi = m;
+		}
+		return lo;
+	}
+
+	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
+		// Finds the indices of the two tangents to an external point q
+		auto leftTangent = [&](point r, point s) -> bool {
+			return right(p, r, s);
+		};
+		auto rightTangent = [&](point r, point s) -> bool {
+			return left(p, r, s);
+		};
+		return {extreme(leftTangent), extreme(rightTangent)};
+	}
+
+	int maximize(point v) { // O(log n) for convex polygon in ccw orientation
+		// Finds the extreme point in the direction of the vector
+		return extreme([&](point p, point q) {return p * v > q * v;});
+	}
+
+	void normalize() { // p[0] becomes the lowest leftmost point 
+		rotate(vp.begin(), min_element(all(vp)), vp.end());
+	}
+
+	polygon operator+(polygon& rhs) { // Minkowsky sum
+		vector<point> sum;
+		normalize();
+		rhs.normalize();
+		for(int i = 0, j = 0, dir; i < n || j < rhs.n; i += dir >= 0, j += dir <= 0) {
+			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
+			dir = (vp[(i + 1) % n] - vp[i % n]) 
+				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
+		}
+		return polygon(sum);
+	}
+};
