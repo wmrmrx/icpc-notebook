@@ -17,7 +17,7 @@ struct LCA {
 			}
 		};
 		dfs(root, root, dfs);
-		rmq = RMQ<pair<int,int>>(2*sz-1, tour.data());
+		rmq = RMQ<pair<int,int>>(tour);
 	}
 
 	int query(int a, int b) {
