@@ -3,43 +3,22 @@
 #code.cpp;Subsection Name
 
 [Geometry]
-geometry/convex_hull.cpp;Convex Hull
-geometry/double.cpp;Double Basic
-geometry/integer.cpp;Integer Basic
-geometry/nearest_points.cpp;Nearest Points
-geometry/shamos_hoey.cpp;Shamos Hoey
+geometry/circle.cpp;Circle
+geometry/halfplane.cpp;Halfplane Intersection
 
 [Graphs]
-graphs/2sat.cpp;2-SAT
-graphs/dinic.cpp;Dinic
-graphs/euler_tour.cpp;Euler Tour
-graphs/hungarian.cpp;Hungaro
-graphs/lca.cpp;LCA
+graphs/block_cut_tree.cpp;Block Cut Tree
+graphs/scc.cpp;Bridges
 
 [Math]
-math/bithack.cpp;Bit Hacks
-math/convolutions.cpp;Convoluções
-math/NTT.cpp;NTT
-math/coprimes.cpp;Coprimes/Mobius
-math/extended_gcd.cpp;MDC extendido
-math/Gauss_mod2.cpp;Base Gauss
-math/Gauss_mod2_eq.cpp;Gauss Elimination
-
-[Strings]
-strings/errtree.cpp;Eertree
-strings/hashing.cpp;Hash
-strings/kmp.cpp;KMP
-strings/suffix_array.cpp;Suffix Array
-strings/z.cpp;Z
-
-[DP]
-dynamic_programming/CHT_dinamico.cpp;CHT dinamico
+math/FWHT.cpp;FWHT
 
 [Data Structures]
 data-structures/implicit_lazy_treap.cpp;Implicit Lazy Treap
-data-structures/MO.cpp;MO
-data-structures/nce.cpp;NCE
-data-structures/rmq.cpp;Sparse Table
-data-structures/search_buckets.cpp;Search Buckets
-data-structures/seg2D.cpp;Seg 2D
+data-structures/segtreePersistente.cpp;Seg Persistente
 
+[Extra]
+extra/hash.sh;hash
+extra/ordered_set.cpp;PBDS
+extra/random.cpp;Random
+extra/template.cpp;Template
