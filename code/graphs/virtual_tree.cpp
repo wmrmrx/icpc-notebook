@@ -1,4 +1,4 @@
-// 8467af
+// 5badc5
 namespace vtree {
 	vector<int> vg[MAX];
 
@@ -9,7 +9,7 @@ namespace vtree {
 			return lca.pre[i] < lca.pre[j];
 		};
 		sort(all(v), cmp);
-		for(int i=0;i<v.size()-1;i++) v.push_back(lca.query(v[i], v[i+1]));
+		for(int i=0;i+1<v.size();i++) v.push_back(lca.query(v[i], v[i+1]));
 		sort(all(v), cmp);
 		v.resize(unique(all(v))-v.begin());
 		for(auto x: v) vg[x].clear();
