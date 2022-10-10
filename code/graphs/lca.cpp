@@ -1,6 +1,6 @@
 // 4d58fb
 struct LCA {
-	vector<int> t;
+	vector<int> t; // preorder traversal
 	RMQ<pair<int,int>> rmq;
 
 	LCA() {}
