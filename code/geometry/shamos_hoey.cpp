@@ -3,7 +3,7 @@
 //
 // Checa se existem segmentos que se intersectam
 // Complexidade: O(N logN)
-// 8dde21
+// d0c138
 bool shamos_hoey(vector<segment> seg) {
 	// create sweep segment events {x, type, seg_id}
 	vector<tuple<point, bool, int>> ev;
@@ -28,6 +28,10 @@ bool shamos_hoey(vector<segment> seg) {
 					return 1;
 			s.insert(at);
 		} else {
+			auto cur = s.find(at);
+			if(cur != s.begin() && cur != s.end() && 
+					intersects(*prev(cur), *next(cur))) 
+				return 1;
 			s.erase(at);
 		}
 	}
