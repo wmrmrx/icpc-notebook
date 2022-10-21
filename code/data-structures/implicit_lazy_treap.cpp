@@ -28,7 +28,7 @@ struct Treap {
 		void prop() {
 			if(rev) {
 				swap(c[0], c[1]);
-				for(no* x: c) if(x) x->rev ^= !x->rev;
+				for(no* x: c) if(x) x->rev = !x->rev;
 				rev = 0;
 			}
 		}
