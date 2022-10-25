@@ -1,7 +1,7 @@
 // Builds forest of block cut trees for an UNDIRECTED graph
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
-// be9e10
+// ab7b49
 struct BlockCutTree {
 	int ncomp; // number of components
 	vector<int> comp; // comp[e]: component of edge e
@@ -14,7 +14,7 @@ struct BlockCutTree {
 		vector<int> low(n), prof(n);
 		stack<pair<int,int>> st;
 
-		auto dfs = [&](auto& self, int v, bool root = 0) -> void {
+		function<void(int,bool)> dfs = [&](int v, bool root) {
 			vis[v] = 1;
 			int arb = 0; // arborescences
 			for(auto [p, e]: g[v]) if(!vise[e]) {
@@ -24,7 +24,7 @@ struct BlockCutTree {
 				if(!vis[p]) {
 					arb++;
 					low[p] = prof[p] = prof[v] + 1;
-					self(self, p);
+					dfs(p, 0);
 					low[v] = min(low[v], low[p]);
 				} else low[v] = min(low[v], prof[p]);
 				if(low[p] >= prof[v]) {
@@ -41,6 +41,6 @@ struct BlockCutTree {
 			}
 			if(root && arb <= 1) gart[v].clear();
 		};
-		for(int v=0;v<n;v++) if(!vis[v]) dfs(dfs, v, 1);
+		for(int v=0;v<n;v++) if(!vis[v]) dfs(v, 1);
 	}
 };

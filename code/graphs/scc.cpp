@@ -2,7 +2,7 @@
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 //
 // Complexity: O(N+M)
-// 3abbaa
+// a1e37f
 struct SCC {
 	vector<bool> bridge; // bridge[e]: true if edge e is a bridge
 	vector<int> comp; // comp[v]: component of vertex v
@@ -15,28 +15,28 @@ struct SCC {
 		vector<bool> vis(n);
 		vector<int> low(n), prof(n);
 
-		auto dfs = [&](auto& self, int v, int dad = -1) -> void {
+		function<void(int,int)> dfs = [&](int v, int dad) {
 			vis[v] = 1;
 			for(auto [p, e]: g[v]) if(p != dad) {
 				if(!vis[p]) {
 					low[p] = prof[p] = prof[v] + 1;
-					self(self, p, v);
+					dfs(p, v);
 					low[v] = min(low[v], low[p]);
 				} else low[v] = min(low[v], prof[p]);
 			}
 			if(low[v] == prof[v]) ncomp++;
 		};
-		for(int i=0;i<n;i++) if(!vis[i]) dfs(dfs, i);
+		for(int i=0;i<n;i++) if(!vis[i]) dfs(i, -1);
 
 		sz.resize(ncomp); gc.resize(ncomp);
 
 		int cnt = 0;
-		auto build = [&](auto& self, int v, int c = -1) -> void {
+		function<void(int,int)> build = [&](int v, int c) {
 			if(low[v] == prof[v]) c = cnt++;
 			comp[v] = c;
 			sz[c]++;
 			for(auto [p, e]: g[v]) if(comp[p] == -1) {
-				self(self, p, c);
+				build(p, c);
 				int pc = comp[p];
 				if(c != pc) {
 					bridge[e] = true;
@@ -45,6 +45,6 @@ struct SCC {
 				}
 			}
 		};
-		for(int i=0;i<n;i++) if(comp[i] == -1) build(build, i);
+		for(int i=0;i<n;i++) if(comp[i] == -1) build(i, -1);
 	}
 };
