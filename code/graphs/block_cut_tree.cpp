@@ -8,8 +8,8 @@ struct BlockCutTree {
 	vector<vector<int>> gart; // gart[v]: list of components an articulation point v is adjacent to
 			          // if v is NOT an articulation point, then gart[v] is empty
 				
-	template <typename E> // assumes auto [neighbor_vertex, edge_id] = g[current_vertex][i]
-	BlockCutTree(int n, int m, vector<E> g[]): ncomp(0), comp(m), gart(n) {
+	// assumes auto [neighbor_vertex, edge_id] = g[current_vertex][i]
+	BlockCutTree(int n, int m, vector<pair<int,int>> g[]): ncomp(0), comp(m), gart(n) {
 		vector<bool> vis(n), vise(m);
 		vector<int> low(n), prof(n);
 		stack<pair<int,int>> st;
