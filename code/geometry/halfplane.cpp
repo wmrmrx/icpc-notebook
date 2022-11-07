@@ -1,7 +1,5 @@
-
 /* Half-plane intersection algorithm. The result of intersecting half-planes is either
- * empty or a convex polygon (maybe degenerated). This template depends on point_double.cpp
- * and line_double.cpp.
+ * empty or a convex polygon (maybe degenerated). This template depends on double.cpp
  *
  * h - (input) set of half-planes to be intersected. Each half-plane is described as a pair
  * of points such that the half-plane is at the left of them.
@@ -12,50 +10,53 @@
  * polygons (such as a point, line, segment or half-line).
  *
  * Time complexity: O(n logn)
+ * cdab7a
  */
 
-struct halfplane: public line {
-	ld ang;
+struct halfplane: public segment {
+	double ang;
 	halfplane() {}
-	halfplane(point _p, point _q) {
-		p = _p; q = _q;
-		point vec(q - p);
-		ang = atan2(vec.y, vec.x);
+	halfplane(point _a, point _b) {
+		a = _a; b = _b;
+		ang = atan2(v().y, v().x);
 	}
-	bool operator <(const halfplane& other) const {
-		if (fabsl(ang - other.ang) < EPS) return right(p, q, other.p);
-	        return ang < other.ang;
+	bool operator <(const halfplane& rhs) const {
+		if (fabsl(ang - rhs.ang) < EPS) return right(a, b, rhs.a);
+	        return ang < rhs.ang;
 	}
-	bool operator ==(const halfplane& other) const {
-		return fabsl(ang - other.ang) < EPS; 
+	bool operator ==(const halfplane& rhs) const {
+		return fabs(ang - rhs.ang) < EPS; 
 	}
 	bool out(point r) {
-		return right(p, q, r);
+		return right(a, b, r);
 	}
 };
 
 vector<point> hp_intersect(vector<halfplane> h) {
-	point box[4] = {{-INF, -INF}, {INF, -INF}, {INF, INF}, {-INF, INF}};
+	array<point, 4> box; box.fill(point(-INFINITY, -INFINITY));
 	for(int i = 0; i < 4; i++)
-		h.pb(halfplane(box[i], box[(i+1) % 4]));
-	sort(h.begin(), h.end());
-	h.resize(unique(h.begin(), h.end()) - h.begin());
+		h.push_back(halfplane(box[i], box[(i+1) % 4]));
+	sort(all(h));
+	h.resize(unique(all(h)) - h.begin());
 	deque<halfplane> dq;
+
+	auto sz = [&]() -> int { return dq.size(); };
+
 	for(auto hp: h) {
-		while(sz(dq) > 1 && hp.out(intersect(dq.back(), dq[sz(dq) - 2])))
+		while(sz() > 1 && hp.out(intersects(dq.back(), dq[sz() - 2])))
 			dq.pop_back();
-		while(sz(dq) > 1 && hp.out(intersect(dq[0], dq[1])))
+		while(sz() > 1 && hp.out(intersects(dq[0], dq[1])))
 			dq.pop_front();
-		dq.pb(hp);
+		dq.push_back(hp);
 	}
-	while(sz(dq) > 2 && dq[0].out(intersect(dq.back(), dq[sz(dq) - 2])))
+	while(sz() > 2 && dq[0].out(intersects(dq.back(), dq[sz() - 2])))
 		dq.pop_back();
-	while(sz(dq) > 2 && dq.back().out(intersect(dq[0], dq[1])))
+	while(sz() > 2 && dq.back().out(intersects(dq[0], dq[1])))
 		dq.pop_front();
-	if(sz(dq) < 3) return {};
-	vector<point> pol(sz(dq));
-	for(int i = 0; i < sz(dq); i++) {
-		pol[i] = intersect(dq[i], dq[(i+1) % sz(dq)]);
+	if(sz() < 3) return {};
+	vector<point> pol(sz());
+	for(int i = 0; i < sz(); i++) {
+		pol[i] = intersects(dq[i], dq[(i+1) % sz()]);
 	}
 	return pol;
 }
