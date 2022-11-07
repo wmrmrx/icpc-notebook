@@ -2,8 +2,7 @@
 // max_flow(s, t): Returns max flow with source s and sink t
 //
 // Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
-// 04538b
-constexpr int INF = numeric_limits<int>::max();
+// f5f7ec
 struct Dinic {
 	struct edge {
 		int to, cap, flow;
@@ -23,7 +22,7 @@ struct Dinic {
 		e.push_back({s, cap, cap});
 	}
 
-	bool BFS(int s, int t) {
+	bool bfs(int s, int t) {
 		fill(all(lvl), INF);
 		lvl[s] = 0;
 		queue<int> q{{s}};
@@ -31,25 +30,26 @@ struct Dinic {
 			int cur = q.front();
 			q.pop();
 			for(int id: g[cur]) {
-				int prox = e[id].to;
-				if(lvl[prox] != INF || e[id].cap == e[id].flow)
+				auto &[p, cap, flow] = e[id];
+				if(lvl[p] != INF || cap == flow)
 					continue;
-				lvl[prox] = lvl[cur] + 1;
-				q.push(prox);
+				lvl[p] = lvl[cur] + 1;
+				q.push(p);
 			}
 		}
 		return lvl[t] != INF;
 	}
 
-	int DFS(int v, int pool, int start[], int t) {
+	int dfs(int v, int pool, int t, vector<int>& st) {
 		if(!pool) return 0;
 		if(v == t) return pool;
-		for(;start[v]<(int)g[v].size();start[v]++) {
-			int id = g[v][start[v]], prox = e[id].to;
-			if(lvl[v]+1 != lvl[prox] || e[id].cap == e[id].flow) continue;
-			int pushed = DFS(prox,min(e[id].cap-e[id].flow,pool),start,t);
+		for(;st[v]<(int)g[v].size();st[v]++) {
+			int id = g[v][st[v]];
+			auto &[p, cap, flow] = e[id];
+			if(lvl[v]+1 != lvl[p] || cap == flow) continue;
+			int pushed = dfs(p, min(cap-flow, pool) , t, st);
 			if(pushed) {
-				e[id].flow += pushed;
+				flow += pushed;
 				e[id^1].flow -= pushed;
 				return pushed;
 			}
@@ -60,9 +60,9 @@ struct Dinic {
 	int max_flow(int s, int t) {
 		int total_flow = 0;
 		vector<int> start(g.size());
-		while(BFS(s,t)) {
+		while(bfs(s,t)) {
 			fill(all(start), 0);
-			while(int pushed = DFS(s,INF,start.data(),t)) 
+			while(int pushed = dfs(s,INF,t,start)) 
 				total_flow += pushed;
 		}
 		//reset to initial state
