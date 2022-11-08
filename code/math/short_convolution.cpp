@@ -1,6 +1,6 @@
 // fft::convolution(a, b): returns convolution between polynomials a and b
 // approx 50% slower, but faster to code
-// 1c8ba5
+// 026f0b
 namespace fft {
 	using cd = complex<double>;
 	const double PI = acosl(-1);
@@ -16,9 +16,8 @@ namespace fft {
 			j ^= bit;
 			if(i < j) swap(a[i], a[j]);
 		}
-		vector<cd> w;
 		for(int sz=2; sz<=n; sz*=2) {
-			w.resize(sz/2);
+			vector<cd> w(sz/2);
 			for(int j=0;j<sz/2;j++) 
 				w[j] = polar(1.0, 2*PI*j/sz*(INVERT?-1:1));
 			for(int i=0; i<n; i+=sz) for(int j=0; j<sz/2; j++) {
