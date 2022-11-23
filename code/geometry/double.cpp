@@ -10,7 +10,8 @@ bool zero(double x) {
 struct point {
 	double x, y;
 	
-	point(double x=0, double y=0): x(x), y(y) {}
+	point(): x(), y() {}
+	point(double _x, double _y): x(_x), y(_y) {}
 	
 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
 	point operator-(point rhs) { return point(x-rhs.x, y-rhs.y); }
@@ -81,7 +82,8 @@ int parallel(point a, point b) {
 struct segment {
 	point a, b;
 
-	segment(point a=point(), point b=point()): a(a), b(b) {}
+	segment() {}
+	segment(point _a, point _b): a(_a), b(_b) {}
 
 	point v() { return b - a; }
 
