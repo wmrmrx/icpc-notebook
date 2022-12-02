@@ -18,65 +18,55 @@
     { 998244353, 15311432, 469870224, 1 << 23 },
     { 918552577, 86995699, 324602258, 1 << 22 }
 
-    98bcfc
+    bf1994
 */
 
 namespace NTT {
-    const ll mod = 998244353, root = 15311432, root_1 = 469870224, root_pw = 1 << 23;
+    using Z = mint<998244353>;
+    const Z root(15311432), root_1(469870224);
+    int root_pw = 1<<23;
 
-    ll fastxp(ll n, ll e){
-        ll ans = 1, pwr = n;
-        while(e){
-            if(e%2)  ans = ans * pwr % mod;
-            e /= 2;
-            pwr = pwr * pwr % mod;
-        }
-        return ans % mod;
-    }
+    void fft(vector<Z> & a, bool invert) {
+	int n = a.size();
 
-
-    void fft(vector<ll> & a, bool invert) {
-        ll n = a.size();
-
-        for (ll i = 1, j = 0; i < n; i++) {
-            ll bit = n >> 1;
+        for (int i = 1, j = 0; i < n; i++) {
+            int bit = n >> 1;
             for (; j & bit; bit >>= 1)
                 j ^= bit;
             j ^= bit;
-
             if (i < j) swap(a[i], a[j]);
         }
 
-        for (ll len = 2; len <= n; len <<= 1) {
-            ll wlen = invert ? root_1 : root;
-            for (ll i = len; i < root_pw; i <<= 1)
-                wlen = wlen * wlen % mod;
+        for (int len = 2; len <= n; len <<= 1) {
+            Z wlen = invert ? root_1 : root;
+            for (int i = len; i < root_pw; i <<= 1)
+                wlen *= wlen;
 
-            for (ll i = 0; i < n; i += len) {
-                ll w = 1;
-                for (ll j = 0; j < len / 2; j++) {
-                    ll u = a[i+j], v = a[i+j+len/2] * w % mod;
-                    a[i+j] = u + v < mod ? u + v : u + v - mod;
-                    a[i+j+len/2] = u - v >= 0 ? u - v : u - v + mod;
-                    w = w * wlen % mod;
+            for (int i = 0; i < n; i += len) {
+                Z w(1);
+                for (int j = 0; j < len / 2; j++) {
+                    Z u = a[i+j], v = a[i+j+len/2] * w;
+                    a[i+j] = u + v;
+                    a[i+j+len/2] = u - v;
+                    w *= wlen;
                 }
             }
         }
 
         if (invert) {
-            ll n_1 = fastxp(n, mod - 2);
-            for (ll & x : a) x = x * n_1 % mod;
+            Z n_1 = Z(n).inv();
+            for (Z & x : a) x *= n_1;
         }
     }
  
-    vector<ll> multiply(vector<ll> &a, vector<ll> &b) {
-        vector<ll> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-        ll sz = a.size() + b.size() - 1, n = 1;
+    vector<Z> multiply(vector<Z> &a, vector<Z> &b) {
+        vector<Z> fa = a, fb = b;
+        int sz = a.size() + b.size() - 1, n = 1;
         while (n < sz) n <<= 1;
 
         fa.resize(n), fb.resize(n);
         fft(fa, 0), fft(fb, 0);
-        for (ll i = 0; i < fa.size(); i++) fa[i] = fa[i] * fb[i] % mod;
+        for (int i = 0; i < fa.size(); i++) fa[i] *= fb[i];
 
         fft(fa, 1);
         fa.resize(sz);
