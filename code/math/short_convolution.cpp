@@ -1,6 +1,6 @@
-// fft::convolution(a, b): returns convolution between polynomials a and b
+// fft::multiply(a, b): returns multiplication between polynomials a and b
 // approx 50% slower, but faster to code
-// 026f0b
+// 080fab
 namespace fft {
 	using cd = complex<double>;
 	const double PI = acosl(-1);
@@ -30,7 +30,7 @@ namespace fft {
 	}
 
 	// a and b must NOT be empty
-	vector<int> convolution(vector<int> &a, vector<int> &b) {
+	vector<int> multiply(vector<int> &a, vector<int> &b) {
 		int rsz = a.size() + b.size() - 1, sz = 1;
 		while(rsz > sz) sz *= 2;
 		vector<cd> ca(all(a)), cb(all(b));
