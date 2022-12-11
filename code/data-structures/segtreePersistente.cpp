@@ -1,13 +1,13 @@
 /* Persistent segment tree.
  * 
  * Complexity: O(logn) memory and time per query/update
- * fc63b9
+ * 3f7e2a
  */
 
 template<class T, int SZ> struct pseg {
     static const int LIMIT = 1e7; // adjust
     int l[LIMIT], r[LIMIT], nex = 0;
-    T val[LIMIT];
+    T val[LIMIT], lazy[LIMIT];
     
     //// HELPER
     int copy(int cur) {
@@ -51,20 +51,18 @@ template<class T, int SZ> struct pseg {
     int build(vector<T>& arr, int L, int R) {
         int cur = nex++;
         if (L == R) {
-            if (L < (int) arr.size ()) val[cur] = arr[L];
-            else val[cur] = 0; // array pode ficar com lixo!!!
+            if (L < sz(arr)) val[cur] = arr[L];
             return cur;
         }
         
         int M = (L+R)/2;
         l[cur] = build(arr,L,M), r[cur] = build(arr,M+1,R);
-        pull(cur); 
-        return cur;
+        pull(cur); return cur;
     }
     
     //// PUBLIC
-    vector<int> loc;
-    // void upd(int lo, T v) { loc.pb(upd(loc.back(),lo,v,0,SZ-1)); }
-    // T query(int ti, int lo, int hi) { return query(loc[ti],lo,hi,0,SZ-1); }
+    vi loc;
+    //void upd(int lo, int hi, T v) { loc.pb(upd(loc.back(),lo,hi,v,0,SZ-1)); }
+    //T query(int ti, int lo, int hi) { return query(loc[ti],lo,hi,0,SZ-1); }
     void build(vector<T>& arr) { loc.pb(build(arr,0,SZ-1)); }
 };
