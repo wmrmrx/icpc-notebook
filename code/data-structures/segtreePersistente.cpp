@@ -51,7 +51,7 @@ template<class T, int SZ> struct pseg {
     int build(vector<T>& arr, int L, int R) {
         int cur = nex++;
         if (L == R) {
-            if (L < sz(arr)) val[cur] = arr[L];
+            if (L < (int) arr.size ()) val[cur] = arr[L];
             return cur;
         }
         
