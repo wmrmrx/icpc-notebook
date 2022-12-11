@@ -61,7 +61,7 @@ template<class T, int SZ> struct pseg {
     }
     
     //// PUBLIC
-    vi loc;
+    vector<int> loc;
     //void upd(int lo, int hi, T v) { loc.pb(upd(loc.back(),lo,hi,v,0,SZ-1)); }
     //T query(int ti, int lo, int hi) { return query(loc[ti],lo,hi,0,SZ-1); }
     void build(vector<T>& arr) { loc.pb(build(arr,0,SZ-1)); }
