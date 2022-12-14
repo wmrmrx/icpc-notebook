@@ -6,13 +6,12 @@
 //     either (a, b) - (a | b) is true
 //     implies (a, b) - (a -> b) is true
 //     must (x) - x is true
-//     solve () - returns true if the system is possible. 
-//                ans[] is the answer for each variable.
+//     atMostOne (v) - ensure that at most one of these
+//                     variables is true
+//     solve () - returns the answer if system is possible.
 // 
 // Details:
 //      Not x is equivalente to ~x on this template.
-//      Did not test function atMostOne, but it add constraints
-//      so that only one of these variables can be true.
 // 5d5273
 
 struct SCC {
