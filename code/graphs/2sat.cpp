@@ -13,7 +13,7 @@
 //      Not x is equivalente to ~x on this template.
 //      Did not test function atMostOne, but it add constraints
 //      so that only one of these variables can be true.
-// 46e497
+// 5d5273
 
 struct SCC {
     int N, ti = 0; vector<vector<int>> adj;
@@ -44,43 +44,41 @@ struct SCC {
 };
  
 struct TwoSAT {
-    int N; SCC S; vector<bool> ans;
-    void init(int _N) { 
-        N = _N; 
-        S.init(2*N); 
-        ans.resize(N); 
-    }
-    int addVar() { 
-        return N++; 
-    }
-    void either(int x, int y) { 
+    int N = 0; vector<pair<int, int>> edges;
+    void init (int _N) { N = _N; }
+    int addVar () { return N++; }
+    void either (int x, int y) { 
         x = max(2 * x, -1 - 2 * x), y = max(2 * y, -1 - 2 * y);
-        S.add_edge(x ^ 1, y); S.add_edge(y ^ 1, x); 
+        edges.push_back ({x, y}); 
     }
-    void implies(int x, int y) { 
-        either(~x, y); 
+    void implies (int x, int y) { 
+        either (~x,y); 
     }
-    void must(int x) {
-        either(x, x); 
+    void must (int x) { 
+        either (x,x); 
     }
-    void atMostOne(const vector<int>& li) {
-        if (li.size() <= 1) return;
+    void atMostOne (const vector<int>& li) {
+        if (li.size () <= 1) return;
         int cur = ~li[0];
-        for (int i = 2; i < li.size(); i++) {
+        for (int i = 2; i < li.size (); i++) {
             int next = addVar();
             either(cur, ~li[i]); either(cur, next);
             either(~li[i], next); cur = ~next;
         }
-        either(cur,~li[1]);
+        either(cur, ~li[1]);
     }
-    bool solve(int _N = -1) {
-        if (_N != -1) N = _N, S.init(2*N);
-        S.gen(); reverse(all(S.comps));
+    vector<bool> solve() {
+        SCC S; S.init(2 * N);
+        for (auto [x, y] : edges) 
+            S.add_edge(x ^ 1, y), S.add_edge(y ^ 1, x);
+        S.gen(); reverse(all(S.comps)); // reverse topo order
         for (int i = 0; i < 2 * N; i += 2) 
-            if (S.comp[i] == S.comp[i^1]) return 0;
-        vector<int> tmp(2 * N); for (auto i : S.comps) if (!tmp[i]) 
-            tmp[i] = 1, tmp[S.comp[i ^ 1]] = -1;
-        for(int i = 0; i < N; i++) if (tmp[S.comp[2*i]] == 1) ans[i] = 1;
-        return 1;
+            if (S.comp[i] == S.comp[i^1]) return {};
+        vector<int> tmp(2 * N); 
+        for (auto i : S.comps) if (!tmp[i]) 
+            tmp[i] = 1, tmp[S.comp[i^1]] = -1;
+        vector<bool> ans(N); 
+        for (int i = 0; i < N; i++) ans[i] = tmp[S.comp[2*i]] == 1;
+        return ans;
     }
 };
