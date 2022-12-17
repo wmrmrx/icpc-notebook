@@ -2,7 +2,7 @@
  * shortest paths. Useful when the edges costs are negative.
  *
  * Constructor:
- * mcf(n, s, t)
+ * MinCost(n, s, t)
  * n - number of nodes in the flow graph.
  * s - source of the flow graph.
  * t - sink of the flow graph.
@@ -19,9 +19,9 @@
  *              - O(V * E * (E log V))
  */
 
-// 82e170
+// 3ab627
 const int INF = 1e18;
-struct mcf {
+struct MinCost {
 	int n, s, t, fl, cost;
 	vector<int> first, prev, dist;
 	vector<bool> queued;
@@ -31,8 +31,8 @@ struct mcf {
 			to(_to), next(_next), cap(_cap), cost(_cost) {}
 	};
 	vector<edge> g;
-	mcf() {}
-	mcf(int _n, int _s,int _t) : n(_n), s(_s), t(_t), fl(0), cost(0),
+	MinCost() {}
+	MinCost(int _n, int _s,int _t) : n(_n), s(_s), t(_t), fl(0), cost(0),
 		first(n, -1), prev(n), dist(n), queued(n) {
 		g.reserve(n*n);
 	};
