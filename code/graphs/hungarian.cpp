@@ -12,7 +12,7 @@ constexpr w_t INF = 1e100;
 bool zero(w_t x) { return abs(x) < 1e-9; }
 
 // HASH FROM HERE
-// e232a9
+// 95453b
 template <bool MAXIMIZE> struct Hungarian {
 	int n, m;
 	vector<vector<w_t>> w;
@@ -35,13 +35,13 @@ template <bool MAXIMIZE> struct Hungarian {
 				break;
 			}
 		}
-		auto kuhn = [&](int s, auto&& self) -> bool {
+		function<bool(int)> kuhn = [&](int s) {
 			if(S[s]) return false; S[s] = 1;
 			for(int t=0;t<m;t++) if(!T[t]) {
 				w_t diff = y[s]+z[t]-w[s][t];
 				if(zero(diff)) {
 					T[t] = 1;
-					if(mr[t] == NONE || self(mr[t], self)) {
+					if(mr[t] == NONE || kuhn(mr[t])) {
 						mr[t] = s; ml[s] = t;
 						return true;
 					}
@@ -53,7 +53,7 @@ template <bool MAXIMIZE> struct Hungarian {
 			fill(all(d), numeric_limits<w_t>::max());
 			while(true) {
 				fill(all(S), false); fill(all(T), false);
-				if(kuhn(i,kuhn)) break;
+				if(kuhn(i)) break;
 				w_t delta = numeric_limits<w_t>::max();
 				for(int j=0;j<m;j++) if(!T[j]) delta=min(delta, d[j]);
 				for(int s=0;s<n;s++) if(S[s]) y[s] -= delta;
