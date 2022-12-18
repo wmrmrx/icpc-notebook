@@ -3,6 +3,7 @@
 //
 // Complexity: O(N+M)
 // a1e37f
+a1e37f
 struct SCC {
 	vector<bool> bridge; // bridge[e]: true if edge e is a bridge
 	vector<int> comp; // comp[v]: component of vertex v
@@ -11,6 +12,7 @@ struct SCC {
 	vector<int> sz; // sz[c]: size of component i (number of vertexes)
 	vector<vector<pair<int, int>>> gc; // gc[i]: list of adjacent components
 				
+	// assumes auto [neighbor_vertex, edge_id] = g[current_vertex][i]
 	SCC(int n, int m, vector<pair<int, int>> g[]): bridge(m), comp(n, -1), ncomp(0) {
 		vector<bool> vis(n);
 		vector<int> low(n), prof(n);
