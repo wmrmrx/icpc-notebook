@@ -2,9 +2,9 @@
 // get_flow(s, t): Returns max flow with source s and sink t
 //
 // Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
-// e85855
+
+// a7c68f
 struct Dinic {
-	static const int INF = 1e18;
 	struct edge {
 		int to, cap, flow;
 	};
