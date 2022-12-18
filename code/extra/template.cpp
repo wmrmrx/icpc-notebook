@@ -2,22 +2,18 @@
 using namespace std;
 
 #define all(x) x.begin(), x.end()
-#define IOS ios::sync_with_stdio(0);cin.tie(0)
-
-using ll = long long;
+#define int int64_t
+#define pb push_back
 
 void dbg_out() { cerr << endl; }
-template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T){ 
-  cerr << ' ' << H; 
-  dbg_out(T...); 
-}
-#define dbg(...) cerr<<"(" << #__VA_ARGS__<<"):" , dbg_out(__VA_ARGS__) , cerr << endl
+template <typename H, typename... T>
+void dbg_out(H h, T... t) { cerr << ' ' << h; dbg_out(t...); }
+#define dbg(...) { cerr << #__VA_ARGS__ << ':'; dbg(__VA_ARGS__); }
 
-void solve(){
-    
+void solve() {
 }
 
 signed main(){
-    IOS;
-    solve();
+	ios::sync_with_stdio(false); cin.tie(0);
+	solve();
 }
