@@ -92,10 +92,10 @@ bool parallel(segment r, segment s) {
 }
 
 struct polygon {
-	int n;
 	vector<point> vp;
+	int n;
 
-	polygon(vector<point> vp): n(vp.size()), vp(vp) {}
+	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {}
 
 	int nxt(int i) { return i+1<n ? i+1 : 0; }
 	int prv(int i) { return i ? i-1 : 0; }

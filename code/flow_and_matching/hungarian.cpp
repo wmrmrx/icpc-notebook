@@ -12,7 +12,7 @@ constexpr w_t INF = 1e100;
 bool zero(w_t x) { return abs(x) < 1e-9; }
 
 // HASH FROM HERE
-// 95453b
+// 2c6efd
 template <bool MAXIMIZE> struct Hungarian {
 	int n, m;
 	vector<vector<w_t>> w;
@@ -20,7 +20,7 @@ template <bool MAXIMIZE> struct Hungarian {
 	vector<w_t> y, z, d;
 	vector<bool> S, T;
 
-	Hungarian(int n, int m): n(n), m(m), w(n, vector<w_t>(m, MAXIMIZE?-INF:INF)), 
+	Hungarian(int _n, int _m): n(_n), m(_m), w(n, vector<w_t>(m, MAXIMIZE?-INF:INF)), 
 	ml(n), mr(m), y(n), z(m), d(m), S(n), T(m) {}
 
 	void set(int i, int j, w_t weight) { w[i][j] = MAXIMIZE?weight:-weight; }

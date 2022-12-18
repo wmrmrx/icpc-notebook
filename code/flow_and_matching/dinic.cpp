@@ -2,12 +2,11 @@
 // get_flow(s, t): Returns max flow with source s and sink t
 //
 // Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
-// 360dcf
+// e85855
 struct Dinic {
-	const int INF = 1e18;
+	static const int INF = 1e18;
 	struct edge {
 		int to, cap, flow;
-		edge(int _to, int _cap, int _flow): to(_to), cap(_cap), flow(_flow) {}
 	};
 
 	vector<vector<int>> g;
@@ -19,9 +18,9 @@ struct Dinic {
 	void add_edge(int s, int t, int cap) {
 		int id = e.size();
 		g[s].push_back(id);
-		e.emplace_back(t, cap, 0);
+		e.push_back({t, cap, 0});
 		g[t].push_back(++id);
-		e.emplace_back(s, cap, cap);
+		e.push_back({s, cap, cap});
 	}
 
 	bool bfs(int s, int t) {
