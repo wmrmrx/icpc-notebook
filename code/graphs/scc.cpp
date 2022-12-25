@@ -3,7 +3,6 @@
 //
 // Complexity: O(N+M)
 // a1e37f
-a1e37f
 struct SCC {
 	vector<bool> bridge; // bridge[e]: true if edge e is a bridge
 	vector<int> comp; // comp[v]: component of vertex v
