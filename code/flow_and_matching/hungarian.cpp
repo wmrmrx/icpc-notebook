@@ -1,71 +1,52 @@
-// Find max matching of min/max weight
-// set(i, j, weight): add edge from left vertex i to right vertex j 
-// assign(): returns min/max weight max matching
-// Change w_t for edge weight type
+// Algoritmo Hungaro
 //
-// Complexity: O(V^3)
+// Resolve o problema de assignment (matriz n x n)
+// Colocar os valores da matriz em 'a' (pode < 0)
+// assignment() retorna um par com o valor do
+// assignment minimo, e a coluna escolhida por cada linha
+//
+// O(n^3)
+// 73cba3
 
-constexpr int NONE = numeric_limits<int>::max();
+template<typename T> struct Hungarian {
+	static constexpr T INF = numeric_limits<T>::max();
+	int n;
+	vector<vector<T>> a;
+	vector<T> u, v;
+	vector<int> p, way;
 
-using w_t = double;
-constexpr w_t INF = 1e100;
-bool zero(w_t x) { return abs(x) < 1e-9; }
+	hungarian(int n_) : n(n_), a(n, vector<T>(n)), u(n+1), v(n+1), p(n+1), way(n+1) {}
 
-// HASH FROM HERE
-// 2c6efd
-template <bool MAXIMIZE> struct Hungarian {
-	int n, m;
-	vector<vector<w_t>> w;
-	vector<int> ml, mr; // ml: matched vertexes of left side
-	vector<w_t> y, z, d;
-	vector<bool> S, T;
+	void set(int i, int j, T w) { a[i][j] = w; }
 
-	Hungarian(int _n, int _m): n(_n), m(_m), w(n, vector<w_t>(m, MAXIMIZE?-INF:INF)), 
-	ml(n), mr(m), y(n), z(m), d(m), S(n), T(m) {}
-
-	void set(int i, int j, w_t weight) { w[i][j] = MAXIMIZE?weight:-weight; }
-
-	w_t assign() {
-		fill(all(ml), NONE); fill(all(mr), NONE);
-		for(int i=0;i<n;i++) y[i] = *max_element(all(w[i]));
-		fill(all(z), 0);
-		for(int i=0;i<n;i++) for(int j=0;j<m;j++) {
-			if(mr[j] == NONE && zero(y[i]+z[j]-w[i][j])) {
-				ml[i] = j; mr[j] = i;
-				break;
-			}
-		}
-		function<bool(int)> kuhn = [&](int s) {
-			if(S[s]) return false; S[s] = 1;
-			for(int t=0;t<m;t++) if(!T[t]) {
-				w_t diff = y[s]+z[t]-w[s][t];
-				if(zero(diff)) {
-					T[t] = 1;
-					if(mr[t] == NONE || kuhn(mr[t])) {
-						mr[t] = s; ml[s] = t;
-						return true;
-					}
-				} else d[t] = min(d[t], diff);
-			}
-			return false;
-		};
-		for(int i=0;i<n;i++) if(ml[i] == NONE) {
-			fill(all(d), numeric_limits<w_t>::max());
-			while(true) {
-				fill(all(S), false); fill(all(T), false);
-				if(kuhn(i)) break;
-				w_t delta = numeric_limits<w_t>::max();
-				for(int j=0;j<m;j++) if(!T[j]) delta=min(delta, d[j]);
-				for(int s=0;s<n;s++) if(S[s]) y[s] -= delta;
-				for(int j=0;j<m;j++) {
-					if(T[j]) z[j] += delta;
-					else d[j] -= delta;
+	pair<T, vector<int>> assignment() {
+		for (int i = 1; i <= n; i++) {
+			p[0] = i;
+			int j0 = 0;
+			vector<T> minv(n+1, INF);
+			vector<int> used(n+1, 0);
+			do {
+				used[j0] = true;
+				int i0 = p[j0], j1 = -1;
+				T delta = INF;
+				for (int j = 1; j <= n; j++) if (!used[j]) {
+					T cur = a[i0-1][j-1] - u[i0] - v[j];
+					if (cur < minv[j]) minv[j] = cur, way[j] = j0;
+					if (minv[j] < delta) delta = minv[j], j1 = j;
 				}
-			}
+				for (int j = 0; j <= n; j++)
+					if (used[j]) u[p[j]] += delta, v[j] -= delta;
+					else minv[j] -= delta;
+				j0 = j1;
+			} while (p[j0] != 0);
+			do {
+				int j1 = way[j0];
+				p[j0] = p[j1];
+				j0 = j1;
+			} while (j0);
 		}
-		w_t res = 0;
-		for(int i=0;i<n;i++) res += y[i];
-		for(int j=0;j<m;j++) res += z[j];
-		return MAXIMIZE?res:-res;
+		vector<int> ans(n);
+		for (int j = 1; j <= n; j++) ans[p[j]-1] = j-1;
+		return make_pair(-v[0], ans);
 	}
 };
