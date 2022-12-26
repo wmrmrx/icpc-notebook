@@ -90,12 +90,12 @@ struct segment {
 };
 
 bool contains(segment r, point p) {
-	return r.a==p || r.b==p || parallel(r.a-p,r.b-p) == -1;
+	return r.a==p || r.b==p || parallel(r.a-p, r.b-p) == -1;
 }
 
 bool intersects(segment r, segment s) {
 	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
-	return left(r.a,r.b,s.a) != left(r.a,r.b,s.b) && 
+	return left(r.a, r.b, s.a) != left(r.a, r.b, s.b) && 
 		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
 }
 
