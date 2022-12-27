@@ -6,7 +6,7 @@
 // assignment minimo, e a coluna escolhida por cada linha
 //
 // O(n^3)
-// 73cba3
+// 7b616a
 
 template<typename T> struct Hungarian {
 	static constexpr T INF = numeric_limits<T>::max();
@@ -15,7 +15,7 @@ template<typename T> struct Hungarian {
 	vector<T> u, v;
 	vector<int> p, way;
 
-	hungarian(int n_) : n(n_), a(n, vector<T>(n)), u(n+1), v(n+1), p(n+1), way(n+1) {}
+	Hungarian(int n_) : n(n_), a(n, vector<T>(n)), u(n+1), v(n+1), p(n+1), way(n+1) {}
 
 	void set(int i, int j, T w) { a[i][j] = w; }
 
@@ -24,7 +24,7 @@ template<typename T> struct Hungarian {
 			p[0] = i;
 			int j0 = 0;
 			vector<T> minv(n+1, INF);
-			vector<int> used(n+1, 0);
+			vector<bool> used(n+1);
 			do {
 				used[j0] = true;
 				int i0 = p[j0], j1 = -1;
@@ -47,6 +47,6 @@ template<typename T> struct Hungarian {
 		}
 		vector<int> ans(n);
 		for (int j = 1; j <= n; j++) ans[p[j]-1] = j-1;
-		return make_pair(-v[0], ans);
+		return {-v[0], ans};
 	}
 };
