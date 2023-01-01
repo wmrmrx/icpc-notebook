@@ -72,7 +72,7 @@ struct segment {
 	point a, b;
 
 	segment(): a(), b() {}
-	segment(point _a, point _b) a(_a), b(_b) {}
+	segment(point _a, point _b): a(_a), b(_b) {}
 
 	point v() { return b - a; }
 };
