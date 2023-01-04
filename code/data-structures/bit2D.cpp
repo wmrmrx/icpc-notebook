@@ -1,11 +1,11 @@
 // 0-indexed
 // update(x, y, val): m[row][col] += val
 // query(x, y): returns sum m[0..=x][0..=y]
-// e49759
+// 5c8c14
 template <typename T>
 struct Bit2D {
 	int n, m;
-	vector<int> bit;
+	vector<T> bit;
 	Bit2D(int _n, int _m): n(_n), m(_m), bit(n*m) {}
 
 	T query(int x, int y) {
