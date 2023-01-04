@@ -9,6 +9,10 @@
 
     O(logNlogM) complexity per operation
     O(N + UlogNlogM) memory, where U is the number of updates
+
+    Possible changes:
+	- Speed: Use iterative segment tree or BIT on N axis
+	- O(UlogNlogM) memory: Make N axis sparse too
 */
 
 // 00e657
