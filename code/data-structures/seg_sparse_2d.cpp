@@ -11,7 +11,7 @@
     O(N + UlogNlogM) memory, where U is the number of updates
 */
 
-// 56f76e
+// 00e657
 namespace seg2d {
 	// YOU ONLY NEED TO CHANGE THIS BLOCK
 	const int N = 200'000, M = 200'000;
@@ -64,7 +64,7 @@ namespace seg2d {
 
 	T qry(int no, int l, int r, int lx, int rx, int ly, int ry) {
 		if(rx < l || r < lx) return zero;
-		if(lx <= l && r <= rx) return qry(root[no], 0, N-1, ly, ry);
+		if(lx <= l && r <= rx) return qry(root[no], 0, M-1, ly, ry);
 		int m = (l+r)/2;
 		return merge( qry(2*no, l, m, lx, rx, ly, ry),
 				qry(2*no+1, m+1, r, lx, rx, ly, ry) );
