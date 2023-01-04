@@ -1,63 +1,90 @@
-/*  
+/*
     Segtree 2D:
     Data structure that makes operation on a grid.
     Grid of dimensions N x M
-    Sum on point
-    Query of sum of points in rectangle
-   
 
-    Complexity:
-        update, query - O(logN^2)
+    Operations:
+	    update(x, y, val) <- update on point (x, y)
+	    query(lx, rx, ly, ry) <- query on rectangle [lx..rx] x [ly..ry]
+
+    O(logNlogM) complexity per operation
+    O(N + UlogNlogM) memory, where U is the number of updates
 */
 
-// 9363b0
+// 56f76e
 namespace seg2d {
+	// YOU ONLY NEED TO CHANGE THIS BLOCK
 	const int N = 200'000, M = 200'000;
+	using T = int32_t;
+	const T zero = 0; // INF if maintaining minimum, for example
+	T merge(T a, T b) {
+		return a + b;
+	}
+
 	struct Node {
-		int32_t s = 0;
+		T s = zero;
 		int32_t l = 0, r = 0;
 	};
+	int root[4*N];
 	vector<Node> v;
 
-	void upd(int& no, int l, int r, int pos, int val) {
-		if(pos < l || r < pos) return;
+	void upd(int& no, int l, int r, int pos, T val) {
 		if(not no) {
 			no = v.size();
 			//assert(no < v.capacity());
 			v.emplace_back();
 		}
-		if(l == r) v[no].s += val; // !!! OR v[no].s = val !!!
+		if(l == r) v[no].s = val; // !!! OR v[no].s = merge(v[no].s, val) !!!
 		else {
 			int m = (l+r)/2;
 			auto &[s, nl, nr] = v[no];
-			upd(nl, l, m, pos, val);
-			upd(nr, m+1, r, pos, val);
-			s = v[nl].s + v[nr].s;
+			if(pos <= m) upd(nl, l, m, pos, val);
+			else upd(nr, m+1, r, pos, val);
+			s = merge(v[nl].s, v[nr].s);
 		}
 	}
 
-	int qry(int no, int l, int r, int ql, int qr) {
-		if(not no) return 0;
-		if(qr < l || r < ql) return 0;
+	T qry(int no, int l, int r, int ql, int qr) {
+		if(not no) return zero;
+		if(qr < l || r < ql) return zero;
 		auto &[s, nl, nr] = v[no];
 		if(ql <= l && r <= qr) return s;
 		int m = (l+r)/2;
-		return qry(nl, l, m, ql, qr)
-			+ qry(nr, m+1, r, ql, qr);
+		return merge(qry(nl, l, m, ql, qr),
+				qry(nr, m+1, r, ql, qr));
 	}
 
-	void update(int x, int y, int val) {
-		for(x+=1;x<=N;x+=x&-x) upd(x, 0, M-1, y, val);
+	void upd(int no, int l, int r, int x, int y, T val) {
+		upd(root[no], 0, M-1, y, val);
+		if(l == r) return;
+		int m = (l+r)/2;
+		if(x <= m) upd(2*no, l, m, x, y, val);
+		else upd(2*no+1, m+1, r, x, y, val);
 	}
 
-	int query(int x, int ly, int ry) {
-		int res = 0;
-		for(x+=1;x>0;x-=x&-x) res += qry(x, 0, M-1, ly, ry);
-		return res;
+	T qry(int no, int l, int r, int lx, int rx, int ly, int ry) {
+		if(rx < l || r < lx) return zero;
+		if(lx <= l && r <= rx) return qry(root[no], 0, N-1, ly, ry);
+		int m = (l+r)/2;
+		return merge( qry(2*no, l, m, lx, rx, ly, ry),
+				qry(2*no+1, m+1, r, lx, rx, ly, ry) );
 	}
 
-	int query(int lx, int ly, int rx, int ry) {
-		return query(rx, ly, ry) - query(lx-1, ly, ry);
+	void build(int no, int l, int r) {
+		root[no] = v.size();
+		v.emplace_back();
+		if(l == r) return;
+		int m = (l + r) / 2;
+		build(2*no, l, m);
+		build(2*no+1, m+1, r);
+	}
+
+	void update(int x, int y, T val) {
+		upd(1, 0, N-1, x, y, val);
+	}
+
+	int query(int lx, int rx, int ly, int ry) {
+		return qry(1, 0, N-1, lx, rx, ly, ry);
 	}
 
 	// receives max number of updates
@@ -65,6 +92,7 @@ namespace seg2d {
 	// RTE if we reserve less than number of nodes created
 	void init(int maxu) {
 		v.reserve(400*maxu);
-		v.resize(N+1);
+		v.emplace_back();
+		build(1, 0, N-1);
 	}
 }
