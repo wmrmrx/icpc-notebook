@@ -11,7 +11,7 @@
 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 // HASH FROM HERE
-// cc3c5c
+// 951728
 template <typename T>
 struct Treap {
 	struct node {
