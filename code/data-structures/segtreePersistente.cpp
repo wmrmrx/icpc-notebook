@@ -1,7 +1,7 @@
 /* Persistent segment tree.
  * 
  * Complexity: O(logn) memory and time per query/update
- * 3f7e2a
+ * e1079e
  */
 
 template<class T, int SZ> struct pseg {
