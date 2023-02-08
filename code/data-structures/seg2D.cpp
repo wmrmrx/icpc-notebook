@@ -1,13 +1,13 @@
-/*  
-    Segtree 2D:
-    Data structure that makes operation on a grid.
-
-    Complexity:
-        build - O(N)
-        query - O(logN^2)
-    
-    9a865d
-*/
+//  
+//  Segtree 2D:
+//  Data structure that makes operation on a grid.
+//
+//  Complexity:
+//      build - O(N)
+//      query - O(logN^2)
+//  
+//  9a865d
+//
 struct Node{
     Node(){}
     Node operator +(const Node &o) const{

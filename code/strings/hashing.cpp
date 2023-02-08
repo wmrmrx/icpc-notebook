@@ -1,18 +1,18 @@
-/*
-    String Hashing
-    Description: A data structure that transforms a string into a number
+//
+//  String Hashing
+//  Description: A data structure that transforms a string into a number
 
-    Functions:
-        str_hash - Builds the hash in O(|S|)
-        operator() - Gives the number representing substring s[l,r] in O(1)
+//  Functions:
+//      str_hash - Builds the hash in O(|S|)
+//      operator() - Gives the number representing substring s[l,r] in O(1)
 
-    Details:
-            - To use more than one prime, you may use long long, __int128 or array<int>
-            - You may easily change it to handle vector<int> instead of string
-            - Other large primes: 1000041323, 100663319, 201326611
-            - If smaller primes are needed(For instance, need to store the mods in an array):
-                - 50331653, 12582917, 6291469, 3145739, 1572869
-*/
+//  Details:
+//          - To use more than one prime, you may use long long, __int128 or array<int>
+//          - You may easily change it to handle vector<int> instead of string
+//          - Other large primes: 1000041323, 100663319, 201326611
+//          - If smaller primes are needed(For instance, need to store the mods in an array):
+//              - 50331653, 12582917, 6291469, 3145739, 1572869
+//
 
 const long long mod1 = 1000015553, mod2 = 1000028537;
 

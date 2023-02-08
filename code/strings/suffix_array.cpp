@@ -1,11 +1,11 @@
-/*
-	Suffix Array
+//
+//      Suffix Array
 
-	Description: Algorithm that sorts the suffixes of a string
-	Complexity: O(|s| log(|s|))
-	
-    Observation: There is a code below from KTH that is twice as faster.
-*/
+//      Description: Algorithm that sorts the suffixes of a string
+//      Complexity: O(|s| log(|s|))
+//      
+//  Observation: There is a code below from KTH that is twice as faster.
+//
 
 // c26d8e
 struct suffixArray {

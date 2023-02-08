@@ -1,14 +1,14 @@
-/*
-    Euler Tour
-    Description: Find a path that passes through all edges
-    Complexity: O(N + M)
-
-    Details:
-        It also works for directed graphs and it is supposed
-        that the first vertex is 1.
-
-    bb6db8
-*/
+//
+//  Euler Tour
+//  Description: Find a path that passes through all edges
+//  Complexity: O(N + M)
+//
+//  Details:
+//      It also works for directed graphs and it is supposed
+//      that the first vertex is 1.
+//
+//  bb6db8
+//
 
 template<int SZ, bool directed> 
 struct Euler {

@@ -1,16 +1,16 @@
-/*
-    LIS-2D
-    Description: 
-        Given N pairs of numbers, find the lenght of the biggest
-        sequence such that a_i < a_i+1, b_i<b_i+1
-    Complexity: 
-        O(N (logN)^2)
-    Details:
-        It uses divide & conquer with a segtree to make all
-        comparisons fast. memo[i] contains the answer for 
-        the biggest sequence ending in i.
-    0eb0fc
-*/
+//
+//  LIS-2D
+//  Description: 
+//      Given N pairs of numbers, find the lenght of the biggest
+//      sequence such that a_i < a_i+1, b_i<b_i+1
+//  Complexity: 
+//      O(N (logN)^2)
+//  Details:
+//      It uses divide & conquer with a segtree to make all
+//      comparisons fast. memo[i] contains the answer for 
+//      the biggest sequence ending in i.
+//  0eb0fc
+//
 
 const int N = 2e5 + 10;
 

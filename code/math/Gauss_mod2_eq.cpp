@@ -1,16 +1,16 @@
-/*
-    Gauss elimination - modulo 2
+//
+//  Gauss elimination - modulo 2
 
-    Description: 
-        Solves a linear system with n equations and m - 1 variables.
-        Is faster duo to the use of bitset.
-    Complexity: O(n^2 * m / 32)
+//  Description: 
+//      Solves a linear system with n equations and m - 1 variables.
+//      Is faster duo to the use of bitset.
+//  Complexity: O(n^2 * m / 32)
 
 
-    Details:
-        Function solve return a boolean indicating if system is possible
-        or not. Also, if it is possible, the parameter maintains the answer.
-*/
+//  Details:
+//      Function solve return a boolean indicating if system is possible
+//      or not. Also, if it is possible, the parameter maintains the answer.
+//
 // f27955
 struct Gauss_mod2 {
     int n, m;

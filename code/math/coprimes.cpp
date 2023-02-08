@@ -1,17 +1,17 @@
-/*
-    Coprimes
-    Description: 
-        Given a set o integers, calculates the quantity of integers
-        in the set coprimes with x.
-    Complexity: 
-        precalc - O(n logn)
-        add - O(sigma(N))
-        coprime - O(sigma(N))
-    Details:
-        It uses Mobius Function. To add or remove an integer of the set
-        just change sign to +1 or -1.
-    e9bba1
-*/
+//
+//  Coprimes
+//  Description: 
+//      Given a set o integers, calculates the quantity of integers
+//      in the set coprimes with x.
+//  Complexity: 
+//      precalc - O(n logn)
+//      add - O(sigma(N))
+//      coprime - O(sigma(N))
+//  Details:
+//      It uses Mobius Function. To add or remove an integer of the set
+//      just change sign to +1 or -1.
+//  e9bba1
+//
 struct Coprimes {
     int n;
     vector<ll> U, cnt;

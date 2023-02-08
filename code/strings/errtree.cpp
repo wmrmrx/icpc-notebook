@@ -1,11 +1,11 @@
-/*
-    Err Tree - Palindromic Tree
+//
+//  Err Tree - Palindromic Tree
 
-    Description: A tree such that each node represents a 
-                 palindrome of string s. It is possible to append
-                 a character.
-    Complexity: Amortized O(|s|)
-*/
+//  Description: A tree such that each node represents a 
+//               palindrome of string s. It is possible to append
+//               a character.
+//  Complexity: Amortized O(|s|)
+//
 
 // 0d1a1c
 struct palindromic_tree {

@@ -1,8 +1,8 @@
-/* Persistent segment tree.
- * 
- * Complexity: O(logn) memory and time per query/update
- * e1079e
- */
+// Persistent segment tree.
+// 
+// Complexity: O(logn) memory and time per query/update
+// e1079e
+//
 
 template<class T, int SZ> struct pseg {
     static const int LIMIT = 1e7; // adjust
@@ -17,19 +17,19 @@ template<class T, int SZ> struct pseg {
     }
     T comb(T a, T b) { return a+b; }
     void pull(int x) { val[x] = comb(val[l[x]],val[r[x]]); } 
-    /*void push(int cur, int L, int R) { 
-        if (!lazy[cur]) return;
-        if (L != R) {
-            l[cur] = copy(l[cur]);
-            val[l[cur]] += lazy[cur];
-            lazy[l[cur]] += lazy[cur];
-            
-            r[cur] = copy(r[cur]);
-            val[r[cur]] += lazy[cur];
-            lazy[r[cur]] += lazy[cur];
-        }
-        lazy[cur] = 0;
-    }*/
+//  void push(int cur, int L, int R) { 
+//      if (!lazy[cur]) return;
+//      if (L != R) {
+//          l[cur] = copy(l[cur]);
+//          val[l[cur]] += lazy[cur];
+//          lazy[l[cur]] += lazy[cur];
+//          
+//          r[cur] = copy(r[cur]);
+//          val[r[cur]] += lazy[cur];
+//          lazy[r[cur]] += lazy[cur];
+//      }
+//      lazy[cur] = 0;
+//  }
  
     //// MAIN FUNCTIONS
     T query(int cur, int lo, int hi, int L, int R) {  

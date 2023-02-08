@@ -1,23 +1,23 @@
-/*
-    Stable Marriage problem
-
-    Given n men and n women, where each person has ranked all 
-    members of the opposite sex in order of preference, marry 
-    the men and women together such that there are no two people 
-    of opposite sex who would both rather have each other than 
-    their current partners. When there are no such pairs of 
-    people, the set of marriages is deemed stable.
-
-    If the lists are complete, there is always a solution that
-    can be founc in O(n * m).
-
-    a - Rank list of first group
-    b - Rank list of first group
-    solve () - Gives an stable matching covering the first group.
-               It is necessary that n <= m.
-
-    ab77b0
-*/
+//
+//  Stable Marriage problem
+//
+//  Given n men and n women, where each person has ranked all 
+//  members of the opposite sex in order of preference, marry 
+//  the men and women together such that there are no two people 
+//  of opposite sex who would both rather have each other than 
+//  their current partners. When there are no such pairs of 
+//  people, the set of marriages is deemed stable.
+//
+//  If the lists are complete, there is always a solution that
+//  can be founc in O(n * m).
+//
+//  a - Rank list of first group
+//  b - Rank list of first group
+//  solve () - Gives an stable matching covering the first group.
+//             It is necessary that n <= m.
+//
+//  ab77b0
+//
 
 struct StableMarriage {
     int n, m;

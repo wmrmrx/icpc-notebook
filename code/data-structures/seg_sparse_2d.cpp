@@ -1,19 +1,19 @@
-/*
-    Segtree 2D:
-    Data structure that makes operation on a grid.
-    Grid of dimensions N x M
-
-    Operations:
-	    update(x, y, val) <- update on point (x, y)
-	    query(lx, rx, ly, ry) <- query on rectangle [lx..rx] x [ly..ry]
-
-    O(logNlogM) complexity per operation
-    O(N + UlogNlogM) memory, where U is the number of updates
-
-    Possible changes:
-	- Speed: Use iterative segment tree or BIT on N axis
-	- O(UlogNlogM) memory: Make N axis sparse too
-*/
+//
+//  Segtree 2D:
+//  Data structure that makes operation on a grid.
+//  Grid of dimensions N x M
+//
+//  Operations:
+//          update(x, y, val) <- update on point (x, y)
+//          query(lx, rx, ly, ry) <- query on rectangle [lx..rx] x [ly..ry]
+//
+//  O(logNlogM) complexity per operation
+//  O(N + UlogNlogM) memory, where U is the number of updates
+//
+//  Possible changes:
+//      - Speed: Use iterative segment tree or BIT on N axis
+//      - O(UlogNlogM) memory: Make N axis sparse too
+//
 
 // 00e657
 namespace seg2d {

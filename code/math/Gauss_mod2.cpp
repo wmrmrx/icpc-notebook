@@ -1,20 +1,20 @@
-/*
-    Gauss_xor - Gauss elimination mod 2
-    Description: Given a set of Vectors of size D,
-                 maintains a basis of the set.
-    Complexity: check - O(D)
-                add - O(D)
+//
+//  Gauss_xor - Gauss elimination mod 2
+//  Description: Given a set of Vectors of size D,
+//               maintains a basis of the set.
+//  Complexity: check - O(D)
+//              add - O(D)
 
-    Functions:
-        check(mask) - returns true if the mask can be represented
-                      by the basis;
-        add(mask) - adds mask to the basis if it is independent.
+//  Functions:
+//      check(mask) - returns true if the mask can be represented
+//                    by the basis;
+//      add(mask) - adds mask to the basis if it is independent.
 
-    Details:
-        We are assuming the vectors have size D <= 64. For general
-        case, you may change ll basis[] for bitset<D> basis[].
-    6e102d
-*/
+//  Details:
+//      We are assuming the vectors have size D <= 64. For general
+//      case, you may change ll basis[] for bitset<D> basis[].
+//  6e102d
+//
 
 const int logN = 30;
 

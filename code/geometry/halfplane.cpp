@@ -1,17 +1,17 @@
-/* Half-plane intersection algorithm. The result of intersecting half-planes is either
- * empty or a convex polygon (maybe degenerated). This template depends on double.cpp
- *
- * h - (input) set of half-planes to be intersected. Each half-plane is described as a pair
- * of points such that the half-plane is at the left of them.
- * pol - the intersection of the half-planes as a vector of points. If not empty, these
- * points describe the vertices of the resulting polygon in clock-wise order.
- * WARNING: Some points of the polygon might be repeated. This may be undesirable in some
- * cases but it's useful to distinguish between empty intersections and degenerated
- * polygons (such as a point, line, segment or half-line).
- *
- * Time complexity: O(n logn)
- * cdab7a
- */
+// Half-plane intersection algorithm. The result of intersecting half-planes is either
+// empty or a convex polygon (maybe degenerated). This template depends on double.cpp
+//
+// h - (input) set of half-planes to be intersected. Each half-plane is described as a pair
+// of points such that the half-plane is at the left of them.
+// pol - the intersection of the half-planes as a vector of points. If not empty, these
+// points describe the vertices of the resulting polygon in clock-wise order.
+// WARNING: Some points of the polygon might be repeated. This may be undesirable in some
+// cases but it's useful to distinguish between empty intersections and degenerated
+// polygons (such as a point, line, segment or half-line).
+//
+// Time complexity: O(n logn)
+// cdab7a
+//
 
 struct halfplane: public segment {
 	double ang;

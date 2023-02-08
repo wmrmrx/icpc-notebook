@@ -1,9 +1,9 @@
-/* Basic structure of circle and operations related with it. This template works
-* only with double numbers since most of the operations of a circle can't be 
-* done with only integers. Therefore, this template depends on point_double.cpp.
-*
-* All operations' time complexity are O(1)
-*/
+//  Basic structure of circle and operations related with it. This template works
+// only with double numbers since most of the operations of a circle can't be 
+// done with only integers. Therefore, this template depends on point_double.cpp.
+// 
+// All operations' time complexity are O(1)
+//
 
 const double PI = acos(-1);
 

@@ -1,16 +1,16 @@
-/* 	
-	KMP
+// 	
+//      KMP
 
-	mathcing(s, t) retorna os indices das ocorrencias
-	de s em t
-	autKMP constroi o automato do KMP
+//      mathcing(s, t) retorna os indices das ocorrencias
+//      de s em t
+//      autKMP constroi o automato do KMP
 
-	Complexidades:
-	pi - O(n)
-	match - O(n + m)
-	construir o automato - O(|sigma|*n)
-	n = |padrao| e m = |texto|
-*/
+//      Complexidades:
+//      pi - O(n)
+//      match - O(n + m)
+//      construir o automato - O(|sigma|*n)
+//      n = |padrao| e m = |texto|
+//
 
 // b29648
 template <typename T> vector<int> kmp(int sz, const T s[]) {

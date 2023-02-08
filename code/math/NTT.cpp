@@ -1,25 +1,25 @@
-/*
-    NTT - Number Theoretic Transform
-    Description: Multiply two polinomials in Z_p, for p prime
-    Complexity: O(N logN)
+//
+//  NTT - Number Theoretic Transform
+//  Description: Multiply two polinomials in Z_p, for p prime
+//  Complexity: O(N logN)
 
-    Functions:
-        multiply(a, b)
+//  Functions:
+//      multiply(a, b)
 
-    Details:
-        Not all primes can be used and p = 998244353 is the most used prime. 
-        To multiply it for a general modulus, use 3 different possible primes 
-        and use Chinese Remainder Theorem to get the answear.
+//  Details:
+//      Not all primes can be used and p = 998244353 is the most used prime. 
+//      To multiply it for a general modulus, use 3 different possible primes 
+//      and use Chinese Remainder Theorem to get the answear.
 
-    Possibilities
-    { 7340033, 5, 4404020, 1 << 20 },
-    { 415236097, 73362476, 247718523, 1 << 22 },
-    { 463470593, 428228038, 182429, 1 << 21},
-    { 998244353, 15311432, 469870224, 1 << 23 },
-    { 918552577, 86995699, 324602258, 1 << 22 }
+//  Possibilities
+//  { 7340033, 5, 4404020, 1 << 20 },
+//  { 415236097, 73362476, 247718523, 1 << 22 },
+//  { 463470593, 428228038, 182429, 1 << 21},
+//  { 998244353, 15311432, 469870224, 1 << 23 },
+//  { 918552577, 86995699, 324602258, 1 << 22 }
 
-    bf1994
-*/
+//  bf1994
+//
 
 namespace NTT {
     using Z = mint<998244353>;
