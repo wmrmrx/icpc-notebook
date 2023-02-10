@@ -2,7 +2,8 @@
 //  Coprimes
 //  Description: 
 //      Given a set o integers, calculates the quantity of integers
-//      in the set coprimes with x.
+//      in the set coprimes with x. You can actually make queries on
+//      anything related to the coprimes. For example, sum of comprimes.
 //  Complexity: 
 //      precalc - O(n logn)
 //      add - O(sigma(N))
@@ -10,29 +11,34 @@
 //  Details:
 //      It uses Mobius Function. To add or remove an integer of the set
 //      just change sign to +1 or -1.
-//  e9bba1
-//
+//  1dca6a
+
 struct Coprimes {
     int n;
-    vector<ll> U, cnt;
+    vector<ll> cnt;
+    vector<int> U;
     vector<vector<int>> fat;
     Coprimes () {}
     Coprimes (int n) : n(n), U(n), fat(n), cnt(n) {
         precalc ();
     }
     void precalc () {
+        U[1] = 1;
+        for (int i = 1; i < n; i++) fat[i].pb (1);
         for (int i = 1; i < n; i++) {
-            for (int j = i; j < n; j += i) fat[j].pb(i); 
-            if (i == 1) U[i] = 1;
-            else if ((i / fat[i][1]) % fat[i][1] == 0) U[i] = 0;
-            else U[i] = -U[i / fat[i][1]];
+            for (int j = 2 * i; j < n; j += i) U[j] -= U[i];
+            if (fat[i].size () == 1 && i > 1) {
+                for (int j = i; j < n; j += i)
+                    for (int k = fat[j].size () - 1; k >= 0; k--) 
+                        fat[j].pb (i * fat[j][k]);
+            }
         }
     }
     void add(int x, int sign){
         for(auto d : fat[x]) cnt[d] += sign;
     }
-    int coprimo(int x){
-        int quant = 0;
+    ll coprimo(int x){
+        ll quant = 0;
         for(auto d : fat[x]){
             quant += U[d] * cnt[d];
         }
