@@ -1,61 +1,37 @@
-//
-//  Euler Tour
-//  Description: Find a path that passes through all edges
+//  Euler Walk
+//  Description: Find an Eulerean Path that passes through all edges
+//               starting at src. Not necesseraly a cycle. Works for both 
+//               directed and undirected. Returns vector 
+//               of \{vertex,label of edge to vertex\}.
+//               Second element of first pair is always $-1$.
 //  Complexity: O(N + M)
 //
-//  Details:
-//      It also works for directed graphs and it is supposed
-//      that the first vertex is 1.
-//
-//  bb6db8
-//
+//  898dd8
 
-template<int SZ, bool directed> 
-struct Euler {
-    int N, M;
-    vector< pair<int, int> > adj[SZ], circuit;
-    int out[SZ], in[SZ], deg[SZ];
-    bool used[SZ], bad;
- 
-    void clr() {
-        for(int i = 0; i < N; i++) adj[i].clear();
-        circuit.clear();
-        for(int i = 0; i < N; i++) out[i] = in[i] = deg[i] = 0;
-        for(int i = 0; i < M; i++) used[i] = 0;
-        N = M = bad = 0;
+template<bool directed> struct Euler {
+    int N; vector<vector<pair<int, int>>> adj; vector<vector<pair<int, int>>::iterator> its; vector<bool> used;
+    Euler (int _N) : N (_N), adj (_N) {}
+    void add_edge(int a, int b) {
+        int M = used.size (); used.push_back(0); 
+        adj[a].emplace_back(b, M); 
+        if (!directed) adj[b].emplace_back(a, M);
     }
- 
-    void dfs(int pre, int cur) {
-        while (adj[cur].size()) {
-            pair<int, int> x = adj[cur].back(); adj[cur].pop_back();
-            if (used[x.second]) continue;
-            used[x.second] = 1; dfs(cur,x.first);
-        }
-        if (circuit.size() && circuit.back().first != cur) bad = 1;
-        circuit.pb({pre,cur}); // generate circuit in reverse order
-    }
- 
-    void addEdge(int a, int b) {
-        if (directed) {
-            adj[a].pb({b,M});
-            out[a] ++, in[b] ++;
-        } else {
-            adj[a].pb({b,M}), adj[b].pb({a,M});
-            deg[a] ++, deg[b] ++;
-        }
-        M ++;
-    }
- 
-    vector<int> solve(int _N) {
-        N = _N; // edges only involve vertices from 0 to N-1
- 
-        int start = 1; 
-        for(int i = 1; i <= N; i++) if (deg[i]%2 != 0) return {};
-        dfs(-1,start);
- 
-        if (circuit.size() != M+1 || bad) return {}; // return empty if no sol
-        vector<int> ans; 
-        for(int i = (int) circuit.size() - 1; i >= 0; i--) ans.pb(circuit[i].second);
-        return ans;
+    vector<pair<int, int>> solve(int src = 0) { 
+        its.resize(N);
+        for (int i = 0; i < N; i++) its[i] = begin (adj[i]);
+
+        vector<pair<int, int>> ans, s{{src,-1}}; // {{vert,prev vert},edge label}
+        int lst = -1; // ans generated in reverse order
+        while (s.size ()) { 
+            int x = s.back ().first; auto& it=its[x], en=end(adj[x]);
+            while (it != en && used[it->second]) ++it;
+            if (it == en) { // no more edges out of vertex
+                if (lst != -1 && lst != x) return {};
+                // not a path, no tour exists
+                ans.push_back(s.back ()); s.pop_back(); if (s.size ()) lst=s.back ().first;
+            } else s.push_back(*it), used[it->second] = 1;
+        } // must use all edges
+        if (ans.size () != used.size () + 1) return {}; 
+        reverse(all(ans)); return ans;
     }
 };
