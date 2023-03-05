@@ -1,6 +1,6 @@
 // Gauss elimination
 // Complexity: O(N*M*M)
-// fbee6d
+
 using arr = valarray<double>;
 struct Gauss {
 	int n, m;

@@ -1,4 +1,3 @@
-//
 //  Err Tree - Palindromic Tree
 
 //  Description: A tree such that each node represents a 
@@ -7,7 +6,6 @@
 //  Complexity: Amortized O(|s|)
 //
 
-// 0d1a1c
 struct palindromic_tree {
     struct node {
         int length, link;

@@ -1,4 +1,3 @@
-//
 //  String Hashing
 //  Description: A data structure that transforms a string into a number
 
@@ -23,7 +22,6 @@ int uniform(int l, int r) {
     return uid(rng);
 }
 
-// e50d39
 template<int MOD> 
 struct str_hash {
     static int P;
@@ -41,7 +39,6 @@ struct str_hash {
 };
 template<int MOD> int str_hash<MOD>::P = uniform(256, MOD - 1); // l > |sigma|
 
-// b31197
 struct Hash {
     // Uses 2 primes to better avoid colisions
     str_hash<mod1> H1;

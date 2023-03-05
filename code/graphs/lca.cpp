@@ -1,4 +1,5 @@
-// 7885f2
+// LCA
+
 struct LCA {
 	vector<int> pre, dep; // preorder traversal and depth
 	RMQ<pair<int,int>> rmq;

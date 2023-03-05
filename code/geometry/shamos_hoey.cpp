@@ -1,9 +1,10 @@
+// Shamos Hoey
 // TOLERA INTERSECÇÕES NAS EXTREMIDADES DOS SEGMENTOS
 // SEGMENTOS NÃO DEVEM SER DEGENERADOS
 //
 // Checa se existem segmentos que se intersectam
 // Complexidade: O(N logN)
-// d0c138
+
 bool shamos_hoey(vector<segment> seg) {
 	// create sweep segment events {x, type, seg_id}
 	vector<tuple<point, bool, int>> ev;

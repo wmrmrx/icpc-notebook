@@ -1,7 +1,8 @@
+// Convex Hull
 // Works with double and integer
 // Returns in CCW order (reversed in x in UPPER)
 // Complexity: O(NlogN)
-// 8909b5
+
 template <bool UPPER>
 vector<point> hull(vector<point> v) {
 	vector<point> res;

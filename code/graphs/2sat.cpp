@@ -12,7 +12,6 @@
 // 
 // Details:
 //      Not x is equivalente to ~x on this template.
-// 5d5273
 
 struct SCC {
     int N, ti = 0; vector<vector<int>> adj;

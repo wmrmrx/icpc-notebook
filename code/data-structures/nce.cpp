@@ -1,3 +1,4 @@
+// NCE
 // For each i, find nearest l < i < r such that 
 // op(l, i), op(r, i) = true if they exist
 // l = -1, r = v.size() otherwise
@@ -9,7 +10,7 @@
 // }
 //
 // Complexity: O(N)
-// 1e83ae
+
 template <typename T, typename OP>
 vector<pair<int, int>> nce(vector<T> v, OP op) {
 	int n = v.size();

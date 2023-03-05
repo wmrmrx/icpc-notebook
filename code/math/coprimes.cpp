@@ -1,4 +1,3 @@
-//
 //  Coprimes
 //  Description: 
 //      Given a set o integers, calculates the quantity of integers
@@ -11,7 +10,6 @@
 //  Details:
 //      It uses Mobius Function. To add or remove an integer of the set
 //      just change sign to +1 or -1.
-//  1dca6a
 
 struct Coprimes {
     int n;

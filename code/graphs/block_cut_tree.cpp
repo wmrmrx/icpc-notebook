@@ -1,7 +1,8 @@
+// Block Cut Tree
 // Builds forest of block cut trees for an UNDIRECTED graph
 // Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
-// f705b6
+
 struct BlockCutTree {
 	int ncomp; // number of components
 	vector<int> comp; // comp[e]: component of edge e

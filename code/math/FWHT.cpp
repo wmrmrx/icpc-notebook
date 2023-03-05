@@ -1,10 +1,8 @@
-//
-//      Title: Fast Walsh-Hadamard trasform
-//      Description: Multiply two polynomials such that x^a * x^b = x^(op(a, b))
-//      	- op(a, b) = a "xor" b, a "or" b, a "and" b
-//      Complexity: O(n log n)
-//      Credits: https://github.com/mochow13/competitive-programming-library/tree/master/Math
-//
+// Fast Walsh-Hadamard trasform
+// Description: Multiply two polynomials such that x^a * x^b = x^(op(a, b))
+// 	- op(a, b) = a "xor" b, a "or" b, a "and" b
+// Complexity: O(n log n)
+
 const ll N = 1<<20;
 
 template <typename T>

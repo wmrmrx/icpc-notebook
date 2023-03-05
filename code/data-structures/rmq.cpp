@@ -1,4 +1,10 @@
-// 38673e
+// RMQ
+//  Description: 
+//      Answers queries on a range.
+//  Complexity: 
+// 		build - O(N logN)
+// 		query - O(1)
+
 template <typename T> struct RMQ {
 	vector<vector<T>> dp;
 	T ops(T a, T b) { return min(a,b); }

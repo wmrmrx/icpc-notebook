@@ -1,4 +1,4 @@
-// Algoritmo Hungaro
+// Hungarian
 //
 // Resolve o problema de assignment (matriz n x n)
 // Colocar os valores da matriz em 'a' (pode < 0)
@@ -6,7 +6,6 @@
 // assignment minimo, e a coluna escolhida por cada linha
 //
 // O(n^3)
-// 7b616a
 
 template<typename T> struct Hungarian {
 	static constexpr T INF = numeric_limits<T>::max();

@@ -1,6 +1,7 @@
+// Bit iterator
 // iterator through all masks with n bits and m set bits
 // use: for(auto it: BitIterator(n,m) { int mask = *it; ... }
-// 8ca232
+
 struct BitIterator {
 	struct Mask {
 		uint32_t msk;

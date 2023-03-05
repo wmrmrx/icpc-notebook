@@ -1,15 +1,12 @@
 // Persistent segment tree.
 // 
 // Complexity: O(logn) memory and time per query/update
-// e1079e
-//
 
 template<class T, int SZ> struct pseg {
     static const int LIMIT = 1e7; // adjust
     int l[LIMIT], r[LIMIT], nex = 0;
     T val[LIMIT], lazy[LIMIT];
     
-    //// HELPER
     int copy(int cur) {
         int x = nex++;
         val[x] = val[cur], l[x] = l[cur], r[x] = r[cur]; // lazy[x] = lazy[cur];

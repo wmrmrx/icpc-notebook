@@ -1,11 +1,10 @@
-//      Suffix Array
+// Suffix Array
 // 
-//      Description: Algorithm that sorts the suffixes of a string
-//      Complexity: O(|s| log(|s|))
+// Description: Algorithm that sorts the suffixes of a string
+// Complexity: O(|s| log(|s|))
 //
 
 // Suffix Array da KTH
-// 38e765
 struct SuffixArray {
     string s;
     vector<int> sa, lcp;

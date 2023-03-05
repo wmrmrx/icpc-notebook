@@ -1,8 +1,9 @@
+// Binary Indexed Tree
+
 // !! zero indexed !!
 // all operations are O(logN)
-// e4fe49
-template<typename T>
-struct Bit {
+
+template<typename T> struct Bit {
 	vector<T> bit;
 	Bit(int n): bit(n) {}
 

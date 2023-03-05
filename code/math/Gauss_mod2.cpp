@@ -1,4 +1,3 @@
-//
 //  Gauss_xor - Gauss elimination mod 2
 //  Description: Given a set of Vectors of size D,
 //               maintains a basis of the set.
@@ -13,8 +12,6 @@
 //  Details:
 //      We are assuming the vectors have size D <= 64. For general
 //      case, you may change ll basis[] for bitset<D> basis[].
-//  6e102d
-//
 
 const int logN = 30;
 

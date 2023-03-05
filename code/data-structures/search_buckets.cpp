@@ -1,16 +1,13 @@
-//  
-//  search_buckets:
+//  Search_buckets
+
 //  Data structure that provides two operations on an array:
 //  1) set array[i] = x
 //  2) count how many i in [start, end) satisfy array[i] < value
 //  Both operations take sqrt(N log N) time. Amazingly, because of 
 //  the cache efficiency this is faster than the(log N)^2 algorithm 
 //  until N = 2-5 million.
-//  
-//  ec7ab8
-//
-template<typename T>
-struct search_buckets {
+
+template<typename T> struct search_buckets {
     // values are just the values in order. buckets are sorted in segments of BUCKET_SIZE (last segment may be smaller)
     int N, BUCKET_SIZE;
     vector<T> values, buckets;

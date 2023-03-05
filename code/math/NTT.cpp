@@ -1,4 +1,3 @@
-//
 //  NTT - Number Theoretic Transform
 //  Description: Multiply two polinomials in Z_p, for p prime
 //  Complexity: O(N logN)
@@ -17,9 +16,6 @@
 //  { 463470593, 428228038, 182429, 1 << 21},
 //  { 998244353, 15311432, 469870224, 1 << 23 },
 //  { 918552577, 86995699, 324602258, 1 << 22 }
-
-//  bf1994
-//
 
 namespace NTT {
     using Z = mint<998244353>;

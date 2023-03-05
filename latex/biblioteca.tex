@@ -50,8 +50,8 @@ basicstyle=\ttfamily\footnotesize, % fonte
 	{~}{$\sim$}{1} % ~ bonitinho
 }
 
-\title{Humuhumunukunukuapua'a \\ UFMG}
-\author{Bruno Monteiro, Emanuel Silva e Bernardo Amorim}
+\title{MWNWMWNNWMWNWN \\ USP}
+\author{Nathan Luiz, Willian Mori e Willian Wang}
 
 
 \begin{document}
@@ -66,258 +66,20 @@ basicstyle=\ttfamily\footnotesize, % fonte
 
 %%%%%%%%%%%%%%%%%%%%
 %
-% flow_and_matching
-%
-%%%%%%%%%%%%%%%%%%%%
-
-\section{flow_and_matching}
-
-\subsection{add_edge(s, t, cap): Adds a directed edge from s to t with capacity cap}
-\begin{lstlisting}
-//
-// Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
-
-// a7c68f
-14d struct Dinic {
-670 	struct edge {
-b7a 		int to, cap, flow;
-0e3 	};
-    
-789 	vector<vector<int>> g;
-1e7 	vector<int> lvl;
-37c 	vector<edge> e;
-    
-db3 	Dinic(int sz): g(sz), lvl(sz) {}
-    
-233 	void add_edge(int s, int t, int cap) {
-1f3 		int id = e.size();
-ffd 		g[s].push_back(id);
-614 		e.push_back({t, cap, 0});
-634 		g[t].push_back(++id);
-ff7 		e.push_back({s, cap, cap});
-8e0 	}
-    
-123 	bool bfs(int s, int t) {
-5c1 		fill(all(lvl), INF);
-0d6 		lvl[s] = 0;
-26a 		queue<int> q;
-08b 		q.push(s);
-f76 		while(!q.empty() && lvl[t] == INF) {
-b1e 			int v = q.front();
-833 			q.pop();
-ca6 			for(int id: g[v]) {
-5c7 				auto [p, cap, flow] = e[id];
-bd9 				if(lvl[p] != INF || cap == flow)
-5e2 					continue;
-ed5 				lvl[p] = lvl[v] + 1;
-00a 				q.push(p);
-e2f 			}
-e19 		}
-8de 		return lvl[t] != INF;
-c9d 	}
-    
-2b1 	int dfs(int v, int pool, int t, vector<int>& st) {
-23a 		if(!pool) return 0;
-413 		if(v == t) return pool;
-138 		for(;st[v]<(int)g[v].size();st[v]++) {
-59b 			int id = g[v][st[v]];
-56f 			auto &[p, cap, flow] = e[id];
-783 			if(lvl[v]+1 != lvl[p] || cap == flow) continue;
-1de 			int f = dfs(p, min(cap-flow, pool) , t, st);
-235 			if(f) {
-c87 				flow += f;
-ef4 				e[id^1].flow -= f;
-abe 				return f;
-964 			}
-e0b 		}
-bb3 		return 0;
-7a0 	}
-    
-704 	int get_flow(int s, int t) {
-    		//reset to initial state
-    		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;
-11e 		int res = 0;
-678 		vector<int> start(g.size());
-8ce 		while(bfs(s,t)) {
-cb6 			fill(all(start), 0);
-449 			while(int f = dfs(s,INF,t,start)) 
-5f5 				res += f;
-7a9 		}
-b50 		return res;
-c83 	}
-a7c };
-\end{lstlisting}
-
-\subsection{Algoritmo Hungaro}
-\begin{lstlisting}
-// Resolve o problema de assignment (matriz n x n)
-// Colocar os valores da matriz em 'a' (pode < 0)
-// assignment() retorna um par com o valor do
-// assignment minimo, e a coluna escolhida por cada linha
-//
-// O(n^3)
-// 7b616a
-
-513 template<typename T> struct Hungarian {
-c04 	static constexpr T INF = numeric_limits<T>::max();
-1a8 	int n;
-a08 	vector<vector<T>> a;
-f36 	vector<T> u, v;
-5ff 	vector<int> p, way;
-    
-0e9 	Hungarian(int n_) : n(n_), a(n, vector<T>(n)), u(n+1), v(n+1), p(n+1), way(n+1) {}
-    
-40e 	void set(int i, int j, T w) { a[i][j] = w; }
-    
-d67 	pair<T, vector<int>> assignment() {
-78a 		for (int i = 1; i <= n; i++) {
-8c9 			p[0] = i;
-625 			int j0 = 0;
-f49 			vector<T> minv(n+1, INF);
-0c1 			vector<bool> used(n+1);
-016 			do {
-472 				used[j0] = true;
-d24 				int i0 = p[j0], j1 = -1;
-8bc 				T delta = INF;
-9ac 				for (int j = 1; j <= n; j++) if (!used[j]) {
-7bf 					T cur = a[i0-1][j-1] - u[i0] - v[j];
-9f2 					if (cur < minv[j]) minv[j] = cur, way[j] = j0;
-821 					if (minv[j] < delta) delta = minv[j], j1 = j;
-4d1 				}
-f63 				for (int j = 0; j <= n; j++)
-2c5 					if (used[j]) u[p[j]] += delta, v[j] -= delta;
-6ec 					else minv[j] -= delta;
-6d4 				j0 = j1;
-52a 			} while (p[j0] != 0);
-016 			do {
-4c5 				int j1 = way[j0];
-0d7 				p[j0] = p[j1];
-6d4 				j0 = j1;
-886 			} while (j0);
-431 		}
-306 		vector<int> ans(n);
-6db 		for (int j = 1; j <= n; j++) ans[p[j]-1] = j-1;
-def 		return {-v[0], ans};
-06e 	}
-7b6 };
-\end{lstlisting}
-
-\subsection{Solves the minimum-cost maximum-flow problem using spfa for the finding the incremental}
-\begin{lstlisting}
-// Infinite loop if there's a negative cycle.
-//
-// Constructor:
-// MinCost(n, s, t)
-// n - number of nodes in the flow graph.
-// s - source of the flow graph.
-// t - sink of the flow graph.
-//
-// Methods:
-// - add_edge(u, v, cap, cost)
-//   adds a directed edge from u to v with capacity `cap` and cost `cost`.
-// - get_flow()
-//   returns a pair of integers in which the first value is the maximum flow and the
-//   second is the minimum cost to achieve this flow.
-//
-// Complexity: There are two upper bounds to the time complexity of getFlow
-//              - O(max_flow * (E log V))
-//              - O(V * E * (E log V))
-//
-
-// 9e2e17
-cfd struct MinCost {
-cd7 	static constexpr int INF = 1e18;
-670 	struct edge {
-22a 		int to, next, cap, cost;
-30a 	};
-748 	int n, s, t;
-439 	vector<int> first, prev, dist;
-70d 	vector<bool> queued;
-93b 	vector<edge> g;
-    
-10d 	MinCost(int _n, int _s, int _t) : n(_n), s(_s), t(_t),
-52d 		first(n, -1), prev(n), dist(n), queued(n) {};
-    
-5cb 	void add_edge(int u, int v, int cap, int cost) {
-270 		int id = g.size();
-4a6 		g.pb({v, first[u], cap, cost});
-c19 		first[u] = id;
-3a5 		g.pb({u, first[v], 0, -cost});
-727 		first[v] = ++id;
-b65 	}
-    
-cbc 	bool augment() {
-04e 		fill(all(dist), INF);
-a93 		dist[s] = 0;
-0d9 		queued[s] = 1;
-26a 		queue<int> q;
-08b 		q.push(s);
-14d 		while(!q.empty()) {
-e4a 			int u = q.front(); 
-833 			q.pop();
-a04 			queued[u] = 0;
-ba2 			for(int e = first[u]; e != -1; e = g[e].next) {
-17a 				int v = g[e].to;
-762 				int ndist = dist[u] + g[e].cost;
-de7 				if(g[e].cap > 0 && ndist < dist[v]) {
-d72 					dist[v] = ndist;
-20e 					prev[v] = e;
-076 					if(!queued[v]) {
-2a1 						q.push(v);
-b84 						queued[v] = 1;
-67c 					}
-90d 				}
-cd6 			}
-a9a 		}
-85d 		return dist[t] < INF;
-    		//UNCOMMENT FOR MIN COST WITH ANY FLOW (NOT NECESSARILY MAXIMUM)
-    		//return dist[t] <= 0;
-cc6 	}
-    
-a53 	pair<int, int> get_flow() {
-05f 		int flow = 0, cost = 0;
-456 		while(augment()) {
-612 			int cur = t, curf = INF;
-9c2 			while(cur != s) {
-a51 				int e = prev[cur];
-887 				curf = min(curf, g[e].cap);
-58c 				cur = g[e^1].to;
-574 			}
-8bc 			flow += curf; 
-1fc 			cost += dist[t] * curf;
-cd6 			cur = t;
-9c2 			while(cur != s) {
-a51 				int e = prev[cur];
-09b 				g[e].cap -= curf;
-787 				g[e^1].cap += curf;
-58c 				cur = g[e^1].to;
-765 			}
-24b 		}
-884 		return {flow, cost};
-42b 	}
-9e2 };
-\end{lstlisting}
-
-
-
-%%%%%%%%%%%%%%%%%%%%
-%
 % strings
 %
 %%%%%%%%%%%%%%%%%%%%
 
 \section{strings}
 
-\subsection{}
+\subsection{ Err Tree - Palindromic Tree}
 \begin{lstlisting}
-
 //  Description: A tree such that each node represents a 
 //               palindrome of string s. It is possible to append
 //               a character.
 //  Complexity: Amortized O(|s|)
 //
 
-// 0d1a1c
 c71 struct palindromic_tree {
 3c9     struct node {
 ff6         int length, link;
@@ -353,9 +115,8 @@ c50     }
 0d1 };
 \end{lstlisting}
 
-\subsection{}
+\subsection{ String Hashing}
 \begin{lstlisting}
-//  Description: A data structure that transforms a string into a number
 
 //  Functions:
 //      str_hash - Builds the hash in O(|S|)
@@ -378,7 +139,6 @@ a7f     uniform_int_distribution<int> uid(l, r);
 f54     return uid(rng);
 d9e }
 
-// e50d39
 3fb template<int MOD> 
 d7d struct str_hash {
 c63     static int P;
@@ -396,7 +156,6 @@ dfd         return hash < 0 ? hash + MOD : hash;
 977 };
 217 template<int MOD> int str_hash<MOD>::P = uniform(256, MOD - 1); // l > |sigma|
 
-// b31197
 61c struct Hash {
         // Uses 2 primes to better avoid colisions
 3b6     str_hash<mod1> H1;
@@ -411,21 +170,18 @@ d2e     }
 b31 };
 \end{lstlisting}
 
-\subsection{	}
+\subsection{KMP}
 \begin{lstlisting}
+// mathcing(s, t) retorna os indices das ocorrencias
+// de s em t
+// autKMP constroi o automato do KMP
 
-//      mathcing(s, t) retorna os indices das ocorrencias
-//      de s em t
-//      autKMP constroi o automato do KMP
+// Complexidades:
+// pi - O(n)
+// match - O(n + m)
+// construir o automato - O(|sigma|*n)
+// n = |padrao| e m = |texto|
 
-//      Complexidades:
-//      pi - O(n)
-//      match - O(n + m)
-//      construir o automato - O(|sigma|*n)
-//      n = |padrao| e m = |texto|
-//
-
-// b29648
 0a1 template <typename T> vector<int> kmp(int sz, const T s[]) {
 924 	vector<int> pi(sz);
 e8d 	for(int i=1;i<sz;i++) {
@@ -436,7 +192,6 @@ e8d 	for(int i=1;i<sz;i++) {
 81d 	return pi;
 b29 };
 
-// c82524
 c10 template<typename T> vector<int> matching(T& s, T& t) {
 658 	vector<int> p = pi(s), match;
 a1b 	for (int i = 0, j = 0; i < t.size(); i++) {
@@ -447,7 +202,6 @@ c4d 		if (s[j] == t[i]) j++;
 ed8 	return match;
 c82 }
 
-// 79bd9e
 a2d struct KMPaut : vector<vector<int>> {
 47c 	KMPaut(){}
 6c7 	KMPaut (string& s) : vector<vector<int>>(26, vector<int>(s.size()+1)) {
@@ -461,14 +215,13 @@ a2d struct KMPaut : vector<vector<int>> {
 79b };
 \end{lstlisting}
 
-\subsection{     Suffix Array}
+\subsection{Suffix Array}
 \begin{lstlisting}
-//      Description: Algorithm that sorts the suffixes of a string
-//      Complexity: O(|s| log(|s|))
+// Description: Algorithm that sorts the suffixes of a string
+// Complexity: O(|s| log(|s|))
 //
 
 // Suffix Array da KTH
-// 38e765
 3f4 struct SuffixArray {
 ac0     string s;
 716     vector<int> sa, lcp;
@@ -499,7 +252,7 @@ da0                 (y[a] == y[b] && y[a + j] == y[b + j]) ? p - 1 : p++;
 38e };
 \end{lstlisting}
 
-\subsection{ad34f9}
+\subsection{Z}
 \begin{lstlisting}
 1a8 	vector<int> ret(sz);
 6ed 	for(int l=0,r=0,i=1;i<sz;i++) {
@@ -532,14 +285,12 @@ ad3 };
 
 \section{data-structures}
 
-\subsection{}
+\subsection{ MO algorithm}
 \begin{lstlisting}
 //  Description: 
 //      Answers queries offline with sqrt decomposition.
 //  Complexity: 
 //      exec - O(n*sqrt(n)*O(remove / add))
-//  ed9fec
-//
 d90 const int magic = 230;
 
 670 struct Query {
@@ -597,9 +348,160 @@ e66         return sum;
 3f7 };
 \end{lstlisting}
 
-\subsection{}
+\subsection{ Search_buckets}
 \begin{lstlisting}
-//  Data structure that makes operation on a grid.
+//  Data structure that provides two operations on an array:
+//  1) set array[i] = x
+//  2) count how many i in [start, end) satisfy array[i] < value
+//  Both operations take sqrt(N log N) time. Amazingly, because of 
+//  the cache efficiency this is faster than the(log N)^2 algorithm 
+//  until N = 2-5 million.
+
+39d template<typename T> struct search_buckets {
+        // values are just the values in order. buckets are sorted in segments of BUCKET_SIZE (last segment may be smaller)
+931     int N, BUCKET_SIZE;
+c8c     vector<T> values, buckets;
+    
+9f1     search_buckets(const vector<T> &initial = {}) {
+b48         init(initial);
+611     }
+    
+7d4     int get_bucket_end(int bucket_start) const {
+5e4         return min(bucket_start + BUCKET_SIZE, N);
+0e2     }
+    
+ac2     void init(const vector<T> &initial) {
+51b         values = buckets = initial;
+2e7         N = values.size();
+ecf         BUCKET_SIZE = 3 * sqrt(N * log(N + 1)) + 1;
+8bb         cerr << "Bucket size: " << BUCKET_SIZE << endl;
+    
+2fc         for (int start = 0; start < N; start += BUCKET_SIZE)
+23b             sort(buckets.begin() + start, buckets.begin() + get_bucket_end(start));
+167     }
+    
+89e     int bucket_less_than(int bucket_start, T value) const {
+8b6         auto begin = buckets.begin() + bucket_start;
+188         auto end = buckets.begin() + get_bucket_end(bucket_start);
+6b9         return lower_bound(begin, end, value) - begin;
+21f     }
+    
+92e     int less_than(int start, int end, T value) const {
+b52         int count = 0;
+23a         int bucket_start = start - start % BUCKET_SIZE;
+23c         int bucket_end = min(get_bucket_end(bucket_start), end);
+    
+93c         if (start - bucket_start < bucket_end - start) {
+af4             while (start > bucket_start)
+d53                 count -= values[--start] < value;
+9d9         } else {
+ad3             while (start < bucket_end)
+62d                 count += values[start++] < value;
+358         }
+    
+590         if (start == end)
+308             return count;
+    
+655         bucket_start = end - end % BUCKET_SIZE;
+e51         bucket_end = get_bucket_end(bucket_start);
+    
+23c         if (end - bucket_start < bucket_end - end) {
+ec0             while (end > bucket_start)
+807                 count += values[--end] < value;
+9d9         } else {
+612             while (end < bucket_end)
+8da                 count -= values[end++] < value;
+250         }
+    
+7bf         while (start < end && get_bucket_end(start) <= end) {
+395             count += bucket_less_than(start, value);
+a28             start = get_bucket_end(start);
+5b1         }
+    
+c08         assert(start == end);
+308         return count;
+4cf     }
+    
+ea5     int prefix_less_than(int n, T value) const {
+629         return less_than(0, n, value);
+e45     }
+    
+2c3     void modify(int index, T value) {
+985         int bucket_start = index - index % BUCKET_SIZE;
+e50         int old_pos = bucket_start + bucket_less_than(bucket_start, values[index]);
+48b         int new_pos = bucket_start + bucket_less_than(bucket_start, value);
+    
+85e         if (old_pos < new_pos) {
+30f             copy(buckets.begin() + old_pos + 1, buckets.begin() + new_pos, buckets.begin() + old_pos);
+8b8             new_pos--;
+                // memmove(&buckets[old_pos], &buckets[old_pos + 1], (new_pos - old_pos) * sizeof(T));
+9d9         } else {
+670             copy_backward(buckets.begin() + new_pos, buckets.begin() + old_pos, buckets.begin() + old_pos + 1);
+                // memmove(&buckets[new_pos + 1], &buckets[new_pos], (old_pos - new_pos) * sizeof(T));
+b97         }
+    
+cac         buckets[new_pos] = value;
+9cf         values[index] = value;
+54b     }
+ec7 };
+\end{lstlisting}
+
+\subsection{ Segtree 2D}
+\begin{lstlisting}
+//
+//  Complexity:
+//      build - O(N)
+//      query - O(logN^2)
+//  
+
+// struct Node {
+//     Node () {}
+//     Node operator + (const Node &o) const{
+//         return Node ();
+//     }
+// };
+
+4c1 namespace Seg2D {
+14e     int n,m;
+2ea     Node a[MAXN][MAXN], st[2*MAXN][2*MAXN];
+    
+b45     Node op (Node a, Node b){
+534         return a + b;
+978     }
+    
+0a8     void build (){
+6e0         for(int i = 0; i < n; i++) for(int j = 0; j < m; j++)st[i+n][j+m]=a[i][j];
+034         for(int i = 0; i < n; i++) for(int j = m - 1; j; --j)
+c2d             st[i + n][j] = op(st[i + n][j << 1],st[i + n][j << 1 | 1]);
+61e         for(int i = n - 1; i; --i) for(int j = 0; j < 2 * m; j++)
+da1             st[i][j]=op(st[2 * i][j], st[2 * i + 1][j]);
+de2     }
+82b     void upd (int x, int y, Node v){
+365         st[x + n][y + m] = v;
+2e7         for(int j = y + m; j > 1; j /= 2) st[x + n][j / 2] = op(st[x + n][j], st[x + n][j ^ 1]);
+eac         for(int i = x + n; i > 1; i /= 2) for(int j = y + m; j; j /= 2)
+aa4             st[i / 2][j] = op(st[i][j], st[i ^ 1][j]);
+12a     }
+    
+        // essa query vai de x0, y0 ate x1 - 1, y1 - 1 !!!
+243     Node query (int x0, int x1, int y0, int y1) {
+2ae         Node r = Node (); // definir elemento neutro da query!!!
+6a8         for (int i0 = x0 + n, i1 = x1 + n; i0 < i1; i0 /= 2, i1 /= 2){
+0b4             int t[4], q = 0;
+f0e             if (i0 & 1) t[q++] = i0++;
+847             if (i1 & 1) t[q++] = --i1;
+18d             for(int k = 0; k < q; k++) for(int j0 = y0 + m, j1 = y1 + m; j0 < j1; j0 /= 2,j1 /= 2){
+acb                 if (j0 & 1) r = op(r, st[t[k]][j0++]);
+401                 if (j1 & 1) r = op(r, st[t[k]][--j1]);
+a9d             }
+3cd         }
+4c1         return r;
+33a     }
+388 };
+\end{lstlisting}
+
+\subsection{ Sparse Segtree 2D}
+\begin{lstlisting}
 //  Grid of dimensions N x M
 //
 //  Operations:
@@ -614,7 +516,6 @@ e66         return sum;
 //      - O(UlogNlogM) memory: Make N axis sparse too
 //
 
-// 00e657
 b5b namespace seg2d {
     	// YOU ONLY NEED TO CHANGE THIS BLOCK
 9a8 	const int N = 200'000, M = 200'000;
@@ -701,168 +602,12 @@ fad 	int query(int lx, int rx, int ly, int ry) {
 00e }
 \end{lstlisting}
 
-\subsection{ }
+\subsection{Binary Indexed Tree}
 \begin{lstlisting}
-//  Data structure that makes operation on a grid.
-//
-//  Complexity:
-//      build - O(N)
-//      query - O(logN^2)
-//  
-//  388c87
+// !! zero indexed !!
+// all operations are O(logN)
 
-// struct Node {
-//     Node () {}
-//     Node operator + (const Node &o) const{
-//         return Node ();
-//     }
-// };
-
-4c1 namespace Seg2D {
-14e     int n,m;
-2ea     Node a[MAXN][MAXN], st[2*MAXN][2*MAXN];
-    
-b45     Node op (Node a, Node b){
-534         return a + b;
-978     }
-    
-0a8     void build (){
-6e0         for(int i = 0; i < n; i++) for(int j = 0; j < m; j++)st[i+n][j+m]=a[i][j];
-034         for(int i = 0; i < n; i++) for(int j = m - 1; j; --j)
-c2d             st[i + n][j] = op(st[i + n][j << 1],st[i + n][j << 1 | 1]);
-61e         for(int i = n - 1; i; --i) for(int j = 0; j < 2 * m; j++)
-da1             st[i][j]=op(st[2 * i][j], st[2 * i + 1][j]);
-de2     }
-82b     void upd (int x, int y, Node v){
-365         st[x + n][y + m] = v;
-2e7         for(int j = y + m; j > 1; j /= 2) st[x + n][j / 2] = op(st[x + n][j], st[x + n][j ^ 1]);
-eac         for(int i = x + n; i > 1; i /= 2) for(int j = y + m; j; j /= 2)
-aa4             st[i / 2][j] = op(st[i][j], st[i ^ 1][j]);
-12a     }
-    
-        // essa query vai de x0, y0 ate x1 - 1, y1 - 1 !!!
-243     Node query (int x0, int x1, int y0, int y1) {
-2ae         Node r = Node (); // definir elemento neutro da query!!!
-6a8         for (int i0 = x0 + n, i1 = x1 + n; i0 < i1; i0 /= 2, i1 /= 2){
-0b4             int t[4], q = 0;
-f0e             if (i0 & 1) t[q++] = i0++;
-847             if (i1 & 1) t[q++] = --i1;
-18d             for(int k = 0; k < q; k++) for(int j0 = y0 + m, j1 = y1 + m; j0 < j1; j0 /= 2,j1 /= 2){
-acb                 if (j0 & 1) r = op(r, st[t[k]][j0++]);
-401                 if (j1 & 1) r = op(r, st[t[k]][--j1]);
-a9d             }
-3cd         }
-4c1         return r;
-33a     }
-388 };
-\end{lstlisting}
-
-\subsection{ }
-\begin{lstlisting}
-//  Data structure that provides two operations on an array:
-//  1) set array[i] = x
-//  2) count how many i in [start, end) satisfy array[i] < value
-//  Both operations take sqrt(N log N) time. Amazingly, because of 
-//  the cache efficiency this is faster than the(log N)^2 algorithm 
-//  until N = 2-5 million.
-//  
-//  ec7ab8
-//
-67a template<typename T>
-b0d struct search_buckets {
-        // values are just the values in order. buckets are sorted in segments of BUCKET_SIZE (last segment may be smaller)
-931     int N, BUCKET_SIZE;
-c8c     vector<T> values, buckets;
-    
-9f1     search_buckets(const vector<T> &initial = {}) {
-b48         init(initial);
-611     }
-    
-7d4     int get_bucket_end(int bucket_start) const {
-5e4         return min(bucket_start + BUCKET_SIZE, N);
-0e2     }
-    
-ac2     void init(const vector<T> &initial) {
-51b         values = buckets = initial;
-2e7         N = values.size();
-ecf         BUCKET_SIZE = 3 * sqrt(N * log(N + 1)) + 1;
-8bb         cerr << "Bucket size: " << BUCKET_SIZE << endl;
-    
-2fc         for (int start = 0; start < N; start += BUCKET_SIZE)
-23b             sort(buckets.begin() + start, buckets.begin() + get_bucket_end(start));
-167     }
-    
-89e     int bucket_less_than(int bucket_start, T value) const {
-8b6         auto begin = buckets.begin() + bucket_start;
-188         auto end = buckets.begin() + get_bucket_end(bucket_start);
-6b9         return lower_bound(begin, end, value) - begin;
-21f     }
-    
-92e     int less_than(int start, int end, T value) const {
-b52         int count = 0;
-23a         int bucket_start = start - start % BUCKET_SIZE;
-23c         int bucket_end = min(get_bucket_end(bucket_start), end);
-    
-93c         if (start - bucket_start < bucket_end - start) {
-af4             while (start > bucket_start)
-d53                 count -= values[--start] < value;
-9d9         } else {
-ad3             while (start < bucket_end)
-62d                 count += values[start++] < value;
-358         }
-    
-590         if (start == end)
-308             return count;
-    
-655         bucket_start = end - end % BUCKET_SIZE;
-e51         bucket_end = get_bucket_end(bucket_start);
-    
-23c         if (end - bucket_start < bucket_end - end) {
-ec0             while (end > bucket_start)
-807                 count += values[--end] < value;
-9d9         } else {
-612             while (end < bucket_end)
-8da                 count -= values[end++] < value;
-250         }
-    
-7bf         while (start < end && get_bucket_end(start) <= end) {
-395             count += bucket_less_than(start, value);
-a28             start = get_bucket_end(start);
-5b1         }
-    
-c08         assert(start == end);
-308         return count;
-4cf     }
-    
-ea5     int prefix_less_than(int n, T value) const {
-629         return less_than(0, n, value);
-e45     }
-    
-2c3     void modify(int index, T value) {
-985         int bucket_start = index - index % BUCKET_SIZE;
-e50         int old_pos = bucket_start + bucket_less_than(bucket_start, values[index]);
-48b         int new_pos = bucket_start + bucket_less_than(bucket_start, value);
-    
-85e         if (old_pos < new_pos) {
-30f             copy(buckets.begin() + old_pos + 1, buckets.begin() + new_pos, buckets.begin() + old_pos);
-8b8             new_pos--;
-                // memmove(&buckets[old_pos], &buckets[old_pos + 1], (new_pos - old_pos) * sizeof(T));
-9d9         } else {
-670             copy_backward(buckets.begin() + new_pos, buckets.begin() + old_pos, buckets.begin() + old_pos + 1);
-                // memmove(&buckets[new_pos + 1], &buckets[new_pos], (old_pos - new_pos) * sizeof(T));
-b97         }
-    
-cac         buckets[new_pos] = value;
-9cf         values[index] = value;
-54b     }
-feb };
-\end{lstlisting}
-
-\subsection{!! zero indexed !!}
-\begin{lstlisting}
-// e4fe49
-67a template<typename T>
-8eb struct Bit {
+273 template<typename T> struct Bit {
 678 	vector<T> bit;
 052 	Bit(int n): bit(n) {}
     
@@ -894,15 +639,15 @@ b2c 				pos += (1<<i);
 8f9 		}
 d75 		return pos;
 e0c 	}
-64e };
+e4f };
 \end{lstlisting}
 
-\subsection{0-indexed}
+\subsection{Binary Indexed Tree 2D}
 \begin{lstlisting}
+// 0-indexed
+// update(x, y, val): m[row][col] += val
 // query(x, y): returns sum m[0..=x][0..=y]
-// 5c8c14
-67a template <typename T>
-b72 struct Bit2D {
+ecd template <typename T> struct Bit2D {
 14e 	int n, m;
 678 	vector<T> bit;
 26f 	Bit2D(int _n, int _m): n(_n), m(_m), bit(n*m) {}
@@ -920,35 +665,13 @@ a3e 	}
 a36 			for(int z=y+1;z<=m;z+=z&-z)
 522 				bit[(x-1)*m+z-1] += val;
 08d 	}
-e35 };
+5c8 };
 \end{lstlisting}
 
-\subsection{38673e}
+\subsection{Implicit Lazy Treap}
 \begin{lstlisting}
-572 	vector<vector<T>> dp;
-6bc 	T ops(T a, T b) { return min(a,b); }
-fae 	RMQ() {}
-f16 	RMQ(vector<T> v) {
-3d2 		int n = v.size();
-1e7 		int log = 32-__builtin_clz(n);
-ca2 		dp.assign(log, vector<T>(n));
-79c 		copy(all(v), dp[0].begin());
-738 		for(int l=1;l<log;l++) for(int i=0;i<n;i++) {
-447 			auto &cur = dp[l], &ant = dp[l-1];
-c4e 			cur[i] = ops(ant[i], ant[min(i+(1<<(l-1)), n-1)]);
-c57 		}
-ec3 	}
-0ad 	T query(int a, int b)  {
-90f 		if(a == b) return dp[0][a];
-6a7 		int p = 31-__builtin_clz(b-a);
-dd7 		auto &cur = dp[p];
-ec5 		return ops(cur[a], cur[b-(1<<p)+1]);
-089 	}
-386 };
-\end{lstlisting}
-
-\subsection{All operations are O(log N)}
-\begin{lstlisting}
+// All operations are O(log N)
+// If changes need to be made in lazy propagation,
 // see Treap::push() and Treap::pull()
 //
 // Important functions:
@@ -959,10 +682,7 @@ ec5 		return ops(cur[a], cur[b-(1<<p)+1]);
 
 798 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-// HASH FROM HERE
-// 951728
-67a template <typename T>
-125 struct Treap {
+451 template <typename T> struct Treap {
 3c9 	struct node {
 247 		T info;
 5ba 		int l, r, sz;
@@ -1036,18 +756,16 @@ afe 		pull(nd);
 6fa 	}
     
     	// Merges all s and makes them root
-3da 	template <int SZ>
-079 	void merge(array<int, SZ> s) {
+cff 	template <int SZ> void merge(array<int, SZ> s) {
 947 		root = s[0];
 724 		for(int i=1;i<SZ;i++)
 672 			merge(root, s[i], root);
-d99 	}
+416 	}
     
     	// Splits root into SZ EXCLUSIVE intervals
     	// [0..s[0]), [s[0]..s[1]), [s[1]..s[2])... [s[SZ-1]..end)
     	// Example: split<2>({l, r}) gets the exclusive interval [l, r)
-3da 	template <int SZ>
-bd6 	array<int, SZ> split(array<int, SZ-1> s) {
+b2c 	template <int SZ> array<int, SZ> split(array<int, SZ-1> s) {
 7c5 		array<int, SZ> res;
 dc9 		split(root, res[0], res[1], s[0]);
 588 		for(int i=1;i<SZ-1;i++) {
@@ -1055,7 +773,7 @@ dc9 		split(root, res[0], res[1], s[0]);
 775 		}
 815 		root = 0;
 b50 		return res;
-b49 	}
+3a2 	}
     
 4b4 	void insert(int ind, T info) {
 488 		auto s = split<2>({ind});
@@ -1082,43 +800,7 @@ b3d 		for(int ra=0, nra=getl(nd); nra != ind; nra = ra + getl(nd)) {
 341 		}
 464 		return v[nd].info;
 567 	}
-17d };
-\end{lstlisting}
-
-\subsection{For each i, find nearest l < i < r such that }
-\begin{lstlisting}
-// l = -1, r = v.size() otherwise
-//
-// Example: nce(v, greater<T>()): for each i returns
-// nce[i] = {
-//  biggest l < i such that v[l] > v[i]
-//  smallest r > i such that v[r] > v[i]
-// }
-//
-// Complexity: O(N)
-// 1e83ae
-751 template <typename T, typename OP>
-101 vector<pair<int, int>> nce(vector<T> v, OP op) {
-3d2 	int n = v.size();
-a3d 	vector<pair<int, int>> res(n);
-fd9 	vector<pair<T, int>> st;
-603 	for(int i=0;i<n;i++) {
-195 		while(!st.empty() && !op(st.back().first, v[i])) 
-d73 			st.pop_back();
-a33 		if(st.empty()) res[i].first = -1;
-53d 		else res[i].first = st.back().second;
-e89 		st.emplace_back(v[i], i);
-cdc 	}
-23e 	st.clear();
-45b 	for(int i=n-1;i>=0;i--) {
-195 		while(!st.empty() && !op(st.back().first, v[i])) 
-d73 			st.pop_back();
-0b7 		if(st.empty()) res[i].second = n;
-ce3 		else res[i].second = st.back().second;
-e89 		st.emplace_back(v[i], i);
-ba8 	}
-b50 	return res;
-793 }
+634 };
 \end{lstlisting}
 
 \subsection{Iterative Segment Tree}
@@ -1151,8 +833,7 @@ b50 	return res;
 // 	}
 //
 // Submission: https://codeforces.com/contest/380/submission/193484078
-//
-// 49d178
+
 a2c template <typename ND, typename T = typename ND::T>
 2a0 struct SegIt {
 1a8 	int n;
@@ -1191,18 +872,61 @@ efd 	}
 7d4 };
 \end{lstlisting}
 
+\subsection{NCE}
+\begin{lstlisting}
+// op(l, i), op(r, i) = true if they exist
+// l = -1, r = v.size() otherwise
+//
+// Example: nce(v, greater<T>()): for each i returns
+// nce[i] = {
+//  biggest l < i such that v[l] > v[i]
+//  smallest r > i such that v[r] > v[i]
+// }
+//
+// Complexity: O(N)
+
+751 template <typename T, typename OP>
+101 vector<pair<int, int>> nce(vector<T> v, OP op) {
+3d2 	int n = v.size();
+a3d 	vector<pair<int, int>> res(n);
+fd9 	vector<pair<T, int>> st;
+603 	for(int i=0;i<n;i++) {
+195 		while(!st.empty() && !op(st.back().first, v[i])) 
+d73 			st.pop_back();
+a33 		if(st.empty()) res[i].first = -1;
+53d 		else res[i].first = st.back().second;
+e89 		st.emplace_back(v[i], i);
+cdc 	}
+23e 	st.clear();
+45b 	for(int i=n-1;i>=0;i--) {
+195 		while(!st.empty() && !op(st.back().first, v[i])) 
+d73 			st.pop_back();
+0b7 		if(st.empty()) res[i].second = n;
+ce3 		else res[i].second = st.back().second;
+e89 		st.emplace_back(v[i], i);
+ba8 	}
+b50 	return res;
+793 }
+\end{lstlisting}
+
+\subsection{Ordered_set}
+\begin{lstlisting}
+30f #include <ext/pb_ds/tree_policy.hpp>
+0d7 using namespace __gnu_pbds;
+// iterator find_by_order(size_t index), size_t order_of_key(T key)
+67a template <typename T> 
+994 using ordered_set=tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+\end{lstlisting}
+
 \subsection{Persistent segment tree.}
 \begin{lstlisting}
 // Complexity: O(logn) memory and time per query/update
-// e1079e
-//
 
 c35 template<class T, int SZ> struct pseg {
 ec3     static const int LIMIT = 1e7; // adjust
 749     int l[LIMIT], r[LIMIT], nex = 0;
 984     T val[LIMIT], lazy[LIMIT];
         
-        //// HELPER
 a69     int copy(int cur) {
 269         int x = nex++;
 5d0         val[x] = val[cur], l[x] = l[cur], r[x] = r[cur]; // lazy[x] = lazy[cur];
@@ -1261,6 +985,270 @@ fa1     void build(vector<T>& arr) { loc.pb(build(arr,0,SZ-1)); }
 e10 };
 \end{lstlisting}
 
+\subsection{RMQ}
+\begin{lstlisting}
+//      Answers queries on a range.
+//  Complexity: 
+// 		build - O(N logN)
+// 		query - O(1)
+
+f81 template <typename T> struct RMQ {
+572 	vector<vector<T>> dp;
+6bc 	T ops(T a, T b) { return min(a,b); }
+fae 	RMQ() {}
+f16 	RMQ(vector<T> v) {
+3d2 		int n = v.size();
+1e7 		int log = 32-__builtin_clz(n);
+ca2 		dp.assign(log, vector<T>(n));
+79c 		copy(all(v), dp[0].begin());
+738 		for(int l=1;l<log;l++) for(int i=0;i<n;i++) {
+447 			auto &cur = dp[l], &ant = dp[l-1];
+c4e 			cur[i] = ops(ant[i], ant[min(i+(1<<(l-1)), n-1)]);
+c57 		}
+ec3 	}
+0ad 	T query(int a, int b)  {
+90f 		if(a == b) return dp[0][a];
+6a7 		int p = 31-__builtin_clz(b-a);
+dd7 		auto &cur = dp[p];
+ec5 		return ops(cur[a], cur[b-(1<<p)+1]);
+089 	}
+386 };
+\end{lstlisting}
+
+
+
+%%%%%%%%%%%%%%%%%%%%
+%
+% flow-and-matching
+%
+%%%%%%%%%%%%%%%%%%%%
+
+\section{flow-and-matching}
+
+\subsection{Dinitz}
+\begin{lstlisting}
+// get_flow(s, t): Returns max flow with source s and sink t
+//
+// Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
+
+14d struct Dinic {
+670 	struct edge {
+b7a 		int to, cap, flow;
+0e3 	};
+    
+789 	vector<vector<int>> g;
+1e7 	vector<int> lvl;
+37c 	vector<edge> e;
+    
+db3 	Dinic(int sz): g(sz), lvl(sz) {}
+    
+233 	void add_edge(int s, int t, int cap) {
+1f3 		int id = e.size();
+ffd 		g[s].push_back(id);
+614 		e.push_back({t, cap, 0});
+634 		g[t].push_back(++id);
+ff7 		e.push_back({s, cap, cap});
+8e0 	}
+    
+123 	bool bfs(int s, int t) {
+5c1 		fill(all(lvl), INF);
+0d6 		lvl[s] = 0;
+26a 		queue<int> q;
+08b 		q.push(s);
+f76 		while(!q.empty() && lvl[t] == INF) {
+b1e 			int v = q.front();
+833 			q.pop();
+ca6 			for(int id: g[v]) {
+5c7 				auto [p, cap, flow] = e[id];
+bd9 				if(lvl[p] != INF || cap == flow)
+5e2 					continue;
+ed5 				lvl[p] = lvl[v] + 1;
+00a 				q.push(p);
+e2f 			}
+e19 		}
+8de 		return lvl[t] != INF;
+c9d 	}
+    
+2b1 	int dfs(int v, int pool, int t, vector<int>& st) {
+23a 		if(!pool) return 0;
+413 		if(v == t) return pool;
+138 		for(;st[v]<(int)g[v].size();st[v]++) {
+59b 			int id = g[v][st[v]];
+56f 			auto &[p, cap, flow] = e[id];
+783 			if(lvl[v]+1 != lvl[p] || cap == flow) continue;
+1de 			int f = dfs(p, min(cap-flow, pool) , t, st);
+235 			if(f) {
+c87 				flow += f;
+ef4 				e[id^1].flow -= f;
+abe 				return f;
+964 			}
+e0b 		}
+bb3 		return 0;
+7a0 	}
+    
+704 	int get_flow(int s, int t) {
+    		//reset to initial state
+    		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;
+11e 		int res = 0;
+678 		vector<int> start(g.size());
+8ce 		while(bfs(s,t)) {
+cb6 			fill(all(start), 0);
+449 			while(int f = dfs(s,INF,t,start)) 
+5f5 				res += f;
+7a9 		}
+b50 		return res;
+c83 	}
+a7c };
+\end{lstlisting}
+
+\subsection{Hungarian}
+\begin{lstlisting}
+// Resolve o problema de assignment (matriz n x n)
+// Colocar os valores da matriz em 'a' (pode < 0)
+// assignment() retorna um par com o valor do
+// assignment minimo, e a coluna escolhida por cada linha
+//
+// O(n^3)
+
+513 template<typename T> struct Hungarian {
+c04 	static constexpr T INF = numeric_limits<T>::max();
+1a8 	int n;
+a08 	vector<vector<T>> a;
+f36 	vector<T> u, v;
+5ff 	vector<int> p, way;
+    
+0e9 	Hungarian(int n_) : n(n_), a(n, vector<T>(n)), u(n+1), v(n+1), p(n+1), way(n+1) {}
+    
+40e 	void set(int i, int j, T w) { a[i][j] = w; }
+    
+d67 	pair<T, vector<int>> assignment() {
+78a 		for (int i = 1; i <= n; i++) {
+8c9 			p[0] = i;
+625 			int j0 = 0;
+f49 			vector<T> minv(n+1, INF);
+0c1 			vector<bool> used(n+1);
+016 			do {
+472 				used[j0] = true;
+d24 				int i0 = p[j0], j1 = -1;
+8bc 				T delta = INF;
+9ac 				for (int j = 1; j <= n; j++) if (!used[j]) {
+7bf 					T cur = a[i0-1][j-1] - u[i0] - v[j];
+9f2 					if (cur < minv[j]) minv[j] = cur, way[j] = j0;
+821 					if (minv[j] < delta) delta = minv[j], j1 = j;
+4d1 				}
+f63 				for (int j = 0; j <= n; j++)
+2c5 					if (used[j]) u[p[j]] += delta, v[j] -= delta;
+6ec 					else minv[j] -= delta;
+6d4 				j0 = j1;
+52a 			} while (p[j0] != 0);
+016 			do {
+4c5 				int j1 = way[j0];
+0d7 				p[j0] = p[j1];
+6d4 				j0 = j1;
+886 			} while (j0);
+431 		}
+306 		vector<int> ans(n);
+6db 		for (int j = 1; j <= n; j++) ans[p[j]-1] = j-1;
+def 		return {-v[0], ans};
+06e 	}
+7b6 };
+\end{lstlisting}
+
+\subsection{Mincost Max-Flow}
+\begin{lstlisting}
+// shortest paths. Useful when the edges costs are negative. 
+// Infinite loop if there's a negative cycle.
+//
+// Constructor:
+// MinCost(n, s, t)
+// n - number of nodes in the flow graph.
+// s - source of the flow graph.
+// t - sink of the flow graph.
+//
+// Methods:
+// - add_edge(u, v, cap, cost)
+//   adds a directed edge from u to v with capacity `cap` and cost `cost`.
+// - get_flow()
+//   returns a pair of integers in which the first value is the maximum flow and the
+//   second is the minimum cost to achieve this flow.
+//
+// Complexity: There are two upper bounds to the time complexity of getFlow
+//              - O(max_flow * (E log V))
+//              - O(V * E * (E log V))
+
+cfd struct MinCost {
+cd7 	static constexpr int INF = 1e18;
+670 	struct edge {
+22a 		int to, next, cap, cost;
+30a 	};
+748 	int n, s, t;
+439 	vector<int> first, prev, dist;
+70d 	vector<bool> queued;
+93b 	vector<edge> g;
+    
+10d 	MinCost(int _n, int _s, int _t) : n(_n), s(_s), t(_t),
+52d 		first(n, -1), prev(n), dist(n), queued(n) {};
+    
+5cb 	void add_edge(int u, int v, int cap, int cost) {
+270 		int id = g.size();
+4a6 		g.pb({v, first[u], cap, cost});
+c19 		first[u] = id;
+3a5 		g.pb({u, first[v], 0, -cost});
+727 		first[v] = ++id;
+b65 	}
+    
+cbc 	bool augment() {
+04e 		fill(all(dist), INF);
+a93 		dist[s] = 0;
+0d9 		queued[s] = 1;
+26a 		queue<int> q;
+08b 		q.push(s);
+14d 		while(!q.empty()) {
+e4a 			int u = q.front(); 
+833 			q.pop();
+a04 			queued[u] = 0;
+ba2 			for(int e = first[u]; e != -1; e = g[e].next) {
+17a 				int v = g[e].to;
+762 				int ndist = dist[u] + g[e].cost;
+de7 				if(g[e].cap > 0 && ndist < dist[v]) {
+d72 					dist[v] = ndist;
+20e 					prev[v] = e;
+076 					if(!queued[v]) {
+2a1 						q.push(v);
+b84 						queued[v] = 1;
+67c 					}
+90d 				}
+cd6 			}
+a9a 		}
+85d 		return dist[t] < INF;
+    		//UNCOMMENT FOR MIN COST WITH ANY FLOW (NOT NECESSARILY MAXIMUM)
+    		//return dist[t] <= 0;
+cc6 	}
+    
+a53 	pair<int, int> get_flow() {
+05f 		int flow = 0, cost = 0;
+456 		while(augment()) {
+612 			int cur = t, curf = INF;
+9c2 			while(cur != s) {
+a51 				int e = prev[cur];
+887 				curf = min(curf, g[e].cap);
+58c 				cur = g[e^1].to;
+574 			}
+8bc 			flow += curf; 
+1fc 			cost += dist[t] * curf;
+cd6 			cur = t;
+9c2 			while(cur != s) {
+a51 				int e = prev[cur];
+09b 				g[e].cap -= curf;
+787 				g[e^1].cap += curf;
+58c 				cur = g[e^1].to;
+765 			}
+24b 		}
+884 		return {flow, cost};
+42b 	}
+9e2 };
+\end{lstlisting}
+
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -1271,9 +1259,8 @@ e10 };
 
 \section{problems}
 
-\subsection{}
+\subsection{ LIS-2D}
 \begin{lstlisting}
-//  Description: 
 //      Given N pairs of numbers, find the lenght of the biggest
 //      sequence such that a_i < a_i+1, b_i<b_i+1
 //  Complexity: 
@@ -1360,187 +1347,14 @@ e82     }
 
 %%%%%%%%%%%%%%%%%%%%
 %
-% dynamic_programming
-%
-%%%%%%%%%%%%%%%%%%%%
-
-\section{dynamic_programming}
-
-\subsection{CHT - Dynamic Convex Hull Trick}
-\begin{lstlisting}
-// Complexity: 
-//     add - O(logN)
-//     query - O(logN)
-
-// Functions:
-//     add(a, b) - add line (a * x + b) to the convex hull.
-//     query (x) - return the maximum value of any line on point x.
-
-// Details:
-//     If you want to maintain the bottom convex hull, it is
-//     easier to just change the sign. Be careful with overflow
-//     on query. Can use __int128 to avoid.
-// 978376
-
-72c struct Line {
-073     mutable ll a, b, p;
-8e3     bool operator<(const Line& o) const { return a < o.a; }
-abf     bool operator<(ll x) const { return p < x; }
-469 };
-
-326 struct dynamic_hull : multiset<Line, less<>> {
-33a     ll div(ll a, ll b) { 
-a20         return a / b - ((a ^ b) < 0 and a % b);
-a8a     }
-        
-bbb     void update(iterator x) {
-b2a         if (next(x) == end()) x->p = LINF;
-772         else if (x->a == next(x)->a) x->p = x->b >= next(x)->b ? LINF : -LINF;
-424         else x->p = div(next(x)->b - x->b, x->a - next(x)->a);
-0c4     }
-    
-71c     bool overlap(iterator x) {
-f18         update(x);
-cfa         if (next(x) == end()) return 0;
-a4a         if (x->a == next(x)->a) return x->b >= next(x)->b;
-d40         return x->p >= next(x)->p;
-901     }
-            
-176     void add(ll a, ll b) {
-1c7         auto x = insert({a, b, 0});
-4ab         while (overlap(x)) erase(next(x)), update(x);
-dbc         if (x != begin() and !overlap(prev(x))) x = prev(x), update(x);
-0fc         while (x != begin() and overlap(prev(x))) 
-4d2             x = prev(x), erase(next(x)), update(x);
-48f     }
-        
-4ad     ll query(ll x) {
-229         assert(!empty());
-7d1         auto l = *lower_bound(x);
-aba         return l.a * x + l.b;
-3f5     }
-8f2 };
-\end{lstlisting}
-
-
-
-%%%%%%%%%%%%%%%%%%%%
-%
 % math
 %
 %%%%%%%%%%%%%%%%%%%%
 
 \section{math}
 
-\subsection{}
+\subsection{ Coprimes}
 \begin{lstlisting}
-//      Description: Multiply two polynomials such that x^a * x^b = x^(op(a, b))
-//      	- op(a, b) = a "xor" b, a "or" b, a "and" b
-//      Complexity: O(n log n)
-//      Credits: https://github.com/mochow13/competitive-programming-library/tree/master/Math
-//
-29a const ll N = 1<<20;
-
-67a template <typename T>
-372 struct FWHT {
-a69 	void fwht(T io[], ll n) {
-495 		for (ll d = 1; d < n; d <<= 1) {
-b98 			for (ll i = 0, m = d<<1; i < n; i += m) {
-499 				for (ll j = 0; j < d; j++) { /// Don't forget modulo if required
-bdc 					T x = io[i+j], y = io[i+j+d];
-703 					io[i+j] = (x+y), io[i+j+d] = (x-y);	// xor
-    					// io[i+j] = x+y; // and
-    					// io[i+j+d] = x+y; // or
-afa 				}
-7f3 			}
-cf6 		}
-fe6 	}
-1f8 	void ufwht(T io[], ll n) {
-495 		for (ll d = 1; d < n; d <<= 1) {
-b98 			for (ll i = 0, m = d<<1; i < n; i += m) {
-499 				for (ll j = 0; j < d; j++) { /// Don't forget modulo if required
-bdc 					T x = io[i+j], y = io[i+j+d];
-    					 /// Modular inverse if required here
-174 					io[i+j] = (x+y)>>1, io[i+j+d] = (x-y)>>1; // xor
-    					// io[i+j] = x-y; // and
-    					// io[i+j+d] = y-x; // or
-027 				}
-711 			}
-fd4 		}
-e69 	}
-    	// a, b are two polynomials and n is size which is power of two
-683 	void convolution(T a[], T b[], ll n) {
-26b 		fwht(a, n), fwht(b, n);
-e95 		for (ll i = 0; i < n; i++)
-33e 			a[i] = a[i]*b[i];
-23c 		ufwht(a, n);
-5b4 	}
-    	// for a*a	
-f9a 	void self_convolution(T a[], ll n) {
-d85 		fwht(a, n);
-e95 		for (ll i = 0; i < n; i++)
-35c 			a[i] = a[i]*a[i];
-23c 		ufwht(a, n);
-4c8 	}
-ba3 };
-d0d FWHT<ll> fwht;
-\end{lstlisting}
-
-\subsection{}
-\begin{lstlisting}
-//  Description: Given a set of Vectors of size D,
-//               maintains a basis of the set.
-//  Complexity: check - O(D)
-//              add - O(D)
-
-//  Functions:
-//      check(mask) - returns true if the mask can be represented
-//                    by the basis;
-//      add(mask) - adds mask to the basis if it is independent.
-
-//  Details:
-//      We are assuming the vectors have size D <= 64. For general
-//      case, you may change ll basis[] for bitset<D> basis[].
-//  6e102d
-//
-
-189 const int logN = 30;
-
-3d7 struct Gauss_xor {
-09f     ll sz, basis[logN];
-    
-1ee     Gauss_xor () {
-a6a         sz = 0;
-6b4         for(int i = 0; i < logN; i++)
-20f             basis[i] = 0;
-28a     }
-    
-338     bool check (ll mask) {
-ef4         for(int i = 0; i < logN; i++) {
-9e9             if(((1ll << i) & mask) == 0) continue;
-260             if(!basis[i]) return false;
-b04             mask ^= basis[i];
-487         }
-8a6         return true;
-31c     }
-    
-45f     void add (ll mask) {
-ef4         for (int i = 0; i < logN; i++) {
-d65             if(!((1ll << i) & mask)) continue;
-617             if(!basis[i]) {
-eb9                 sz++;
-d86                 basis[i] = mask;
-505                 return;
-9b9             }
-b04             mask ^= basis[i];
-cab         }
-d51     }
-8be };
-\end{lstlisting}
-
-\subsection{}
-\begin{lstlisting}
-//  Description: 
 //      Given a set o integers, calculates the quantity of integers
 //      in the set coprimes with x. You can actually make queries on
 //      anything related to the coprimes. For example, sum of comprimes.
@@ -1551,7 +1365,6 @@ d51     }
 //  Details:
 //      It uses Mobius Function. To add or remove an integer of the set
 //      just change sign to +1 or -1.
-//  1dca6a
 
 49c struct Coprimes {
 1a8     int n;
@@ -1587,9 +1400,121 @@ a33     ll coprimo(int x){
 1dc };
 \end{lstlisting}
 
-\subsection{}
+\subsection{ Gauss elimination - modulo 2}
 \begin{lstlisting}
-//  Description: Multiply two polinomials in Z_p, for p prime
+//  Description: 
+//      Solves a linear system with n equations and m - 1 variables.
+//      Is faster duo to the use of bitset.
+//  Complexity: O(n^2 * m / 32)
+
+
+//  Details:
+//      Function solve return a boolean indicating if system is possible
+//      or not. Also, if it is possible, the parameter maintains the answer.
+
+146 struct Gauss_mod2 {
+14e     int n, m;
+66e     array<int, M> pos;
+3e5     int rank = 0;
+75f     vector<bitset<M>> a;
+     
+        // n equations, m-1 variables, last column is for coefficients
+616     Gauss_mod2(int n, int m, vector<bitset<M>> &a): n(n), m(m), a(a) {
+e55         pos.fill(-1);
+eac     }
+     
+728     int solve(bitset<M> &ans) {
+a73         for (int col = 0, row = 0; col < m && row < n; col++) {
+896             int one = -1;
+016             for (int i = row; i < n; i++) {
+e6e                 if (a[i][col]) {
+7ba                     one = i;
+c2b                     break;
+dff                 }
+edb             }
+     
+b1a             if (one == -1) { continue; }
+     
+5fb             swap(a[one], a[row]);
+     
+8a0             pos[col] = row;
+     
+79f             for (int i = row + 1; i < n; i++) {
+505                 if (a[i][col])
+95d                     a[i] ^= a[row];
+ecc             }
+616             ++row, ++rank;
+400         }
+     
+d16         ans.reset();
+     
+ca1         for (int i = m - 1; i >= 0; i--) {
+413             if (pos[i] == -1) ans[i] = true;
+4e6             else {
+ec8                 int k = pos[i];
+322                 for (int j = i + 1; j < m; j++) if (a[k][j]) ans[i] = ans[i] ^ ans[j];
+506                 ans[i] = ans[i] ^ a[k][m];
+4cc             }
+e3a         }
+     
+332         for (int i = rank; i < n; i++) if (a[i][m]) return 0;
+     
+6a5         return 1;
+dfa     }
+f27 };
+\end{lstlisting}
+
+\subsection{ Gauss_xor - Gauss elimination mod 2}
+\begin{lstlisting}
+//               maintains a basis of the set.
+//  Complexity: check - O(D)
+//              add - O(D)
+
+//  Functions:
+//      check(mask) - returns true if the mask can be represented
+//                    by the basis;
+//      add(mask) - adds mask to the basis if it is independent.
+
+//  Details:
+//      We are assuming the vectors have size D <= 64. For general
+//      case, you may change ll basis[] for bitset<D> basis[].
+
+189 const int logN = 30;
+
+3d7 struct Gauss_xor {
+09f     ll sz, basis[logN];
+    
+1ee     Gauss_xor () {
+a6a         sz = 0;
+6b4         for(int i = 0; i < logN; i++)
+20f             basis[i] = 0;
+28a     }
+    
+338     bool check (ll mask) {
+ef4         for(int i = 0; i < logN; i++) {
+9e9             if(((1ll << i) & mask) == 0) continue;
+260             if(!basis[i]) return false;
+b04             mask ^= basis[i];
+487         }
+8a6         return true;
+31c     }
+    
+45f     void add (ll mask) {
+ef4         for (int i = 0; i < logN; i++) {
+d65             if(!((1ll << i) & mask)) continue;
+617             if(!basis[i]) {
+eb9                 sz++;
+d86                 basis[i] = mask;
+505                 return;
+9b9             }
+b04             mask ^= basis[i];
+cab         }
+d51     }
+8be };
+\end{lstlisting}
+
+\subsection{ NTT - Number Theoretic Transform}
+\begin{lstlisting}
 //  Complexity: O(N logN)
 
 //  Functions:
@@ -1606,9 +1531,6 @@ a33     ll coprimo(int x){
 //  { 463470593, 428228038, 182429, 1 << 21},
 //  { 998244353, 15311432, 469870224, 1 << 23 },
 //  { 918552577, 86995699, 324602258, 1 << 22 }
-
-//  bf1994
-//
 
 ea8 namespace NTT {
 7e5     using Z = mint<998244353>;
@@ -1664,89 +1586,41 @@ c5c         fa.resize(sz);
 bf1 };
 \end{lstlisting}
 
-\subsection{}
+\subsection{Bit iterator}
 \begin{lstlisting}
+// use: for(auto it: BitIterator(n,m) { int mask = *it; ... }
 
-//  Description: 
-//      Solves a linear system with n equations and m - 1 variables.
-//      Is faster duo to the use of bitset.
-//  Complexity: O(n^2 * m / 32)
-
-
-//  Details:
-//      Function solve return a boolean indicating if system is possible
-//      or not. Also, if it is possible, the parameter maintains the answer.
-//
-// f27955
-146 struct Gauss_mod2 {
-14e     int n, m;
-66e     array<int, M> pos;
-3e5     int rank = 0;
-75f     vector<bitset<M>> a;
-     
-        // n equations, m-1 variables, last column is for coefficients
-616     Gauss_mod2(int n, int m, vector<bitset<M>> &a): n(n), m(m), a(a) {
-e55         pos.fill(-1);
-eac     }
-     
-728     int solve(bitset<M> &ans) {
-a73         for (int col = 0, row = 0; col < m && row < n; col++) {
-896             int one = -1;
-016             for (int i = row; i < n; i++) {
-e6e                 if (a[i][col]) {
-7ba                     one = i;
-c2b                     break;
-dff                 }
-edb             }
-     
-b1a             if (one == -1) { continue; }
-     
-5fb             swap(a[one], a[row]);
-     
-8a0             pos[col] = row;
-     
-79f             for (int i = row + 1; i < n; i++) {
-505                 if (a[i][col])
-95d                     a[i] ^= a[row];
-ecc             }
-616             ++row, ++rank;
-400         }
-     
-d16         ans.reset();
-     
-ca1         for (int i = m - 1; i >= 0; i--) {
-413             if (pos[i] == -1) ans[i] = true;
-4e6             else {
-ec8                 int k = pos[i];
-322                 for (int j = i + 1; j < m; j++) if (a[k][j]) ans[i] = ans[i] ^ ans[j];
-506                 ans[i] = ans[i] ^ a[k][m];
-4cc             }
-e3a         }
-     
-332         for (int i = rank; i < n; i++) if (a[i][m]) return 0;
-     
-6a5         return 1;
-dfa     }
-f27 };
+368 struct BitIterator {
+41c 	struct Mask {
+f79 		uint32_t msk;
+5f7 		Mask(uint32_t _msk): msk(_msk) {}
+22e 		bool operator!=(const Mask& rhs) const { return msk < rhs.msk; };
+29f 		void operator++(){const uint32_t t=msk|(msk-1);msk=(t+1)|(((~t&-~t)-1)>>__builtin_ffs(msk));}
+600 		uint32_t operator*() const { return msk; }
+cc7 	};
+1dc 	uint32_t n, m;
+75a 	BitIterator(uint32_t _n, uint32_t _m): n(_n), m(_m) {}
+17a 	Mask begin() const { return Mask((1<<m)-1); }
+d0d 	Mask end() const { return Mask((1<<n)); }
+8ca };
 \end{lstlisting}
 
-\subsection{    fft - Fast Fourier Transform}
+\subsection{Convolutions}
 \begin{lstlisting}
-//     Complexity: O(N logN)
+// Complexity: O(N logN)
 
-//     Functions:
-//         multiply(a, b)
-//         multiply_mod(a, b, m) - return answer modulo m
+// Functions:
+//     multiply(a, b)
+//     multiply_mod(a, b, m) - return answer modulo m
 
-//     Details:
-//         For function multiply_mod, any modulo can be used. 
-//         It is implemented using the technique of dividing 
-//         in sqrt to use less fft. Function multiply may have
-//         precision problems.
-//         This code is faster than normal. So you may use it
-//         if TL e tight.
+// Details:
+//     For function multiply_mod, any modulo can be used. 
+//     It is implemented using the technique of dividing 
+//     in sqrt to use less fft. Function multiply may have
+//     precision problems.
+//     This code is faster than normal. So you may use it
+//     if TL e tight.
 
-// f79fe3
 d32 const double PI=acos(-1.0);
 35b namespace fft {
 3b2     struct num {
@@ -1905,57 +1779,70 @@ dfb     return multiply_mod(a, a, m, 1);
 dde }
 \end{lstlisting}
 
-\subsection{fft::multiply(a, b): returns multiplication between polynomials a and b}
+\subsection{Extended gcd}
 \begin{lstlisting}
-// 080fab
-35b namespace fft {
-238 	using cd = complex<double>;
-9e5 	const double PI = acosl(-1);
-    
-    	// a.size() == 2^n
-34a 	template <bool INVERT>
-dc2 	void fft(vector<cd>& a) {
-94d 		int n = a.size();
-5f9 		for (int i=1, j=0; i<n; i++) {
-9bf 			int bit = n/2;
-2f7 			for (; j & bit; bit /= 2)
-53c 				j ^= bit;
-53c 			j ^= bit;
-aa5 			if(i < j) swap(a[i], a[j]);
-f90 		}
-aa6 		for(int sz=2; sz<=n; sz*=2) {
-3cf 			vector<cd> w(sz/2);
-e28 			for(int j=0;j<sz/2;j++) 
-2f3 				w[j] = polar(1.0, 2*PI*j/sz*(INVERT?-1:1));
-221 			for(int i=0; i<n; i+=sz) for(int j=0; j<sz/2; j++) {
-5e4 				cd u = a[i+j], v = a[i+j+sz/2] * w[j];
-6c3 				a[i+j] = u + v;
-fd2 				a[i+j+sz/2] = u - v;
-77d 			}
-c7c 		}
-881 		if(INVERT) for(cd& x: a) x /= n;
-761 	}
-    
-    	// a and b must NOT be empty
-892 	vector<int> multiply(vector<int> &a, vector<int> &b) {
-c97 		int rsz = a.size() + b.size() - 1, sz = 1;
-f79 		while(rsz > sz) sz *= 2;
-44d 		vector<cd> ca(all(a)), cb(all(b));
-936 		ca.resize(sz); cb.resize(sz);
-60d 		fft<false>(ca); fft<false>(cb);
-514 		for(int i=0;i<sz;i++)
-9f5 			ca[i] *= cb[i];
-3c3 		fft<true>(ca);
-473 		vector<int> res(rsz);
-0a4 		for(int i=0;i<rsz;i++) res[i] = round(ca[i].real());
-b50 		return res;
-007 	}
-080 }
+5d9 pair<int,int> egcd(int a, int b) {
+02b 	if(b == 0) return {1, 0};
+60e 	auto [x, y] = egcd(b, a%b);
+f07 	return {y, x - y * (a/b)};
+5e5 }
+\end{lstlisting}
+
+\subsection{Fast Walsh-Hadamard trasform}
+\begin{lstlisting}
+// 	- op(a, b) = a "xor" b, a "or" b, a "and" b
+// Complexity: O(n log n)
+
+29a const ll N = 1<<20;
+
+67a template <typename T>
+372 struct FWHT {
+a69 	void fwht(T io[], ll n) {
+495 		for (ll d = 1; d < n; d <<= 1) {
+b98 			for (ll i = 0, m = d<<1; i < n; i += m) {
+499 				for (ll j = 0; j < d; j++) { /// Don't forget modulo if required
+bdc 					T x = io[i+j], y = io[i+j+d];
+703 					io[i+j] = (x+y), io[i+j+d] = (x-y);	// xor
+    					// io[i+j] = x+y; // and
+    					// io[i+j+d] = x+y; // or
+afa 				}
+7f3 			}
+cf6 		}
+fe6 	}
+1f8 	void ufwht(T io[], ll n) {
+495 		for (ll d = 1; d < n; d <<= 1) {
+b98 			for (ll i = 0, m = d<<1; i < n; i += m) {
+499 				for (ll j = 0; j < d; j++) { /// Don't forget modulo if required
+bdc 					T x = io[i+j], y = io[i+j+d];
+    					 /// Modular inverse if required here
+174 					io[i+j] = (x+y)>>1, io[i+j+d] = (x-y)>>1; // xor
+    					// io[i+j] = x-y; // and
+    					// io[i+j+d] = y-x; // or
+027 				}
+711 			}
+fd4 		}
+e69 	}
+    	// a, b are two polynomials and n is size which is power of two
+683 	void convolution(T a[], T b[], ll n) {
+26b 		fwht(a, n), fwht(b, n);
+e95 		for (ll i = 0; i < n; i++)
+33e 			a[i] = a[i]*b[i];
+23c 		ufwht(a, n);
+5b4 	}
+    	// for a*a	
+f9a 	void self_convolution(T a[], ll n) {
+d85 		fwht(a, n);
+e95 		for (ll i = 0; i < n; i++)
+35c 			a[i] = a[i]*a[i];
+23c 		ufwht(a, n);
+4c8 	}
+ba3 };
+d0d FWHT<ll> fwht;
 \end{lstlisting}
 
 \subsection{Gauss elimination}
 \begin{lstlisting}
-// fbee6d
+
 76a using arr = valarray<double>;
 320 struct Gauss {
 14e 	int n, m;
@@ -1976,26 +1863,9 @@ b9c 	}
 acf };
 \end{lstlisting}
 
-\subsection{iterator through all masks with n bits and m set bits}
+\subsection{Mint}
 \begin{lstlisting}
-// 8ca232
-368 struct BitIterator {
-41c 	struct Mask {
-f79 		uint32_t msk;
-5f7 		Mask(uint32_t _msk): msk(_msk) {}
-22e 		bool operator!=(const Mask& rhs) const { return msk < rhs.msk; };
-29f 		void operator++(){const uint32_t t=msk|(msk-1);msk=(t+1)|(((~t&-~t)-1)>>__builtin_ffs(msk));}
-600 		uint32_t operator*() const { return msk; }
-cc7 	};
-1dc 	uint32_t n, m;
-75a 	BitIterator(uint32_t _n, uint32_t _m): n(_n), m(_m) {}
-17a 	Mask begin() const { return Mask((1<<m)-1); }
-d0d 	Mask end() const { return Mask((1<<n)); }
-8ca };
-\end{lstlisting}
-
-\subsection{mplate <const int MOD>}
-\begin{lstlisting}
+e54 struct mint {
 3ec 	int x;
 9f5 	mint(): x(0) {}
 609 	mint(int _x): x(_x%MOD<0?_x%MOD+MOD:_x%MOD) {}
@@ -2017,12 +1887,69 @@ f35 	}
 b64 };
 \end{lstlisting}
 
-\subsection{returns X, Y such that a*X + b*Y = gcd(a, b)}
+
+
+%%%%%%%%%%%%%%%%%%%%
+%
+% dynamic-programming
+%
+%%%%%%%%%%%%%%%%%%%%
+
+\section{dynamic-programming}
+
+\subsection{CHT - Dynamic Convex Hull Trick}
 \begin{lstlisting}
-02b 	if(b == 0) return {1, 0};
-60e 	auto [x, y] = egcd(b, a%b);
-f07 	return {y, x - y * (a/b)};
-5e5 }
+// Complexity: 
+//     add - O(logN)
+//     query - O(logN)
+
+// Functions:
+//     add(a, b) - add line (a * x + b) to the convex hull.
+//     query (x) - return the maximum value of any line on point x.
+
+// Details:
+//     If you want to maintain the bottom convex hull, it is
+//     easier to just change the sign. Be careful with overflow
+//     on query. Can use __int128 to avoid.
+
+72c struct Line {
+073     mutable ll a, b, p;
+8e3     bool operator<(const Line& o) const { return a < o.a; }
+abf     bool operator<(ll x) const { return p < x; }
+469 };
+
+326 struct dynamic_hull : multiset<Line, less<>> {
+33a     ll div(ll a, ll b) { 
+a20         return a / b - ((a ^ b) < 0 and a % b);
+a8a     }
+        
+bbb     void update(iterator x) {
+b2a         if (next(x) == end()) x->p = LINF;
+772         else if (x->a == next(x)->a) x->p = x->b >= next(x)->b ? LINF : -LINF;
+424         else x->p = div(next(x)->b - x->b, x->a - next(x)->a);
+0c4     }
+    
+71c     bool overlap(iterator x) {
+f18         update(x);
+cfa         if (next(x) == end()) return 0;
+a4a         if (x->a == next(x)->a) return x->b >= next(x)->b;
+d40         return x->p >= next(x)->p;
+901     }
+            
+176     void add(ll a, ll b) {
+1c7         auto x = insert({a, b, 0});
+4ab         while (overlap(x)) erase(next(x)), update(x);
+dbc         if (x != begin() and !overlap(prev(x))) x = prev(x), update(x);
+0fc         while (x != begin() and overlap(prev(x))) 
+4d2             x = prev(x), erase(next(x)), update(x);
+48f     }
+        
+4ad     ll query(ll x) {
+229         assert(!empty());
+7d1         auto l = *lower_bound(x);
+aba         return l.a * x + l.b;
+3f5     }
+8f2 };
 \end{lstlisting}
 
 
@@ -2035,13 +1962,40 @@ f07 	return {y, x - y * (a/b)};
 
 \section{extra}
 
-\subsection{19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());}
+\subsection{Clock}
 \begin{lstlisting}
+615 double getCurrentTime() {
+7dd 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
+0b1 }
+\end{lstlisting}
+
+\subsection{hash.sh}
+\begin{lstlisting}
+d41 # ./hash.sh arquivo.cpp l1 l2
+d41 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
+d41 #
+d41 # Hash acumulativo, linha por linha:
+d41 # for i in $(seq $2 $3); do
+d41 #   echo -n "$i "
+d41 #   sed -n $2','$i' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
+d41 # done
+58a sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
+\end{lstlisting}
+
+\subsection{Pragmas}
+\begin{lstlisting}
+827 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+\end{lstlisting}
+
+\subsection{Random}
+\begin{lstlisting}
+836 shuffle(permutation.begin(), permutation.end(), rng);
 1ee uniform_int_distribution<int>(a,b)(rng);
 \end{lstlisting}
 
-\subsection{nclude <bits/stdc++.h>}
+\subsection{Template}
 \begin{lstlisting}
+ca4 using namespace std;
 
 613 #define all(x) x.begin(), x.end()
 5d8 #define int int64_t
@@ -2061,36 +2015,6 @@ fa9 }
 68e }
 \end{lstlisting}
 
-\subsection{nclude <ext/pb_ds/assoc_container.hpp>}
-\begin{lstlisting}
-0d7 using namespace __gnu_pbds;
-// iterator find_by_order(size_t index), size_t order_of_key(T key)
-67a template <typename T> 
-994 using ordered_set=tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
-\end{lstlisting}
-
-\subsection{ock_t startTime = clock();}
-\begin{lstlisting}
-7dd 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
-0b1 }
-\end{lstlisting}
-
-\subsection{Para usar (hash das linhas}
-\begin{lstlisting}
-d41 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
-d41 #
-d41 # Hash acumulativo, linha por linha:
-d41 # for i in $(seq $2 $3); do
-d41 #   echo -n "$i "
-d41 #   sed -n $2','$i' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
-d41 # done
-58a sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
-\end{lstlisting}
-
-\subsection{ragma GCC optimize("O3,unroll-loops")}
-\begin{lstlisting}
-\end{lstlisting}
-
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -2101,9 +2025,51 @@ d41 # done
 
 \section{graphs}
 
-\subsection{}
+\subsection{ Euler Walk}
 \begin{lstlisting}
+//               starting at src. Not necesseraly a cycle. Works for both 
+//               directed and undirected. Returns vector 
+//               of \{vertex,label of edge to vertex\}.
+//               Second element of first pair is always $-1$.
+//  Complexity: O(N + M)
 //
+
+843 template<bool directed> struct Euler {
+a06     using pii = pair<int, int>;
+060     int N;
+109     vector<vector<pii>> adj; 
+1f1     vector<vector<pii>::iterator> its; 
+cbd     vector<bool> used;
+ee1     Euler (int _N) : N (_N), adj (_N) {}
+010     void add_edge(int a, int b) {
+e63         int M = used.size (); used.push_back(0); 
+215         adj[a].emplace_back(b, M); 
+f91         if (!directed) adj[b].emplace_back(a, M);
+e01     }
+94e     vector<pii> solve(int src = 0) { 
+29e         its.resize(N);
+3c7         for (int i = 0; i < N; i++) its[i] = begin (adj[i]);
+    
+805         vector<pii> ans, s{{src,-1}}; // {{vert,prev vert},edge label}
+2f5         int lst = -1; // ans generated in reverse order
+bdd         while (s.size ()) { 
+723             int x = s.back ().first; auto& it=its[x], en=end(adj[x]);
+0d5             while (it != en && used[it->second]) ++it;
+8af             if (it == en) { // no more edges out of vertex
+9c7                 if (lst != -1 && lst != x) return {};
+                    // not a path, no tour exists
+f10                 ans.push_back(s.back ()); s.pop_back(); 
+816                 if (s.size ()) lst=s.back ().first;
+38e             } else s.push_back(*it), used[it->second] = 1;
+acb         } // must use all edges
+0f8         if (ans.size () != used.size () + 1) return {}; 
+9ee         reverse(all(ans)); return ans;
+340     }
+d90 };
+\end{lstlisting}
+
+\subsection{ Stable Marriage problem}
+\begin{lstlisting}
 //  Given n men and n women, where each person has ranked all 
 //  members of the opposite sex in order of preference, marry 
 //  the men and women together such that there are no two people 
@@ -2118,8 +2084,6 @@ d41 # done
 //  b - Rank list of first group
 //  solve () - Gives an stable matching covering the first group.
 //             It is necessary that n <= m.
-//
-//  ab77b0
 //
 
 7da struct StableMarriage {
@@ -2161,50 +2125,6 @@ fe6     }
 ab7 };
 \end{lstlisting}
 
-\subsection{ Euler Walk}
-\begin{lstlisting}
-//               starting at src. Not necesseraly a cycle. Works for both 
-//               directed and undirected. Returns vector 
-//               of \{vertex,label of edge to vertex\}.
-//               Second element of first pair is always $-1$.
-//  Complexity: O(N + M)
-//
-//  d903f4
-
-843 template<bool directed> struct Euler {
-a06     using pii = pair<int, int>;
-060     int N;
-109     vector<vector<pii>> adj; 
-1f1     vector<vector<pii>::iterator> its; 
-cbd     vector<bool> used;
-ee1     Euler (int _N) : N (_N), adj (_N) {}
-010     void add_edge(int a, int b) {
-e63         int M = used.size (); used.push_back(0); 
-215         adj[a].emplace_back(b, M); 
-f91         if (!directed) adj[b].emplace_back(a, M);
-e01     }
-94e     vector<pii> solve(int src = 0) { 
-29e         its.resize(N);
-3c7         for (int i = 0; i < N; i++) its[i] = begin (adj[i]);
-    
-805         vector<pii> ans, s{{src,-1}}; // {{vert,prev vert},edge label}
-2f5         int lst = -1; // ans generated in reverse order
-bdd         while (s.size ()) { 
-723             int x = s.back ().first; auto& it=its[x], en=end(adj[x]);
-0d5             while (it != en && used[it->second]) ++it;
-8af             if (it == en) { // no more edges out of vertex
-9c7                 if (lst != -1 && lst != x) return {};
-                    // not a path, no tour exists
-f10                 ans.push_back(s.back ()); s.pop_back(); 
-816                 if (s.size ()) lst=s.back ().first;
-38e             } else s.push_back(*it), used[it->second] = 1;
-acb         } // must use all edges
-0f8         if (ans.size () != used.size () + 1) return {}; 
-9ee         reverse(all(ans)); return ans;
-340     }
-d90 };
-\end{lstlisting}
-
 \subsection{2-SAT}
 \begin{lstlisting}
 // Complexity: O(|V| + |E|)
@@ -2219,7 +2139,6 @@ d90 };
 // 
 // Details:
 //      Not x is equivalente to ~x on this template.
-// 5d5273
 
 bf0 struct SCC {
 dc0     int N, ti = 0; vector<vector<int>> adj;
@@ -2290,43 +2209,11 @@ b35     }
 46a };
 \end{lstlisting}
 
-\subsection{7885f2}
+\subsection{Block Cut Tree}
 \begin{lstlisting}
-0ce 	vector<int> pre, dep; // preorder traversal and depth
-e16 	RMQ<pair<int,int>> rmq;
-
-c67 	LCA() {}
-1a3 	LCA(int sz, vector<int> g[], int root): pre(sz), dep(sz) {
-837 		vector<pair<int,int>> tour; tour.reserve(2*sz-1);
-6be 		auto dfs = [&](int v, int dad, auto& self) -> void {
-e17 			pre[v] = tour.size();
-95e 			tour.push_back({dep[v],v});
-27e 			for(int p: g[v]) if(p != dad) {
-5b8 				dep[p] = dep[v]+1;
-f5e 				self(p,v,self);
-95e 				tour.push_back({dep[v],v});
-af6 			}
-61f 		};
-862 		dfs(root, root, dfs);
-b69 		rmq = RMQ<pair<int,int>>(tour);
-234 	}
-
-4ea 	int query(int a, int b) {
-ca7 		if(pre[a] > pre[b]) swap(a,b);
-d1b 		return rmq.query(pre[a],pre[b]).second;
-f05 	}
-
-b5d 	int dist(int a, int b) {
-969 		int c = query(a,b);
-5a3 		return dep[a] + dep[b] - 2*dep[c];
-3de 	}
-788 };
-\end{lstlisting}
-
-\subsection{Builds forest of block cut trees for an UNDIRECTED graph}
-\begin{lstlisting}
+// Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 // Complexity: O(N+M)
-// f705b6
+
 142 struct BlockCutTree {
 8d3 	int ncomp; // number of components
 f7a 	vector<int> comp; // comp[e]: component of edge e
@@ -2371,11 +2258,46 @@ ff8 	}
 f70 };
 \end{lstlisting}
 
-\subsection{Builds forest of strongly connected components for an UNDIRECTED graph}
+\subsection{LCA}
 \begin{lstlisting}
+33e struct LCA {
+0ce 	vector<int> pre, dep; // preorder traversal and depth
+e16 	RMQ<pair<int,int>> rmq;
+    
+c67 	LCA() {}
+1a3 	LCA(int sz, vector<int> g[], int root): pre(sz), dep(sz) {
+837 		vector<pair<int,int>> tour; tour.reserve(2*sz-1);
+6be 		auto dfs = [&](int v, int dad, auto& self) -> void {
+e17 			pre[v] = tour.size();
+95e 			tour.push_back({dep[v],v});
+27e 			for(int p: g[v]) if(p != dad) {
+5b8 				dep[p] = dep[v]+1;
+f5e 				self(p,v,self);
+95e 				tour.push_back({dep[v],v});
+af6 			}
+61f 		};
+862 		dfs(root, root, dfs);
+b69 		rmq = RMQ<pair<int,int>>(tour);
+234 	}
+    
+4ea 	int query(int a, int b) {
+ca7 		if(pre[a] > pre[b]) swap(a,b);
+d1b 		return rmq.query(pre[a],pre[b]).second;
+f05 	}
+    
+b5d 	int dist(int a, int b) {
+969 		int c = query(a,b);
+5a3 		return dep[a] + dep[b] - 2*dep[c];
+3de 	}
+788 };
+\end{lstlisting}
+
+\subsection{Tarjan for undirected graphs}
+\begin{lstlisting}
+// Constructor: SCC(|V|, |E|, [[v, e]; |V|])
 //
 // Complexity: O(N+M)
-// a1e37f
+
 bf0 struct SCC {
 27d 	vector<bool> bridge; // bridge[e]: true if edge e is a bridge
 f7a 	vector<int> comp; // comp[v]: component of vertex v
@@ -2424,12 +2346,13 @@ c7d 		for(int i=0;i<n;i++) if(comp[i] == -1) build(i, -1);
 a1e };
 \end{lstlisting}
 
-\subsection{ea97fc}
+\subsection{Virtual Tree}
 \begin{lstlisting}
+f03 namespace vtree {
 dbb 	vector<int> vg[MAX];
-
-	// receives list of vertexes and returns root of virtual tree
-	// v must NOT be empty
+    
+    	// receives list of vertexes and returns root of virtual tree
+    	// v must NOT be empty
 cf3 	int build(vector<int> vs, LCA& lca) {
 aa3 		auto cmp = [&](int i, int j) {
 d31 			return lca.pre[i] < lca.pre[j];
@@ -2460,12 +2383,12 @@ ea9 }
 
 \section{geometry}
 
-\subsection{ Basic structure of circle and operations related with it. This template works}
+\subsection{Circle}
 \begin{lstlisting}
+// only with double numbers since most of the operations of a circle can't be 
 // done with only integers. Therefore, this template depends on point_double.cpp.
 // 
 // All operations' time complexity are O(1)
-//
 
 1d5 const double PI = acos(-1);
 
@@ -2499,342 +2422,36 @@ ee4         return d + r < c.r + EPS;
 0f4 };
 \end{lstlisting}
 
-\subsection{efine int long long}
+\subsection{Convex Hull}
 \begin{lstlisting}
-8d0 bool zero(int x) {
-5db 	return x == 0;
-9b6 }
+// Returns in CCW order (reversed in x in UPPER)
+// Complexity: O(NlogN)
 
-// CORNER: point = (0, 0)
-be5 struct point {
-e91 	int x, y;
-    	
-5cb 	point(): x(), y() {}
-4b6 	point(int _x, int _y): x(_x), y(_y) {}
-    	
-587 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
-2f1 	point operator-(point rhs) { return point(x-rhs.x, y-rhs.y); }
-f24 	int operator*(point rhs) { return x*rhs.x + y*rhs.y; }
-55a 	int operator^(point rhs) { return x*rhs.y - y*rhs.x; }
-    
-950 	int norm2() { return *this * *this; }
-    
-e1c 	using tup = tuple<int, int>;
-    
-5fa 	bool operator<(const point& rhs) const {
-046 		return tup{x, y} < tup{rhs.x, rhs.y};
-4a4 	}
-    	
-bfa 	bool operator==(const point& rhs) const {
-024 		return tup{x, y} == tup{rhs.x, rhs.y};
-77f 	}
-5ad };
-
-// angular comparison in [0, 2pi)
-// smallest is (1, 0)
-// CORNER: a || b == (0, 0)
-a43 bool ang_cmp(point a, point b) {
-b41 	auto quad = [](point p) -> bool {
-    		// 0 if ang in [0, pi), 1 if in [pi, 2pi)
-cfb 		return p.y < 0 || (p.y == 0 && p.x < 0);
-428 	};
-c41 	using tup = tuple<bool, int>;
-dab 	return tup{quad(a), 0} < tup{quad(b), a^b};
-401 }
-
-4c6 int dist2(point p, point q) { // squared distance
-f70     return (p - q)*(p - q);
-288 }
-
-5bf int area2(point a, point b, point c) { // two times signed area of triangle abc
-b44 	return (b - a) ^ (c - a);
-214 }
-
-97b bool left(point a, point b, point c) {
-8a5 	return area2(a, b, c) > 0; // counterclockwise
-8fd }
-
-18a bool right(point a, point b, point c) {
-c85 	return area2(a, b, c) < 0; // clockwise
-ece }
-
-62c bool collinear(point a, point b, point c) {
-56f 	return zero(area2(a,b,c));
-16b }
-
-// CORNER: a || b == (0, 0)
-e00 int parallel(point a, point b) {
-046 	if(!zero(a ^ b)) return 0;
-8bb 	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
-e6c }
-
-// CORNER: a == b
-565 struct segment {
-393 	point a, b;
-    
-877 	segment(): a(), b() {}
-e93 	segment(point _a, point _b): a(_a), b(_b) {}
-    
-988 	point v() { return b - a; }
-a42 };
-
-5db bool contains(segment r, point p) {
-9c1 	return r.a==p || r.b==p || parallel(r.a-p,r.b-p) == -1;
-12b }
-
-e58 bool intersects(segment r, segment s) {
-2fb 	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
-9ff 	return left(r.a,r.b,s.a) != left(r.a,r.b,s.b) && 
-0a2 		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
-3dc }
-
-6cc bool parallel(segment r, segment s) {
-260 	return parallel(r.v(), s.v());
-bef }
-
-d2f struct polygon {
-768 	vector<point> vp;
-1a8 	int n;
-    
-66a 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {}
-    
-a2f 	int nxt(int i) { return i+1<n ? i+1 : 0; }
-6af 	int prv(int i) { return i ? i-1 : 0; }
-    
-    	// If positive, the polygon is in ccw order. It is in cw order otherwise.
-882 	int orientation() { // O(n
-745 		int acum = 0;
-830 		for(int i = 0; i < n; i++)
-159 			acum += vp[i] ^ vp[nxt(i)];
-a13 		return acum;
-ea7 	}
-    
-82b 	int area2() { // O(n)
-64e 		return abs(orientation());
-eb3 	}
-    
-9b0 	void turnCcw() { // O(n)
-3d8 		if(orientation() < 0) reverse(all(vp));
-6b2 	}
-    
-223 	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
-947 		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
-9da 		int lo = 1, hi = n;
-3d1 		while(lo + 1 < hi) {
-c86 			int mid = (lo + hi) / 2;
-395 			if(!right(vp[0], vp[mid], p)) lo = mid;
-8c0 			else hi = mid;
-a27 		}
-78d 		return hi != n ? !right(vp[lo], vp[hi], p) : dist2(vp[0], p) <= dist2(vp[0], vp[n-1]);
-aa8 	}
-    
-be9 	int calipers() { // O(n). The polygon must be convex and in ccw order.
-1a4 		int ans = 0;
-1ed 		for(int i = 0, j = 1; i < n; i++) {
-d97 			point v = vp[nxt(i)] - vp[i];
-775 			while((v ^ (vp[nxt(j)] - vp[j])) > 0) j = nxt(j);
-e88 			ans = max(ans, dist2(vp[i], vp[j])); // Example with polygon diameter squared
-c95 		}
-ba7 		return ans;
-e14 	}
-    
-8ff 	int extreme(const function<bool(point, point)> &cmp) {
-9b0 		auto isExtreme = [&](int i, bool& curDir) -> bool {
-a46 			curDir = cmp(vp[nxt(i)], vp[i]);
-f40 			return !cmp(vp[prv(i)], vp[i]) && !curDir;
-cb5 		};
-1a0 		bool lastDir, curDir;
-c7c 		if(isExtreme(0, lastDir)) return 0;
-a04 		int lo = 0, hi = n; 
-3d1 		while(lo + 1 < hi) {
-591 			int m = (lo + hi) / 2;
-b60 			if(isExtreme(m, curDir)) return m;
-254 			bool relDir = cmp(vp[m], vp[lo]);
-729 			if((!lastDir && curDir) || (lastDir == curDir && relDir == curDir)) {
-04a 				lo = m;
-986 				lastDir = curDir;
-58b 			} else hi = m;
-5cb 		}
-253 		return lo;
-298 	}
-    
-6fb 	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
-    		// Finds the indices of the two tangents to an external point q
-f2d 		auto leftTangent = [&](point r, point s) -> bool {
-f70 			return right(p, r, s);
-5f6 		};
-29e 		auto rightTangent = [&](point r, point s) -> bool {
-f88 			return left(p, r, s);
-2b2 		};
-f49 		return {extreme(leftTangent), extreme(rightTangent)};
-f00 	}
-    
-a9e 	int maximize(point v) { // O(log n) for convex polygon in ccw orientation
-    		// Finds the extreme point in the direction of the vector
-003 		return extreme([&](point p, point q) {return p * v > q * v;});
-f56 	}
-    
-df5 	void normalize() { // p[0] becomes the lowest leftmost point 
-b2f 		rotate(vp.begin(), min_element(all(vp)), vp.end());
-7e8 	}
-    
-0da 	polygon operator+(polygon& rhs) { // Minkowsky sum
-244 		vector<point> sum;
-335 		normalize();
-61f 		rhs.normalize();
-755 		for(int i = 0, j = 0, dir; i < n || j < rhs.n; i += dir >= 0, j += dir <= 0) {
-c6f 			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
-727 			dir = (vp[(i + 1) % n] - vp[i % n]) 
-59c 				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
-520 		}
-6b4 		return polygon(sum);
-f2a 	}
-b14 };
-\end{lstlisting}
-
-\subsection{Half-plane intersection algorithm. The result of intersecting half-planes is either}
-\begin{lstlisting}
-//
-// h - (input) set of half-planes to be intersected. Each half-plane is described as a pair
-// of points such that the half-plane is at the left of them.
-// pol - the intersection of the half-planes as a vector of points. If not empty, these
-// points describe the vertices of the resulting polygon in clock-wise order.
-// WARNING: Some points of the polygon might be repeated. This may be undesirable in some
-// cases but it's useful to distinguish between empty intersections and degenerated
-// polygons (such as a point, line, segment or half-line).
-//
-// Time complexity: O(n logn)
-// cdab7a
-//
-
-7a9 struct halfplane: public segment {
-fe9 	double ang;
-077 	halfplane() {}
-7c9 	halfplane(point _a, point _b) {
-cab 		a = _a; b = _b;
-a36 		ang = atan2(v().y, v().x);
-461 	}
-535 	bool operator <(const halfplane& rhs) const {
-287 		if (fabsl(ang - rhs.ang) < EPS) return right(a, b, rhs.a);
-004 	        return ang < rhs.ang;
-576 	}
-3b2 	bool operator ==(const halfplane& rhs) const {
-a0f 		return fabs(ang - rhs.ang) < EPS; 
-745 	}
-83c 	bool out(point r) {
-ad7 		return right(a, b, r);
-6ae 	}
-485 };
-
-0cd vector<point> hp_intersect(vector<halfplane> h) {
-35b 	array<point, 4> box; box.fill(point(-INFINITY, -INFINITY));
-c63 	for(int i = 0; i < 4; i++)
-cf1 		h.push_back(halfplane(box[i], box[(i+1) % 4]));
-d77 	sort(all(h));
-b1b 	h.resize(unique(all(h)) - h.begin());
-ff6 	deque<halfplane> dq;
-    
-c76 	auto sz = [&]() -> int { return dq.size(); };
-    
-6e3 	for(auto hp: h) {
-0c4 		while(sz() > 1 && hp.out(intersects(dq.back(), dq[sz() - 2])))
-c70 			dq.pop_back();
-489 		while(sz() > 1 && hp.out(intersects(dq[0], dq[1])))
-c68 			dq.pop_front();
-1d5 		dq.push_back(hp);
-a92 	}
-cce 	while(sz() > 2 && dq[0].out(intersects(dq.back(), dq[sz() - 2])))
-c70 		dq.pop_back();
-d58 	while(sz() > 2 && dq.back().out(intersects(dq[0], dq[1])))
-c68 		dq.pop_front();
-040 	if(sz() < 3) return {};
-e5f 	vector<point> pol(sz());
-21d 	for(int i = 0; i < sz(); i++) {
-8de 		pol[i] = intersects(dq[i], dq[(i+1) % sz()]);
-fbd 	}
-b22 	return pol;
-f60 }
-\end{lstlisting}
-
-\subsection{Returns minimum distance SQUARED between two points}
-\begin{lstlisting}
-// 719cd0
-505 template <typename C_T>
-e26 C_T nearest_points(vector<point> v) {
-695 	using lim = numeric_limits<C_T>;
-50a 	C_T res = lim::max(), sq = sqrt((double)res);
+9c0 template <bool UPPER>
+6d8 vector<point> hull(vector<point> v) {
+805 	vector<point> res;
+6cd 	if(UPPER) for(auto& p: v) p.x = -p.x, p.y = -p.y;
 304 	sort(all(v));
-6e3 	for(int i=1;i<v.size();i++) if(v[i] == v[i-1]) return 0;
-e54 	auto by_y = [](const point& a, const point& b) {
-c0c 		using tup = tuple<C_T, C_T>;
-1b4 		return tup{a.y, a.x} < tup{b.y, b.x};
-58e 	};
-aa9 	queue<point> active;
-252 	set<point, decltype(by_y)> pts(by_y);
 3f5 	for(auto& p: v) {
-c24 		while(!active.empty() && p.x-active.front().x > sq) {
-56c 			pts.erase(active.front());
-1a0 			active.pop();
-ab0 		}
-abd 		auto it = pts.lower_bound({lim::min(), p.y-sq});
-97f 		while(it != pts.end() && it->y <= p.y + sq) {
-6fc 			C_T d = dist2(p, *it);
-424 			if(d < res) {
-b9f 				res = d;
-a2c 				sq = sqrt((double)res);
-bc7 			}
-40d 			it++;
-16e 		}
-381 		active.push(p);
-aa4 		pts.insert(p);
-367 	}
+1e7 		if(res.empty()) { res.push_back(p); continue; }
+89e 		if(res.back().x == p.x) continue;
+ca3 		while(res.size() >= 2) {
+dd1 			point a = res[res.size()-2], b = res.back();
+039 			if(!left(a, b, p)) res.pop_back();
+    			//to include collinear points
+    			//if(right(a, b, p)) res.pop_back();
+f97 			else break;
+d33 		}
+6f7 		res.push_back(p);
+806 	}
+96b 	if(UPPER) for(auto& p: res) p.x = -p.x, p.y = -p.y;
 b50 	return res;
-558 }
+72a }
 \end{lstlisting}
 
-\subsection{TOLERA INTERSECÇÕES NAS EXTREMIDADES DOS SEGMENTOS}
+\subsection{Double geometry}
 \begin{lstlisting}
-//
-// Checa se existem segmentos que se intersectam
-// Complexidade: O(N logN)
-// d0c138
-4d0 bool shamos_hoey(vector<segment> seg) {
-    	// create sweep segment events {x, type, seg_id}
-900 	vector<tuple<point, bool, int>> ev;
-071 	for(int i=0; i<seg.size(); i++) {
-035 		if(seg[i].b < seg[i].a) swap(seg[i].a, seg[i].b);
-4ed 		ev.emplace_back(seg[i].a, 0, i);
-d2a 		ev.emplace_back(seg[i].b, 1, i);
-3d7 	}
-075 	sort(all(ev));
-2e7 	auto cmp = [](segment r, segment s) -> bool {
-6c3 		if(r.a == s.a) return left(r.a, r.b, s.b);
-4c1 		else if(r.a < s.a) return left(r.a, r.b, s.a);
-8ec 		else return !left(s.a, s.b, r.a);
-6ab 	};
-91a 	set<segment, decltype(cmp)> s(cmp);
-2af 	for(auto [_, b, id]: ev) {
-4ea 		segment at = seg[id];
-22d 		if(!b) {
-8c2 			auto nxt = s.lower_bound(at);
-556 			if((nxt != s.end() && intersects(*nxt, at))
-0f4 				|| (nxt != s.begin() && intersects(*(--nxt), at)))
-6a5 					return 1;
-9be 			s.insert(at);
-9d9 		} else {
-381 			auto cur = s.find(at);
-a98 			if(cur != s.begin() && cur != s.end() && 
-38b 					intersects(*prev(cur), *next(cur))) 
-6a5 				return 1;
-50d 			s.erase(at);
-ed2 		}
-ddd 	}
-bb3 	return 0;
-d0c }
-\end{lstlisting}
 
-\subsection{WARNING: INPUT IN DOUBLE IS SLOW, IF POSSIBLE READ WITH INTEGER}
-\begin{lstlisting}
 ad8 constexpr double EPS = 1e-10;
 
 664 bool zero(double x) {
@@ -3052,30 +2669,340 @@ e1f 	}
 494 };
 \end{lstlisting}
 
-\subsection{Works with double and integer}
+\subsection{Half-plane intersection}
+\begin{lstlisting}
+// empty or a convex polygon (maybe degenerated). This template depends on double.cpp
+//
+// h - (input) set of half-planes to be intersected. Each half-plane is described as a pair
+// of points such that the half-plane is at the left of them.
+// pol - the intersection of the half-planes as a vector of points. If not empty, these
+// points describe the vertices of the resulting polygon in clock-wise order.
+// WARNING: Some points of the polygon might be repeated. This may be undesirable in some
+// cases but it's useful to distinguish between empty intersections and degenerated
+// polygons (such as a point, line, segment or half-line).
+//
+// Time complexity: O(n logn)
+
+7a9 struct halfplane: public segment {
+fe9 	double ang;
+077 	halfplane() {}
+7c9 	halfplane(point _a, point _b) {
+cab 		a = _a; b = _b;
+a36 		ang = atan2(v().y, v().x);
+461 	}
+535 	bool operator <(const halfplane& rhs) const {
+287 		if (fabsl(ang - rhs.ang) < EPS) return right(a, b, rhs.a);
+004 	        return ang < rhs.ang;
+576 	}
+3b2 	bool operator ==(const halfplane& rhs) const {
+a0f 		return fabs(ang - rhs.ang) < EPS; 
+745 	}
+83c 	bool out(point r) {
+ad7 		return right(a, b, r);
+6ae 	}
+485 };
+
+0cd vector<point> hp_intersect(vector<halfplane> h) {
+35b 	array<point, 4> box; box.fill(point(-INFINITY, -INFINITY));
+c63 	for(int i = 0; i < 4; i++)
+cf1 		h.push_back(halfplane(box[i], box[(i+1) % 4]));
+d77 	sort(all(h));
+b1b 	h.resize(unique(all(h)) - h.begin());
+ff6 	deque<halfplane> dq;
+    
+c76 	auto sz = [&]() -> int { return dq.size(); };
+    
+6e3 	for(auto hp: h) {
+0c4 		while(sz() > 1 && hp.out(intersects(dq.back(), dq[sz() - 2])))
+c70 			dq.pop_back();
+489 		while(sz() > 1 && hp.out(intersects(dq[0], dq[1])))
+c68 			dq.pop_front();
+1d5 		dq.push_back(hp);
+a92 	}
+cce 	while(sz() > 2 && dq[0].out(intersects(dq.back(), dq[sz() - 2])))
+c70 		dq.pop_back();
+d58 	while(sz() > 2 && dq.back().out(intersects(dq[0], dq[1])))
+c68 		dq.pop_front();
+040 	if(sz() < 3) return {};
+e5f 	vector<point> pol(sz());
+21d 	for(int i = 0; i < sz(); i++) {
+8de 		pol[i] = intersects(dq[i], dq[(i+1) % sz()]);
+fbd 	}
+b22 	return pol;
+f60 }
+\end{lstlisting}
+
+\subsection{Integer Geometry}
+\begin{lstlisting}
+
+8d0 bool zero(int x) {
+5db 	return x == 0;
+9b6 }
+
+// CORNER: point = (0, 0)
+be5 struct point {
+e91 	int x, y;
+    	
+5cb 	point(): x(), y() {}
+4b6 	point(int _x, int _y): x(_x), y(_y) {}
+    	
+587 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
+2f1 	point operator-(point rhs) { return point(x-rhs.x, y-rhs.y); }
+f24 	int operator*(point rhs) { return x*rhs.x + y*rhs.y; }
+55a 	int operator^(point rhs) { return x*rhs.y - y*rhs.x; }
+    
+950 	int norm2() { return *this * *this; }
+    
+e1c 	using tup = tuple<int, int>;
+    
+5fa 	bool operator<(const point& rhs) const {
+046 		return tup{x, y} < tup{rhs.x, rhs.y};
+4a4 	}
+    	
+bfa 	bool operator==(const point& rhs) const {
+024 		return tup{x, y} == tup{rhs.x, rhs.y};
+77f 	}
+5ad };
+
+// angular comparison in [0, 2pi)
+// smallest is (1, 0)
+// CORNER: a || b == (0, 0)
+a43 bool ang_cmp(point a, point b) {
+b41 	auto quad = [](point p) -> bool {
+    		// 0 if ang in [0, pi), 1 if in [pi, 2pi)
+cfb 		return p.y < 0 || (p.y == 0 && p.x < 0);
+428 	};
+c41 	using tup = tuple<bool, int>;
+dab 	return tup{quad(a), 0} < tup{quad(b), a^b};
+401 }
+
+4c6 int dist2(point p, point q) { // squared distance
+f70     return (p - q)*(p - q);
+288 }
+
+5bf int area2(point a, point b, point c) { // two times signed area of triangle abc
+b44 	return (b - a) ^ (c - a);
+214 }
+
+97b bool left(point a, point b, point c) {
+8a5 	return area2(a, b, c) > 0; // counterclockwise
+8fd }
+
+18a bool right(point a, point b, point c) {
+c85 	return area2(a, b, c) < 0; // clockwise
+ece }
+
+62c bool collinear(point a, point b, point c) {
+56f 	return zero(area2(a,b,c));
+16b }
+
+// CORNER: a || b == (0, 0)
+e00 int parallel(point a, point b) {
+046 	if(!zero(a ^ b)) return 0;
+8bb 	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
+e6c }
+
+// CORNER: a == b
+565 struct segment {
+393 	point a, b;
+    
+877 	segment(): a(), b() {}
+e93 	segment(point _a, point _b): a(_a), b(_b) {}
+    
+988 	point v() { return b - a; }
+a42 };
+
+5db bool contains(segment r, point p) {
+9c1 	return r.a==p || r.b==p || parallel(r.a-p,r.b-p) == -1;
+12b }
+
+e58 bool intersects(segment r, segment s) {
+2fb 	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
+9ff 	return left(r.a,r.b,s.a) != left(r.a,r.b,s.b) && 
+0a2 		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
+3dc }
+
+6cc bool parallel(segment r, segment s) {
+260 	return parallel(r.v(), s.v());
+bef }
+
+d2f struct polygon {
+768 	vector<point> vp;
+1a8 	int n;
+    
+66a 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {}
+    
+a2f 	int nxt(int i) { return i+1<n ? i+1 : 0; }
+6af 	int prv(int i) { return i ? i-1 : 0; }
+    
+    	// If positive, the polygon is in ccw order. It is in cw order otherwise.
+882 	int orientation() { // O(n
+745 		int acum = 0;
+830 		for(int i = 0; i < n; i++)
+159 			acum += vp[i] ^ vp[nxt(i)];
+a13 		return acum;
+ea7 	}
+    
+82b 	int area2() { // O(n)
+64e 		return abs(orientation());
+eb3 	}
+    
+9b0 	void turnCcw() { // O(n)
+3d8 		if(orientation() < 0) reverse(all(vp));
+6b2 	}
+    
+223 	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
+947 		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
+9da 		int lo = 1, hi = n;
+3d1 		while(lo + 1 < hi) {
+c86 			int mid = (lo + hi) / 2;
+395 			if(!right(vp[0], vp[mid], p)) lo = mid;
+8c0 			else hi = mid;
+a27 		}
+78d 		return hi != n ? !right(vp[lo], vp[hi], p) : dist2(vp[0], p) <= dist2(vp[0], vp[n-1]);
+aa8 	}
+    
+be9 	int calipers() { // O(n). The polygon must be convex and in ccw order.
+1a4 		int ans = 0;
+1ed 		for(int i = 0, j = 1; i < n; i++) {
+d97 			point v = vp[nxt(i)] - vp[i];
+775 			while((v ^ (vp[nxt(j)] - vp[j])) > 0) j = nxt(j);
+e88 			ans = max(ans, dist2(vp[i], vp[j])); // Example with polygon diameter squared
+c95 		}
+ba7 		return ans;
+e14 	}
+    
+8ff 	int extreme(const function<bool(point, point)> &cmp) {
+9b0 		auto isExtreme = [&](int i, bool& curDir) -> bool {
+a46 			curDir = cmp(vp[nxt(i)], vp[i]);
+f40 			return !cmp(vp[prv(i)], vp[i]) && !curDir;
+cb5 		};
+1a0 		bool lastDir, curDir;
+c7c 		if(isExtreme(0, lastDir)) return 0;
+a04 		int lo = 0, hi = n; 
+3d1 		while(lo + 1 < hi) {
+591 			int m = (lo + hi) / 2;
+b60 			if(isExtreme(m, curDir)) return m;
+254 			bool relDir = cmp(vp[m], vp[lo]);
+729 			if((!lastDir && curDir) || (lastDir == curDir && relDir == curDir)) {
+04a 				lo = m;
+986 				lastDir = curDir;
+58b 			} else hi = m;
+5cb 		}
+253 		return lo;
+298 	}
+    
+6fb 	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
+    		// Finds the indices of the two tangents to an external point q
+f2d 		auto leftTangent = [&](point r, point s) -> bool {
+f70 			return right(p, r, s);
+5f6 		};
+29e 		auto rightTangent = [&](point r, point s) -> bool {
+f88 			return left(p, r, s);
+2b2 		};
+f49 		return {extreme(leftTangent), extreme(rightTangent)};
+f00 	}
+    
+a9e 	int maximize(point v) { // O(log n) for convex polygon in ccw orientation
+    		// Finds the extreme point in the direction of the vector
+003 		return extreme([&](point p, point q) {return p * v > q * v;});
+f56 	}
+    
+df5 	void normalize() { // p[0] becomes the lowest leftmost point 
+b2f 		rotate(vp.begin(), min_element(all(vp)), vp.end());
+7e8 	}
+    
+0da 	polygon operator+(polygon& rhs) { // Minkowsky sum
+244 		vector<point> sum;
+335 		normalize();
+61f 		rhs.normalize();
+755 		for(int i = 0, j = 0, dir; i < n || j < rhs.n; i += dir >= 0, j += dir <= 0) {
+c6f 			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
+727 			dir = (vp[(i + 1) % n] - vp[i % n]) 
+59c 				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
+520 		}
+6b4 		return polygon(sum);
+f2a 	}
+b14 };
+\end{lstlisting}
+
+\subsection{Nearest Points}
 \begin{lstlisting}
 // Complexity: O(NlogN)
-// 8909b5
-9c0 template <bool UPPER>
-6d8 vector<point> hull(vector<point> v) {
-805 	vector<point> res;
-6cd 	if(UPPER) for(auto& p: v) p.x = -p.x, p.y = -p.y;
+
+505 template <typename C_T>
+e26 C_T nearest_points(vector<point> v) {
+695 	using lim = numeric_limits<C_T>;
+50a 	C_T res = lim::max(), sq = sqrt((double)res);
 304 	sort(all(v));
+6e3 	for(int i=1;i<v.size();i++) if(v[i] == v[i-1]) return 0;
+e54 	auto by_y = [](const point& a, const point& b) {
+c0c 		using tup = tuple<C_T, C_T>;
+1b4 		return tup{a.y, a.x} < tup{b.y, b.x};
+58e 	};
+aa9 	queue<point> active;
+252 	set<point, decltype(by_y)> pts(by_y);
 3f5 	for(auto& p: v) {
-1e7 		if(res.empty()) { res.push_back(p); continue; }
-89e 		if(res.back().x == p.x) continue;
-ca3 		while(res.size() >= 2) {
-dd1 			point a = res[res.size()-2], b = res.back();
-039 			if(!left(a, b, p)) res.pop_back();
-    			//to include collinear points
-    			//if(right(a, b, p)) res.pop_back();
-f97 			else break;
-d33 		}
-6f7 		res.push_back(p);
-806 	}
-96b 	if(UPPER) for(auto& p: res) p.x = -p.x, p.y = -p.y;
+c24 		while(!active.empty() && p.x-active.front().x > sq) {
+56c 			pts.erase(active.front());
+1a0 			active.pop();
+ab0 		}
+abd 		auto it = pts.lower_bound({lim::min(), p.y-sq});
+97f 		while(it != pts.end() && it->y <= p.y + sq) {
+6fc 			C_T d = dist2(p, *it);
+424 			if(d < res) {
+b9f 				res = d;
+a2c 				sq = sqrt((double)res);
+bc7 			}
+40d 			it++;
+16e 		}
+381 		active.push(p);
+aa4 		pts.insert(p);
+367 	}
 b50 	return res;
-72a }
+558 }
+\end{lstlisting}
+
+\subsection{Shamos Hoey}
+\begin{lstlisting}
+// SEGMENTOS NÃO DEVEM SER DEGENERADOS
+//
+// Checa se existem segmentos que se intersectam
+// Complexidade: O(N logN)
+
+4d0 bool shamos_hoey(vector<segment> seg) {
+    	// create sweep segment events {x, type, seg_id}
+900 	vector<tuple<point, bool, int>> ev;
+071 	for(int i=0; i<seg.size(); i++) {
+035 		if(seg[i].b < seg[i].a) swap(seg[i].a, seg[i].b);
+4ed 		ev.emplace_back(seg[i].a, 0, i);
+d2a 		ev.emplace_back(seg[i].b, 1, i);
+3d7 	}
+075 	sort(all(ev));
+2e7 	auto cmp = [](segment r, segment s) -> bool {
+6c3 		if(r.a == s.a) return left(r.a, r.b, s.b);
+4c1 		else if(r.a < s.a) return left(r.a, r.b, s.a);
+8ec 		else return !left(s.a, s.b, r.a);
+6ab 	};
+91a 	set<segment, decltype(cmp)> s(cmp);
+2af 	for(auto [_, b, id]: ev) {
+4ea 		segment at = seg[id];
+22d 		if(!b) {
+8c2 			auto nxt = s.lower_bound(at);
+556 			if((nxt != s.end() && intersects(*nxt, at))
+0f4 				|| (nxt != s.begin() && intersects(*(--nxt), at)))
+6a5 					return 1;
+9be 			s.insert(at);
+9d9 		} else {
+381 			auto cur = s.find(at);
+a98 			if(cur != s.begin() && cur != s.end() && 
+38b 					intersects(*prev(cur), *next(cur))) 
+6a5 				return 1;
+50d 			s.erase(at);
+ed2 		}
+ddd 	}
+bb3 	return 0;
+d0c }
 \end{lstlisting}
 
 \pagebreak
@@ -3089,18 +3016,9 @@ b50 	return res;
 
 \section{Extra}
 
-\subsection{ordered_set.cpp}
-\begin{lstlisting}
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-using namespace __gnu_pbds;
-// iterator find_by_order(size_t index), size_t order_of_key(T key)
-template <typename T> 
-using ordered_set=tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
-\end{lstlisting}
-
 \subsection{template.cpp}
 \begin{lstlisting}
+// Template
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -3124,6 +3042,7 @@ signed main(){
 
 \subsection{hash.sh}
 \begin{lstlisting}
+# hash.sh
 # Para usar (hash das linhas [l1, l2]):
 # ./hash.sh arquivo.cpp l1 l2
 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
@@ -3138,6 +3057,7 @@ sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum |
 
 \subsection{random.cpp}
 \begin{lstlisting}
+// Random
 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 shuffle(permutation.begin(), permutation.end(), rng);
 uniform_int_distribution<int>(a,b)(rng);
@@ -3145,6 +3065,7 @@ uniform_int_distribution<int>(a,b)(rng);
 
 \subsection{clock.cpp}
 \begin{lstlisting}
+// Clock
 clock_t startTime = clock();
 double getCurrentTime() {
 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
@@ -3153,6 +3074,7 @@ double getCurrentTime() {
 
 \subsection{pragma.cpp}
 \begin{lstlisting}
+// Pragmas
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 \end{lstlisting}

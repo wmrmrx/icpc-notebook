@@ -6,7 +6,6 @@
 //               Second element of first pair is always $-1$.
 //  Complexity: O(N + M)
 //
-//  d903f4
 
 template<bool directed> struct Euler {
     using pii = pair<int, int>;

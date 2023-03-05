@@ -1,11 +1,9 @@
-//
-//  MO
+//  MO algorithm
+
 //  Description: 
 //      Answers queries offline with sqrt decomposition.
 //  Complexity: 
 //      exec - O(n*sqrt(n)*O(remove / add))
-//  ed9fec
-//
 const int magic = 230;
 
 struct Query {

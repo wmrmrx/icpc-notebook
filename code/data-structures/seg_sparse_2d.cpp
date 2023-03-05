@@ -1,5 +1,4 @@
-//
-//  Segtree 2D:
+//  Sparse Segtree 2D
 //  Data structure that makes operation on a grid.
 //  Grid of dimensions N x M
 //
@@ -15,7 +14,6 @@
 //      - O(UlogNlogM) memory: Make N axis sparse too
 //
 
-// 00e657
 namespace seg2d {
 	// YOU ONLY NEED TO CHANGE THIS BLOCK
 	const int N = 200'000, M = 200'000;

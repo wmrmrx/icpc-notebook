@@ -1,4 +1,5 @@
-// Half-plane intersection algorithm. The result of intersecting half-planes is either
+// Half-plane intersection
+// The result of intersecting half-planes is either
 // empty or a convex polygon (maybe degenerated). This template depends on double.cpp
 //
 // h - (input) set of half-planes to be intersected. Each half-plane is described as a pair
@@ -10,8 +11,6 @@
 // polygons (such as a point, line, segment or half-line).
 //
 // Time complexity: O(n logn)
-// cdab7a
-//
 
 struct halfplane: public segment {
 	double ang;

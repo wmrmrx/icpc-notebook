@@ -28,8 +28,7 @@
 // 	}
 //
 // Submission: https://codeforces.com/contest/380/submission/193484078
-//
-// 49d178
+
 template <typename ND, typename T = typename ND::T>
 struct SegIt {
 	int n;

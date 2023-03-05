@@ -1,3 +1,5 @@
+// Implicit Lazy Treap
+
 // All operations are O(log N)
 // If changes need to be made in lazy propagation,
 // see Treap::push() and Treap::pull()
@@ -10,10 +12,7 @@
 
 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-// HASH FROM HERE
-// 951728
-template <typename T>
-struct Treap {
+template <typename T> struct Treap {
 	struct node {
 		T info;
 		int l, r, sz;
@@ -87,8 +86,7 @@ struct Treap {
 	}
 
 	// Merges all s and makes them root
-	template <int SZ>
-	void merge(array<int, SZ> s) {
+	template <int SZ> void merge(array<int, SZ> s) {
 		root = s[0];
 		for(int i=1;i<SZ;i++)
 			merge(root, s[i], root);
@@ -97,8 +95,7 @@ struct Treap {
 	// Splits root into SZ EXCLUSIVE intervals
 	// [0..s[0]), [s[0]..s[1]), [s[1]..s[2])... [s[SZ-1]..end)
 	// Example: split<2>({l, r}) gets the exclusive interval [l, r)
-	template <int SZ>
-	array<int, SZ> split(array<int, SZ-1> s) {
+	template <int SZ> array<int, SZ> split(array<int, SZ-1> s) {
 		array<int, SZ> res;
 		split(root, res[0], res[1], s[0]);
 		for(int i=1;i<SZ-1;i++) {

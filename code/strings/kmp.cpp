@@ -1,18 +1,15 @@
-// 	
-//      KMP
+// KMP
 
-//      mathcing(s, t) retorna os indices das ocorrencias
-//      de s em t
-//      autKMP constroi o automato do KMP
+// mathcing(s, t) retorna os indices das ocorrencias
+// de s em t
+// autKMP constroi o automato do KMP
 
-//      Complexidades:
-//      pi - O(n)
-//      match - O(n + m)
-//      construir o automato - O(|sigma|*n)
-//      n = |padrao| e m = |texto|
-//
+// Complexidades:
+// pi - O(n)
+// match - O(n + m)
+// construir o automato - O(|sigma|*n)
+// n = |padrao| e m = |texto|
 
-// b29648
 template <typename T> vector<int> kmp(int sz, const T s[]) {
 	vector<int> pi(sz);
 	for(int i=1;i<sz;i++) {
@@ -23,7 +20,6 @@ template <typename T> vector<int> kmp(int sz, const T s[]) {
 	return pi;
 };
 
-// c82524
 template<typename T> vector<int> matching(T& s, T& t) {
 	vector<int> p = pi(s), match;
 	for (int i = 0, j = 0; i < t.size(); i++) {
@@ -34,7 +30,6 @@ template<typename T> vector<int> matching(T& s, T& t) {
 	return match;
 }
 
-// 79bd9e
 struct KMPaut : vector<vector<int>> {
 	KMPaut(){}
 	KMPaut (string& s) : vector<vector<int>>(26, vector<int>(s.size()+1)) {

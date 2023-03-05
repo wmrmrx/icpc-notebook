@@ -1,4 +1,3 @@
-//
 //  Gauss elimination - modulo 2
 
 //  Description: 
@@ -10,8 +9,7 @@
 //  Details:
 //      Function solve return a boolean indicating if system is possible
 //      or not. Also, if it is possible, the parameter maintains the answer.
-//
-// f27955
+
 struct Gauss_mod2 {
     int n, m;
     array<int, M> pos;

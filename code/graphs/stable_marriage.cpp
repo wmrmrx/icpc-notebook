@@ -1,4 +1,3 @@
-//
 //  Stable Marriage problem
 //
 //  Given n men and n women, where each person has ranked all 
@@ -15,8 +14,6 @@
 //  b - Rank list of first group
 //  solve () - Gives an stable matching covering the first group.
 //             It is necessary that n <= m.
-//
-//  ab77b0
 //
 
 struct StableMarriage {

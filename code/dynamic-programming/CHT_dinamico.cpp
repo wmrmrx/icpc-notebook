@@ -12,7 +12,6 @@
 //     If you want to maintain the bottom convex hull, it is
 //     easier to just change the sign. Be careful with overflow
 //     on query. Can use __int128 to avoid.
-// 978376
 
 struct Line {
     mutable ll a, b, p;
