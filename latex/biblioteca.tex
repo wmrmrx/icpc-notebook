@@ -14,7 +14,7 @@
 \usepackage{xcolor}
 \usepackage{listings} %biblioteca pro codigo
 \usepackage{color}    %deixa o codigo colorido bonitinho
-\usepackage[landscape, left=0.5cm, right=0.5cm, top=1cm, bottom=1.5cm]{geometry} %pra deixar a margem do jeito que o brasil gosta
+\usepackage[landscape, left=1cm, right=0.5cm, top=1cm, bottom=1.5cm]{geometry} %pra deixar a margem do jeito que o brasil gosta
 
 \definecolor{gray}{rgb}{0.4, 0.4, 0.4} %cor pros comentarios
 %\renewcommand{\footnotesize}{\small} %isso eh pra mudar o tamanho da fonte do codigo
@@ -348,7 +348,7 @@ e66         return sum;
 3f7 };
 \end{lstlisting}
 
-\subsection{ Search_buckets}
+\subsection{ Search Buckets}
 \begin{lstlisting}
 //  Data structure that provides two operations on an array:
 //  1) set array[i] = x
@@ -909,7 +909,7 @@ b50 	return res;
 793 }
 \end{lstlisting}
 
-\subsection{Ordered_set}
+\subsection{Ordered Set}
 \begin{lstlisting}
 30f #include <ext/pb_ds/tree_policy.hpp>
 0d7 using namespace __gnu_pbds;
@@ -1464,16 +1464,17 @@ dfa     }
 f27 };
 \end{lstlisting}
 
-\subsection{ Gauss_xor - Gauss elimination mod 2}
+\subsection{ Gauss Xor - Gauss elimination mod 2}
 \begin{lstlisting}
 //               maintains a basis of the set.
-//  Complexity: check - O(D)
+//  Complexity: query - O(D)
 //              add - O(D)
 
 //  Functions:
-//      check(mask) - returns true if the mask can be represented
-//                    by the basis;
-//      add(mask) - adds mask to the basis if it is independent.
+//      query(mask) - returns the biggest number that can
+//                    be made if you initially have cur and
+//                    it cannot be bigger than lim.
+//      add(mask) - adds mask to the basis.
 
 //  Details:
 //      We are assuming the vectors have size D <= 64. For general
@@ -1482,35 +1483,51 @@ f27 };
 189 const int logN = 30;
 
 3d7 struct Gauss_xor {
-09f     ll sz, basis[logN];
-    
-1ee     Gauss_xor () {
-a6a         sz = 0;
-6b4         for(int i = 0; i < logN; i++)
-20f             basis[i] = 0;
-28a     }
-    
-338     bool check (ll mask) {
-ef4         for(int i = 0; i < logN; i++) {
-9e9             if(((1ll << i) & mask) == 0) continue;
-260             if(!basis[i]) return false;
-b04             mask ^= basis[i];
-487         }
-8a6         return true;
-31c     }
-    
-45f     void add (ll mask) {
-ef4         for (int i = 0; i < logN; i++) {
-d65             if(!((1ll << i) & mask)) continue;
-617             if(!basis[i]) {
-eb9                 sz++;
-d86                 basis[i] = mask;
-505                 return;
-9b9             }
-b04             mask ^= basis[i];
-cab         }
-d51     }
-8be };
+387     int basis[logN];
+c9f     Gauss_xor () { memset (basis, 0, sizeof (basis)); }
+     
+5b8     void add (int x) {
+a28         for (int j = logN - 1; j >= 0; j--) {
+be0             if (x & (1ll << j)) {
+335                 if (basis[j]) x ^= basis[j];
+4e6                 else {
+467                     basis[j] = x;
+505                     return;
+681                 }
+58a             }
+3f8         }
+78e     }
+     
+cbd     int query (int j, int cur, int lim, bool mn) {
+bfc         if (j < 0) return cur;
+c5f         if (mn) {
+5ad             return query (j - 1, max (cur, cur ^ basis[j]), lim, 1);
+ec1         }
+4e6         else {
+9bc             if (lim & (1ll << j)) {
+2c4                 if (cur & (1ll << j)) {
+8ee                     int res = query (j - 1, cur, lim, 0);
+d1e                     if (res) return res;
+a86                 }
+4e6                 else {
+05a                     if (basis[j]) {
+4ea                         int res = query (j - 1, cur ^ basis[j], lim, 0);
+d1e                         if (res) return res;
+591                     }
+7d9                 }
+ce3                 int val = min (cur, cur ^ basis[j]);
+e2d                 if ((val & (1ll << j)) == 0) return query (j - 1, val, lim, 1);
+98b                 else return 0;
+39a             }
+4e6             else {
+2c4                 if (cur & (1ll << j)) {
+e5f                     if (!basis[j]) return 0;
+7c0                 }
+12a                 return query (j - 1, min (cur, cur ^ basis[j]), lim, 0);
+a33             }
+651         }
+bda     }
+5db };
 \end{lstlisting}
 
 \subsection{ NTT - Number Theoretic Transform}
@@ -2101,66 +2118,66 @@ aba         return l.a * x + l.b;
 
 
 
-%%%%%%%%%%%%%%%%%%%%
-%
-% extra
-%
-%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%
+% %
+% % extra
+% %
+% %%%%%%%%%%%%%%%%%%%%
 
-\section{extra}
+% \section{extra}
 
-\subsection{Clock}
-\begin{lstlisting}
-615 double getCurrentTime() {
-7dd 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
-0b1 }
-\end{lstlisting}
+% \subsection{Clock}
+% \begin{lstlisting}
+% 615 double getCurrentTime() {
+% 7dd 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
+% 0b1 }
+% \end{lstlisting}
 
-\subsection{hash.sh}
-\begin{lstlisting}
-d41 # ./hash.sh arquivo.cpp l1 l2
-d41 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
-d41 #
-d41 # Hash acumulativo, linha por linha:
-d41 # for i in $(seq $2 $3); do
-d41 #   echo -n "$i "
-d41 #   sed -n $2','$i' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
-d41 # done
-58a sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
-\end{lstlisting}
+% \subsection{hash.sh}
+% \begin{lstlisting}
+% d41 # ./hash.sh arquivo.cpp l1 l2
+% d41 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
+% d41 #
+% d41 # Hash acumulativo, linha por linha:
+% d41 # for i in $(seq $2 $3); do
+% d41 #   echo -n "$i "
+% d41 #   sed -n $2','$i' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
+% d41 # done
+% 58a sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
+% \end{lstlisting}
 
-\subsection{Pragmas}
-\begin{lstlisting}
-827 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
-\end{lstlisting}
+% \subsection{Pragmas}
+% \begin{lstlisting}
+% 827 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+% \end{lstlisting}
 
-\subsection{Random}
-\begin{lstlisting}
-836 shuffle(permutation.begin(), permutation.end(), rng);
-1ee uniform_int_distribution<int>(a,b)(rng);
-\end{lstlisting}
+% \subsection{Random}
+% \begin{lstlisting}
+% 836 shuffle(permutation.begin(), permutation.end(), rng);
+% 1ee uniform_int_distribution<int>(a,b)(rng);
+% \end{lstlisting}
 
-\subsection{Template}
-\begin{lstlisting}
-ca4 using namespace std;
+% \subsection{Template}
+% \begin{lstlisting}
+% ca4 using namespace std;
 
-613 #define all(x) x.begin(), x.end()
-5d8 #define int int64_t
-efe #define pb push_back
+% 613 #define all(x) x.begin(), x.end()
+% 5d8 #define int int64_t
+% efe #define pb push_back
 
-21e void dbg_out() { cerr << endl; }
-2dc template <typename H, typename... T>
-f62 void dbg_out(H h, T... t) { cerr << ' ' << h; dbg_out(t...); }
-89a #define dbg(...) { cerr << #__VA_ARGS__ << ':'; dbg_out(__VA_ARGS__); }
+% 21e void dbg_out() { cerr << endl; }
+% 2dc template <typename H, typename... T>
+% f62 void dbg_out(H h, T... t) { cerr << ' ' << h; dbg_out(t...); }
+% 89a #define dbg(...) { cerr << #__VA_ARGS__ << ':'; dbg_out(__VA_ARGS__); }
 
-63d void solve() {
-fa9 }
+% 63d void solve() {
+% fa9 }
 
-0dd signed main(){
-9dd 	ios::sync_with_stdio(false); cin.tie(0);
-0f9 	solve();
-68e }
-\end{lstlisting}
+% 0dd signed main(){
+% 9dd 	ios::sync_with_stdio(false); cin.tie(0);
+% 0f9 	solve();
+% 68e }
+% \end{lstlisting}
 
 
 
