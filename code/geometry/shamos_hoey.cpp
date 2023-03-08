@@ -25,7 +25,7 @@ bool shamos_hoey(vector<segment> seg) {
 		if(!b) {
 			auto nxt = s.lower_bound(at);
 			if((nxt != s.end() && intersects(*nxt, at))
-				|| (nxt != s.begin() && intersects(*(--nxt), at)))
+				|| (nxt != s.begin() && intersects(*prev(nxt), at)))
 					return 1;
 			s.insert(at);
 		} else {
