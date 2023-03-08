@@ -14,6 +14,8 @@ bool shamos_hoey(vector<segment> seg) {
 		ev.emplace_back(seg[i].b, 1, i);
 	}
 	sort(all(ev));
+	// CORNER CASE: r.a == s.a && collinear(r.a, r,b, s.b) 
+	// cmp(r, s) == cmp(s, r) => r == s !!!
 	auto cmp = [](segment r, segment s) -> bool {
 		if(r.a == s.a) return left(r.a, r.b, s.b);
 		else if(r.a < s.a) return left(r.a, r.b, s.a);
