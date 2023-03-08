@@ -31,10 +31,16 @@ struct halfplane: public segment {
 	}
 };
 
+constexpr double INF = 1e19;
 vector<point> hp_intersect(vector<halfplane> h) {
-	array<point, 4> box; box.fill(point(-INFINITY, -INFINITY));
+	array<point, 4> box = {
+		point(-INF, -INF),
+		point(INF, -INF),
+		point(INF, INF),
+		point(-INF, INF),
+	};
 	for(int i = 0; i < 4; i++)
-		h.push_back(halfplane(box[i], box[(i+1) % 4]));
+		h.emplace_back(box[i], box[(i+1) % 4]);
 	sort(all(h));
 	h.resize(unique(all(h)) - h.begin());
 	deque<halfplane> dq;
@@ -42,20 +48,20 @@ vector<point> hp_intersect(vector<halfplane> h) {
 	auto sz = [&]() -> int { return dq.size(); };
 
 	for(auto hp: h) {
-		while(sz() > 1 && hp.out(intersects(dq.back(), dq[sz() - 2])))
+		while(sz() > 1 && hp.out(line_intersection(dq.back(), dq[sz() - 2])))
 			dq.pop_back();
-		while(sz() > 1 && hp.out(intersects(dq[0], dq[1])))
+		while(sz() > 1 && hp.out(line_intersection(dq[0], dq[1])))
 			dq.pop_front();
 		dq.push_back(hp);
 	}
-	while(sz() > 2 && dq[0].out(intersects(dq.back(), dq[sz() - 2])))
+	while(sz() > 2 && dq[0].out(line_intersection(dq.back(), dq[sz() - 2])))
 		dq.pop_back();
-	while(sz() > 2 && dq.back().out(intersects(dq[0], dq[1])))
+	while(sz() > 2 && dq.back().out(line_intersection(dq[0], dq[1])))
 		dq.pop_front();
 	if(sz() < 3) return {};
 	vector<point> pol(sz());
 	for(int i = 0; i < sz(); i++) {
-		pol[i] = intersects(dq[i], dq[(i+1) % sz()]);
+		pol[i] = line_intersection(dq[i], dq[(i+1) % sz()]);
 	}
 	return pol;
 }
