@@ -30,7 +30,7 @@ bool shamos_hoey(vector<segment> seg) {
 			s.insert(at);
 		} else {
 			auto cur = s.find(at);
-			if(cur != s.begin() && cur != s.end() && 
+			if(cur != s.begin() && next(cur) != s.end() && 
 					intersects(*prev(cur), *next(cur))) 
 				return 1;
 			s.erase(at);
