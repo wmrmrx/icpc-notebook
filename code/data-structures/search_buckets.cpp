@@ -1,4 +1,4 @@
-//  Search_buckets
+//  Search Buckets
 
 //  Data structure that provides two operations on an array:
 //  1) set array[i] = x

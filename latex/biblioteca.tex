@@ -1779,6 +1779,36 @@ dfb     return multiply_mod(a, a, m, 1);
 dde }
 \end{lstlisting}
 
+\subsection{Dirichlet Trick}
+\begin{lstlisting}
+//      Find the partial sum of a multiplicative function.
+//      This code works for Phi or Mobius functions.
+// Details:
+//      It is necessary to precalculate the values of at least
+//      sqrt (N). But, the optimal value might be around N^(2/3)
+
+04a namespace Dirichlet {
+d9a     vector<int> f;
+ce9     map<int,int> mp;
+    
+4ce     void init (vector<int> &mul_func) {
+8dc         f.resize (mul_func.size ());
+6d7         for (int i = 1; i < mul_func.size (); i++) f[i] = f[i - 1] + mul_func[i];
+5ef     }
+    
+cfc     int calc (int x) {
+486         if(x<=N) return f[x];
+c4e         if(mp.find(x)!=mp.end()) return mp[x];
+651         int ans = x * (x + 1) / 2;
+166         for(int i = 2, r; i <= x; i = r + 1) {
+37f             r=x/(x/i);
+2a9             ans -= calc(x/i)*(r-i+1);
+624         }
+b6f         return mp[x]=ans;
+3b5     }
+187 }
+\end{lstlisting}
+
 \subsection{Extended gcd}
 \begin{lstlisting}
 5d9 pair<int,int> egcd(int a, int b) {
@@ -1885,6 +1915,123 @@ bbc 			res*=p;
 b50 		return res;
 f35 	}
 b64 };
+\end{lstlisting}
+
+\subsection{Polynomial operations}
+\begin{lstlisting}
+// Multi-point polynomial evaluation: O(n*log^2(n))
+// Polynomial interpolation: O(n*log^2(n))
+ 
+// Works with NTT. For FFT, just replace the type.
+
+f66 #define SZ(s) int(s.size())
+7e5 using Z = mint<998244353>;
+689 typedef vector<Z> poly;
+
+de4 poly add(poly &a, poly &b) {
+bea     int n = SZ(a), m = SZ(b);
+dba     poly ans(max(n, m));
+0cc     for (int i = 0; i < max(n, m); i++) {
+d20         if (i < n)
+7a8             ans[i] += a[i];
+1d6         if (i < m)
+229             ans[i] += b[i];
+51a     }
+277     while (SZ(ans) > 1 && !ans.back().x) ans.pop_back();
+ba7     return ans;
+3d8 }
+
+dfb poly invert(poly &b, int d) {
+5d9     poly c = {b[0].inv ()};
+cfd     while (SZ(c) <= d) {
+0c0         int j = 2 * SZ(c);
+6aa         auto bb = b;
+3df         bb.resize(j);
+55c         poly cb = NTT::multiply(c, bb);
+fbf         for (int i = 0; i < SZ(cb); i++) cb[i] = Z(0) - cb[i];
+6d7         cb[0] += 2;
+beb         c = NTT::multiply(c, cb);
+4cd         c.resize(j);
+6bd     }
+ea9     c.resize(d + 1);
+807     return c;
+089 }
+
+b8c pair<poly, poly> divslow(poly &a, poly &b) {
+bea     poly q, r = a;
+f69     while (SZ(r) >= SZ(b))
+f95     {
+759         q.pb(r.back() * b.back().inv ());
+41f         if (q.back().x)
+5c5             for (int i = 0; i < SZ(b); i++)
+f95             {
+ab0                 r[SZ(r) - i - 1] = r[SZ(r) - i - 1] - q.back() * b[SZ(b) - i - 1];
+864             }
+515         r.pop_back();
+07b     }
+bb2     reverse(all(q));
+442     return {q, r};
+7dc }
+
+958 pair<poly, poly> divide(poly &a, poly &b) { // returns {quotient,remainder}
+d01     int m = SZ(a), n = SZ(b), MAGIC = 750;
+fbc     if (m < n)
+33d         return {{0}, a};
+61b     if (min(m - n, n) < MAGIC)
+7c0         return divslow(a, b);
+64a     poly ap = a; reverse(all(ap));
+424     poly bp = b; reverse(all(bp));
+160     bp = invert(bp, m - n);
+c5b     poly q = NTT::multiply(ap, bp);
+63e     q.resize(SZ(q) + m - n - SZ(q) + 1, 0);
+bb2     reverse(all(q));
+72d     poly bq = NTT::multiply(b, q);
+df0     for (int i = 0; i < SZ(bq); i++) bq[i] = Z(0) - bq[i];
+b56     poly r = add(a, bq);
+442     return {q, r};
+224 }
+
+204 vector<poly> tree;
+
+1ee void filltree(vector<Z> &x) {
+b3a     int k = SZ(x);
+ffb     tree.resize(2 * k);
+13c     for (int i = k; i < 2 * k; i++) tree[i] = {Z(0) - x[i - k], 1};
+bcd     for (int i = k - 1; i; i--)
+9ec         tree[i] = NTT::multiply(tree[2 * i], tree[2 * i + 1]);
+6f6 }
+
+591 vector<Z> evaluate(poly &a, vector<Z> &x) {
+2b8     filltree(x);
+b3a     int k = SZ(x);
+a34     vector<poly> ans(2 * k);
+8f8     ans[1] = divide(a, tree[1]).second;
+7db     for (int i = 2; i < 2 * k; i++) ans[i] = divide(ans[i >> 1], tree[i]).second;
+607     vector<Z> r;
+c02     for (int i = 0; i < k; i++) r.pb(ans[i + k][0]);
+4c1     return r;
+f5a }
+
+e05 poly derivate(poly &p) {
+c5e     poly ans(SZ(p) - 1);
+ff7     for (int i = 1; i < SZ(p); i++) ans[i - 1] = p[i] * i;
+ba7     return ans;
+c7f }
+
+5a1 poly interpolate(vector<Z> &x, vector<Z> &y) {
+2b8     filltree(x);
+8c4     poly p = derivate(tree[1]);
+3ed     int k = SZ(y);
+4fe     vector<Z> d = evaluate(p, x);
+888     vector<poly> intree(2 * k);
+a0d     for (int i = k; i < 2 * k; i++) intree[i] = {y[i - k] / d[i - k]};
+a79     for (int i = k - 1; i; i--) {
+a49         poly p1 = NTT::multiply(tree[2 * i], intree[2 * i + 1]);
+026         poly p2 = NTT::multiply(tree[2 * i + 1], intree[2 * i]);
+452         intree[i] = add(p1, p2);
+d48     }
+2a3     return intree[1];
+ae8 }
 \end{lstlisting}
 
 
@@ -2702,10 +2849,16 @@ ad7 		return right(a, b, r);
 6ae 	}
 485 };
 
+7d1 constexpr double INF = 1e19;
 0cd vector<point> hp_intersect(vector<halfplane> h) {
-35b 	array<point, 4> box; box.fill(point(-INFINITY, -INFINITY));
+a85 	array<point, 4> box = {
+765 		point(-INF, -INF),
+822 		point(INF, -INF),
+ac0 		point(INF, INF),
+006 		point(-INF, INF),
+9bb 	};
 c63 	for(int i = 0; i < 4; i++)
-cf1 		h.push_back(halfplane(box[i], box[(i+1) % 4]));
+e4b 		h.emplace_back(box[i], box[(i+1) % 4]);
 d77 	sort(all(h));
 b1b 	h.resize(unique(all(h)) - h.begin());
 ff6 	deque<halfplane> dq;
@@ -2713,23 +2866,23 @@ ff6 	deque<halfplane> dq;
 c76 	auto sz = [&]() -> int { return dq.size(); };
     
 6e3 	for(auto hp: h) {
-0c4 		while(sz() > 1 && hp.out(intersects(dq.back(), dq[sz() - 2])))
+673 		while(sz() > 1 && hp.out(line_intersection(dq.back(), dq[sz() - 2])))
 c70 			dq.pop_back();
-489 		while(sz() > 1 && hp.out(intersects(dq[0], dq[1])))
+70c 		while(sz() > 1 && hp.out(line_intersection(dq[0], dq[1])))
 c68 			dq.pop_front();
 1d5 		dq.push_back(hp);
-a92 	}
-cce 	while(sz() > 2 && dq[0].out(intersects(dq.back(), dq[sz() - 2])))
+34d 	}
+a26 	while(sz() > 2 && dq[0].out(line_intersection(dq.back(), dq[sz() - 2])))
 c70 		dq.pop_back();
-d58 	while(sz() > 2 && dq.back().out(intersects(dq[0], dq[1])))
+430 	while(sz() > 2 && dq.back().out(line_intersection(dq[0], dq[1])))
 c68 		dq.pop_front();
 040 	if(sz() < 3) return {};
 e5f 	vector<point> pol(sz());
 21d 	for(int i = 0; i < sz(); i++) {
-8de 		pol[i] = intersects(dq[i], dq[(i+1) % sz()]);
-fbd 	}
+3bb 		pol[i] = line_intersection(dq[i], dq[(i+1) % sz()]);
+39e 	}
 b22 	return pol;
-f60 }
+7c5 }
 \end{lstlisting}
 
 \subsection{Integer Geometry}
@@ -2990,7 +3143,7 @@ d2a 		ev.emplace_back(seg[i].b, 1, i);
 22d 		if(!b) {
 8c2 			auto nxt = s.lower_bound(at);
 556 			if((nxt != s.end() && intersects(*nxt, at))
-0f4 				|| (nxt != s.begin() && intersects(*(--nxt), at)))
+0b1 				|| (nxt != s.begin() && intersects(*prev(nxt), at)))
 6a5 					return 1;
 9be 			s.insert(at);
 9d9 		} else {
@@ -2999,10 +3152,10 @@ a98 			if(cur != s.begin() && cur != s.end() &&
 38b 					intersects(*prev(cur), *next(cur))) 
 6a5 				return 1;
 50d 			s.erase(at);
-ed2 		}
-ddd 	}
+a83 		}
+c4b 	}
 bb3 	return 0;
-d0c }
+107 }
 \end{lstlisting}
 
 \pagebreak
