@@ -7,35 +7,28 @@
 //
 
 struct palindromic_tree {
-    struct node {
-        int length, link;
-        map<char, int> to;
-        node(int length, int link): length(length), link(link) {}
-    };
-    vector<node> nodes;
-    int current;
-    palindromic_tree(): current(1) {
-        nodes.push_back(node(-1, 0));
-        nodes.push_back(node(0, 0));
-    }
+    // node info
+    vector<int> len, link, freq;
+    vector<map<char, int>> to;
+
+    int cur, cnt;
+    palindromic_tree (int N): cur(1), cnt(2), len (N), link (N), to (N), freq (N) { len[0] = -1; }
     void add(int i, string& s) {
-        int parent = nodes[current].length == i ? nodes[current].link : current;
-        while (s[i - nodes[parent].length - 1] != s[i])
-            parent = nodes[parent].link;
-        if (nodes[parent].to.find(s[i]) != nodes[parent].to.end()) {
-            current = nodes[parent].to[s[i]];
-        } else {
-            int link = nodes[parent].link;
-            while (s[i - nodes[link].length - 1] != s[i])
-                link = nodes[link].link;
-            link = max(1, nodes[link].to[s[i]]);
-            current = nodes[parent].to[s[i]] = nodes.size();
-            nodes.push_back(node(nodes[parent].length + 2, link));
+        int p = len[cur] == i ? link[cur] : cur;
+        while (s[i - len[p] - 1] != s[i]) p = link[p];
+        if (to[p].find(s[i]) != to[p].end()) cur = to[p][s[i]];
+        else {
+            int L = link[p];
+            while (s[i - len[L] - 1] != s[i]) L = link[L];
+            L = max<int>(1, to[L][s[i]]);
+            cur = to[p][s[i]] = cnt;
+            len[cnt] = len[p] + 2; link[cnt] = L;
+            cnt++;
         }
+        freq[cur]++;
     }
     void insert(string& s) {
-        current = 1;
-        for (int i = 0; i < int(s.size()); i++)
+        for (int i = 0; i < s.size (); i++)
             add(i, s);
     }
 };
