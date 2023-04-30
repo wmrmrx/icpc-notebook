@@ -219,10 +219,29 @@ struct polygon {
 
 const double PI = acos(-1);
 
+// Circle
+//  Basic structure of circle and operations related with it.
+// 
+// All operations' time complexity are O(1)
+
+const double PI = acos(-1);
+
 struct circle {
 	point o; double r;
+
 	circle() {}
 	circle(point _o, double _r) : o(_o), r(_r) {}
+	// CORNER CASE: a, b and c must NOT be collinear
+	circle(point a, point b, point c) {
+		b = b - a;
+		c = c - a;
+		double B = b.norm2();
+		double C = c.norm2();
+		double D = b ^ c;
+		o = a + point( (c.y*B - b.y*C) / (2*D), (b.x * C - c.x * B) / (2*D) );
+		r = (o-a).norm2();
+	}
+
 	bool has(point p) { 
 		return (o - p).norm2() < r*r + EPS;
 	}
@@ -242,8 +261,8 @@ struct circle {
 		double d = sqrt((p - o).norm2() - r*r);
 		return *this / circle(p, d);
 	}
-	bool in(circle c){ // non strictly inside
-		double d = (o - c.o).norm();
-		return d + r < c.r + EPS;
+	bool contains(point p){ // non strictly inside
+		double d = (o - p).norm2();
+		return d < r * r + EPS;
 	}
 };
