@@ -239,7 +239,7 @@ struct circle {
 		double C = c.norm2();
 		double D = b ^ c;
 		o = a + point( (c.y*B - b.y*C) / (2*D), (b.x * C - c.x * B) / (2*D) );
-		r = (o-a).norm2();
+		r = (o-a).norm();
 	}
 
 	bool has(point p) { 
