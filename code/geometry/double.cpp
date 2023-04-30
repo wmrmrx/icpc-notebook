@@ -231,7 +231,6 @@ struct circle {
 
 	circle() {}
 	circle(point _o, double _r) : o(_o), r(_r) {}
-	// CORNER CASE: a, b and c must NOT be collinear
 	circle(point a, point b, point c) {
 		b = b - a;
 		c = c - a;
@@ -258,11 +257,11 @@ struct circle {
 		return inter;
 	}
 	vector<point> tang(point p){
-		double d = sqrt((p - o).norm2() - r*r);
+		double d = sqrt(dist2(p, o) - r*r);
 		return *this / circle(p, d);
 	}
 	bool contains(point p){ // non strictly inside
-		double d = (o - p).norm2();
+		double d = dist2(o, p);
 		return d < r * r + EPS;
 	}
 };
