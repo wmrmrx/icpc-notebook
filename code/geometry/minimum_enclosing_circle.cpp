@@ -11,7 +11,7 @@ circle mec(vector<point> vp) {
 			o = (vp[i] + vp[j]) / 2;
 			r = dist(o, vp[i]);
 			for(int k=0;k<j;k++) if(!c.contains(vp[k]))
-				c = circle(vp[i], vp[j], vp[j]);
+				c = circle(vp[i], vp[j], vp[k]);
 		}
 	}
 	return c;
