@@ -86,60 +86,54 @@ struct segment {
 	segment() {}
 	segment(point _a, point _b): a(_a), b(_b) {}
 
-	point v() { return b - a; }
+	point vec() { return b - a; }
+
+	bool contains(point p) {
+		return a == p || b == p || parallel(a-p, b-p) == -1;
+	}
+
+	point proj(point p) { // projection of p onto segment
+		p = p - a;
+		point v = vec();
+		return a + v*((p*v)/(v*v));
+	}
 
 };
 
-bool contains(segment r, point p) {
-	return r.a==p || r.b==p || parallel(r.a-p, r.b-p) == -1;
-}
-
 bool intersects(segment r, segment s) {
-	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
+	if(r.contains(s.a) || r.contains(s.b) || s.contains(r.a) || s.contains(r.b)) return 1;
 	return left(r.a, r.b, s.a) != left(r.a, r.b, s.b) && 
 		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
 }
 
 bool parallel(segment r, segment s) {
-	return parallel(r.v(), s.v());
+	return parallel(r.vec(), s.vec());
 }
 
 point line_intersection(segment r, segment s) {
 	if(parallel(r, s)) return point(HUGE_VAL, HUGE_VAL);
-	point vr = r.v(), vs = s.v();
+	point vr = r.vec(), vs = s.vec();
 	double cr = vr ^ r.a, cs = vs ^ s.a;
 	return (vs*cr - vr*cs) / (vr ^ vs);
-}
-
-point proj(segment r, point p) {
-	p = p - r.a;
-	point v = r.v();
-	return r.a + v*((p*v)/(v*v));
 }
 
 struct polygon {
 	vector<point> vp;
 	int n;
 
-	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {}
+	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {
+		if(area2() < -EPS) reverse(all(_vp));
+	}
 
 	int nxt(int i) { return i+1<n ? i+1 : 0; }
 	int prv(int i) { return i ? i-1 : 0; }
 
 	// If positive, the polygon is in ccw order. It is in cw order otherwise.
-	double orientation() { // O(n
-		int acum = 0;
+	double area2() { // O(n
+		double acum = 0;
 		for(int i = 0; i < n; i++)
 			acum += vp[i] ^ vp[nxt(i)];
 		return acum;
-	}
-
-	double area2() { // O(n)
-		return abs(orientation());
-	}
-
-	void turnCcw() { // O(n)
-		if(orientation() < -EPS) reverse(all(vp));
 	}
 
 	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
@@ -158,26 +152,31 @@ struct polygon {
 		for(int i = 0, j = 1; i < n; i++) {
 			point v = vp[nxt(i)] - vp[i];
 			while((v ^ (vp[nxt(j)] - vp[j])) > EPS) j = nxt(j);
+			// do something with vp[i] and vp[j]
 			ans = max(ans, dist2(vp[i], vp[j])); // Example with polygon diameter squared
 		}
 		return ans;
 	}
 
+	// returns the maximal point using comparator cmp
+	// example: 
+	// 	extreme([&](point p, point q) {return p * v > q * v;});
+	// 	returns point with maximal dot product with v
 	int extreme(const function<bool(point, point)> &cmp) {
-		auto isExtreme = [&](int i, bool& curDir) -> bool {
-			curDir = cmp(vp[nxt(i)], vp[i]);
-			return !cmp(vp[prv(i)], vp[i]) && !curDir;
+		auto is_extreme = [&](int i, bool& cur_dir) -> bool {
+			cur_dir = cmp(vp[nxt(i)], vp[i]);
+			return !cmp(vp[prv(i)], vp[i]) && !cur_dir;
 		};
-		bool lastDir, curDir;
-		if(isExtreme(0, lastDir)) return 0;
+		bool last_dir, cur_dir;
+		if(is_extreme(0, last_dir)) return 0;
 		int lo = 0, hi = n; 
 		while(lo + 1 < hi) {
 			int m = (lo + hi) / 2;
-			if(isExtreme(m, curDir)) return m;
-			bool relDir = cmp(vp[m], vp[lo]);
-			if((!lastDir && curDir) || (lastDir == curDir && relDir == curDir)) {
+			if(is_extreme(m, cur_dir)) return m;
+			bool rel_dir = cmp(vp[m], vp[lo]);
+			if((!last_dir && cur_dir) || (last_dir == cur_dir && rel_dir == cur_dir)) {
 				lo = m;
-				lastDir = curDir;
+				last_dir = cur_dir;
 			} else hi = m;
 		}
 		return lo;
@@ -185,18 +184,13 @@ struct polygon {
 
 	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
 		// Finds the indices of the two tangents to an external point q
-		auto leftTangent = [&](point r, point s) -> bool {
+		auto left_tangent = [&](point r, point s) -> bool {
 			return right(p, r, s);
 		};
-		auto rightTangent = [&](point r, point s) -> bool {
+		auto right_tangent = [&](point r, point s) -> bool {
 			return left(p, r, s);
 		};
-		return {extreme(leftTangent), extreme(rightTangent)};
-	}
-
-	int maximize(point v) { // O(log n) for convex polygon in ccw orientation
-		// Finds the extreme point in the direction of the vector
-		return extreme([&](point p, point q) {return p * v > q * v + EPS;});
+		return {extreme(left_tangent), extreme(right_tangent)};
 	}
 
 	void normalize() { // p[0] becomes the lowest leftmost point 
@@ -204,9 +198,9 @@ struct polygon {
 	}
 
 	polygon operator+(polygon& rhs) { // Minkowsky sum
-		vector<point> sum;
 		normalize();
 		rhs.normalize();
+		vector<point> sum;
 		double dir;
 		for(int i = 0, j = 0; i < n || j < rhs.n; i += dir > -EPS, j += dir < EPS) {
 			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
@@ -214,5 +208,42 @@ struct polygon {
 				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
 		}
 		return polygon(sum);
+	}
+};
+// Circle
+//  Basic structure of circle and operations related with it. This template works
+// only with double numbers since most of the operations of a circle can't be 
+// done with only integers. Therefore, this template depends on point_double.cpp.
+// 
+// All operations' time complexity are O(1)
+
+const double PI = acos(-1);
+
+struct circle {
+	point o; double r;
+	circle() {}
+	circle(point _o, double _r) : o(_o), r(_r) {}
+	bool has(point p) { 
+		return (o - p).norm2() < r*r + EPS;
+	}
+	vector<point> operator/(circle c) { // Intersection of circles.
+		vector<point> inter;                   // The points in the output are in ccw order.
+		double d = (o - c.o).norm();
+		if(r + c.r < d - EPS || d + min(r, c.r) < max(r, c.r) - EPS)
+			return {};
+		double x = (r*r - c.r*c.r + d*d) / (2*d);
+		double y = sqrt(r*r - x*x);
+		point v = (c.o - o) / d;
+		inter.pb(o + v*x + v.rotated(cw90)*y);
+		if(y > EPS) inter.pb(o + v*x + v.rotated(ccw90)*y);
+		return inter;
+	}
+	vector<point> tang(point p){
+		double d = sqrt((p - o).norm2() - r*r);
+		return *this / circle(p, d);
+	}
+	bool in(circle c){ // non strictly inside
+		double d = (o - c.o).norm();
+		return d + r < c.r + EPS;
 	}
 };
