@@ -223,6 +223,7 @@ struct circle {
 
 	circle() {}
 	circle(point _o, double _r) : o(_o), r(_r) {}
+	// CORNER CASE: a, b and c must NOT be collinear
 	circle(point a, point b, point c) {
 		b = b - a;
 		c = c - a;
