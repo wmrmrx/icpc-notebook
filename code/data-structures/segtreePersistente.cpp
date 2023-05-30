@@ -1,19 +1,24 @@
 // Persistent segment tree.
 // 
-// Complexity: O(logn) memory and time per query/update
+// Complexity: 
+//      Update - O(logn) memory and time
+//      Query - O(logn) time
+// Lazy works, but is very expensive. Every query will need O(logn) memory.
 
 template<class T, int SZ> struct pseg {
     static const int LIMIT = 1e7; // adjust
-    int l[LIMIT], r[LIMIT], nex = 0;
-    T val[LIMIT], lazy[LIMIT];
-    
+    int nex;
+    vector<int> l, r;
+    vector<T> val, lazy;
+    pseg () : l (LIMIT), r (LIMIT), val (LIMIT), nex (0) {}
+
     int copy(int cur) {
         int x = nex++;
         val[x] = val[cur], l[x] = l[cur], r[x] = r[cur]; // lazy[x] = lazy[cur];
         return x;
     }
-    T comb(T a, T b) { return a+b; }
-    void pull(int x) { val[x] = comb(val[l[x]],val[r[x]]); } 
+    T comb(T a, T b) { return a + b; }
+    void pull(int x) { val[x] = comb (val[l[x]], val[r[x]]); } 
 //  void push(int cur, int L, int R) { 
 //      if (!lazy[cur]) return;
 //      if (L != R) {
@@ -37,7 +42,7 @@ template<class T, int SZ> struct pseg {
     }
     int upd(int cur, int pos, T v, int L, int R) {
         if (R < pos || pos < L) return cur;
-        
+
         int x = copy(cur);
         if (pos <= L && R <= pos) { val[x] = v; return x; }
         
@@ -49,9 +54,10 @@ template<class T, int SZ> struct pseg {
         int cur = nex++;
         if (L == R) {
             if (L < (int) arr.size ()) val[cur] = arr[L];
+            else val[cur] = T ();
             return cur;
         }
-        
+
         int M = (L+R)/2;
         l[cur] = build(arr,L,M), r[cur] = build(arr,M+1,R);
         pull(cur); return cur;
@@ -59,7 +65,7 @@ template<class T, int SZ> struct pseg {
     
     //// PUBLIC
     vector<int> loc;
-    //void upd(int lo, int hi, T v) { loc.pb(upd(loc.back(),lo,hi,v,0,SZ-1)); }
-    //T query(int ti, int lo, int hi) { return query(loc[ti],lo,hi,0,SZ-1); }
-    void build(vector<T>& arr) { loc.pb(build(arr,0,SZ-1)); }
+    void upd(int pos, T v) { loc.pb (upd (loc.back(), pos, v, 0, SZ-1)); }
+    T query(int ti, int lo, int hi) { return query (loc[ti], lo, hi ,0 , SZ - 1); }
+    void build(vector<T>& arr) { loc.pb (build(arr, 0, SZ - 1)); }
 };

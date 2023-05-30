@@ -9,11 +9,8 @@ struct SuffixArray {
     string s;
     vector<int> sa, lcp;
     SuffixArray () {}
-    SuffixArray(vector<string>& v, int lim=256) { // or basic_string<int>
-        for(auto str : v) {
-            s += str;
-            s += '$';
-        }
+    SuffixArray(string v, int lim=256) { // or basic_string<int>
+        s = v;
         int n = s.size(), k = 0, a, b;
         vector<int> x(all(s)+1), y(n), ws(max(n, lim)), rank(n);
         sa = lcp = y; iota(all(sa), 0);
