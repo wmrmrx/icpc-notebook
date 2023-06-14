@@ -15,7 +15,7 @@ struct MaxMatching {
 
 	void add_edge(int u, int v) { adj[u].pb(v); adj[v].pb(u); }
 
-	int group(int x) { return white[first[x]] ? first[x] = group(first[x]) : first[x]; }
+	int group(int x) { int &f = first[x]; return white[f] ? f = group(f) : f; }
 
 	void match(int p, int b) {
 		swap(b, mate[p]); if(mate[b] != p) return;
