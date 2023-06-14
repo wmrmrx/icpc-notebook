@@ -15,7 +15,7 @@ struct MaxMatching {
 
 	void add_edge(int u, int v) { adj[u].pb(v); adj[v].pb(u); }
 
-	int group(int x) { return white[first[x]] ? first[x] = group(first[x]) ? first[x]; }
+	int group(int x) { return white[first[x]] ? first[x] = group(first[x]) : first[x]; }
 
 	void match(int p, int b) {
 		swap(b, mate[p]); if(mate[b] != p) return;
@@ -34,7 +34,7 @@ struct MaxMatching {
 					int x = group(a), y = group(b), lca = 0;
 					while(x || y) {
 						if(y) swap(x, y);
-						if(label[x] == {a, b}) { lca = x; break; }
+						if(label[x] == pair<int,int>{a, b}) { lca = x; break; }
 						label[x] = {a,b}; x = group(label[mate[x]].first);
 					}
 					for (int v: {group(a), group(b)}) while (v != lca) {
@@ -43,11 +43,11 @@ struct MaxMatching {
 						v = group(label[mate[v]].first);
 					}
 				} else if (!mate[b]) { // found augmenting path
-					mate[b] = a; match(a,b); white = vb(n+1); // reset
+					mate[b] = a; match(a, b); fill(all(white), false); // reset
 					return true;
 				} else if (!white[mate[b]]) {
 					white[mate[b]] = true; first[mate[b]] = b;
-					label[b] = {0,0}; label[mate[b]] = pi{a,0};
+					label[b] = {0,0}; label[mate[b]] = {a, 0};
 					q.push(mate[b]);
 				}
 			}
