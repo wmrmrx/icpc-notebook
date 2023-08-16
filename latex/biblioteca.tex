@@ -81,38 +81,31 @@ basicstyle=\ttfamily\footnotesize, % fonte
 //
 
 c71 struct palindromic_tree {
-3c9     struct node {
-ff6         int length, link;
-3a4         map<char, int> to;
-697         node(int length, int link): length(length), link(link) {}
-45d     };
-b9e     vector<node> nodes;
-9fc     int current;
-d36     palindromic_tree(): current(1) {
-31a         nodes.push_back(node(-1, 0));
-5ec         nodes.push_back(node(0, 0));
-2fa     }
+        // node info
+320     vector<int> len, link, freq;
+dd9     vector<map<char, int>> to;
+    
+d92     int cur, cnt;
+35a     palindromic_tree (int N): cur(1), cnt(2), len (N), link (N), to (N), freq (N) { len[0] = -1; }
 ea5     void add(int i, string& s) {
-8f5         int parent = nodes[current].length == i ? nodes[current].link : current;
-f2b         while (s[i - nodes[parent].length - 1] != s[i])
-c9c             parent = nodes[parent].link;
-4d9         if (nodes[parent].to.find(s[i]) != nodes[parent].to.end()) {
-b6c             current = nodes[parent].to[s[i]];
-9d9         } else {
-490             int link = nodes[parent].link;
-0bb             while (s[i - nodes[link].length - 1] != s[i])
-304                 link = nodes[link].link;
-569             link = max(1, nodes[link].to[s[i]]);
-b39             current = nodes[parent].to[s[i]] = nodes.size();
-bcf             nodes.push_back(node(nodes[parent].length + 2, link));
-6f7         }
-ec3     }
+f11         int p = len[cur] == i ? link[cur] : cur;
+763         while (s[i - len[p] - 1] != s[i]) p = link[p];
+060         if (to[p].find(s[i]) != to[p].end()) cur = to[p][s[i]];
+4e6         else {
+e6f             int L = link[p];
+7e6             while (s[i - len[L] - 1] != s[i]) L = link[L];
+9b8             L = max<int>(1, to[L][s[i]]);
+46f             cur = to[p][s[i]] = cnt;
+65c             len[cnt] = len[p] + 2; link[cnt] = L;
+f65             cnt++;
+60b         }
+54f         freq[cur]++;
+1e1     }
 bfc     void insert(string& s) {
-dd9         current = 1;
-9a8         for (int i = 0; i < int(s.size()); i++)
+724         for (int i = 0; i < s.size (); i++)
 df9             add(i, s);
-c50     }
-0d1 };
+251     }
+ed4 };
 \end{lstlisting}
 
 \subsection{ String Hashing}
@@ -217,8 +210,10 @@ a2d struct KMPaut : vector<vector<int>> {
 
 \subsection{Suffix Array}
 \begin{lstlisting}
-// Description: Algorithm that sorts the suffixes of a string
-// Complexity: O(|s| log(|s|))
+// Description: Algorithm that sorts the suffixes of a string.
+//              The last character of the string to be sorted 
+//              must be the smallest!
+// Complexity: O(|s| log(|s|)).
 //
 
 // Suffix Array da KTH
@@ -226,11 +221,8 @@ a2d struct KMPaut : vector<vector<int>> {
 ac0     string s;
 716     vector<int> sa, lcp;
 264     SuffixArray () {}
-cb4     SuffixArray(vector<string>& v, int lim=256) { // or basic_string<int>
-318         for(auto str : v) {
-cf2             s += str;
-fc8             s += '$';
-ee6         }
+91c     SuffixArray(string v, int lim=256) { // or basic_string<int>
+3ef         s = v;
 861         int n = s.size(), k = 0, a, b;
 99c         vector<int> x(all(s)+1), y(n), ws(max(n, lim)), rank(n);
 8a6         sa = lcp = y; iota(all(sa), 0);
@@ -248,8 +240,8 @@ da0                 (y[a] == y[b] && y[a + j] == y[b + j]) ? p - 1 : p++;
 9c7         for (int i = 1; i < n; i++) rank[sa[i]] = i;
 05c         for (int i = 0, j; i < n - 1; lcp[rank[i++]] = k)
 9f6             for (k && k--, j = sa[rank[i] - 1]; s[i + k] == s[j + k]; k++);
-0d0     }
-38e };
+289     }
+3e5 };
 \end{lstlisting}
 
 \subsection{Z}
@@ -672,7 +664,8 @@ a36 			for(int z=y+1;z<=m;z+=z&-z)
 \begin{lstlisting}
 // All operations are O(log N)
 // If changes need to be made in lazy propagation,
-// see Treap::push() and Treap::pull()
+// See Node::push()
+// To extend behavior of Treap, use inheritance
 //
 // Important functions:
 // Treap::insert(int ind, T info)
@@ -682,125 +675,117 @@ a36 			for(int z=y+1;z<=m;z+=z&-z)
 
 798 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-451 template <typename T> struct Treap {
-3c9 	struct node {
-247 		T info;
-5ba 		int l, r, sz;
-5fa 		uint64_t h;
-aa6 		bool rev;
-f93 		node() {}
-f43 		node(T _info): info(_info), l(0), r(0), sz(1), h(rng()), rev(0) {}
-c9a 	};
-    
-2a8 	int root, ptr;
-899 	unique_ptr<node[]> v;
-    	// max: maximum number of insertions
-e17 	Treap(int max): root(0), ptr(0), v(new node[max+1]) {
-    		// v[0] is a placeholder node such that v[0].sz = 0
-336 		v[0].sz = 0;
-541 	}
-    
-6b4 	void push(int nd) {
-75a 		node &x = v[nd];
-974 		if(x.rev) {
-7f7 			swap(x.l, x.r);
-cd4 			v[x.l].rev ^= 1;
-acf 			v[x.r].rev ^= 1;
-49c 			x.rev = 0;
-c31 		}
-090 	}
-4b1 	void pull(int nd) {
-75a 		node& x = v[nd];
-f49 		x.sz = v[x.l].sz + v[x.r].sz + 1;
-a0a 	}
-27b 	int new_node(T info) {
-183 		v[++ptr] = node(info);
-500 		return ptr;
-71b 	}
-632 	int getl(int nd) {
-6ca 		return v[v[nd].l].sz;
-c0d 	}
-    
-0ca 	void merge(int l, int r, int& res) {
+a2c template <typename ND, typename T = typename ND::T> 
+125 struct Treap {
+691 	ND *root;
+006 	vector<ND> v;
+    	// max: maximum number of NDs created
+1be 	Treap(int max): root(0) {
+890 		v.reserve(max);
+d0e 	}
+21d 	ND* new_ND(T info) {
+    		// assert(v.size() != v.capacity());
+6b6 		v.emplace_back(info);
+ec2 		return &v.back();
+18e 	}
+f6e 	int getl(ND& nd) {
+892 		return nd.l ? nd.l->sz : 0;
+9c5 	}
+3bb 	void merge(ND* l, ND* r, ND*& res) {
 9b5 		if(!l || !r) {
-07e 			res = l + r;
+0e8 			res = l ? l : r;
 505 			return;
-75b 		}
-b8e 		push(l); push(r);
-a21 		if(v[l].h > v[r].h) {
+1e7 		}
+48f 		l->push(); r->push();
+e4a 		if(l->h > r->h) {
 8ee 			res = l;
-8b4 			merge(v[l].r, r, v[l].r);
+d17 			merge(l->r, r, l->r);
 9d9 		} else {
 516 			res = r;
-ca7 			merge(l, v[r].l, v[r].l);
-9e1 		}
-f39 		pull(res);
-66e 	}
+c88 			merge(l, r->l, r->l);
+40e 		}
+7d2 		res->pull();
+c4e 	}
     	// left treap has size pos
-309 	void split(int nd, int &l, int &r, int pos, int ra = 0) {
-b36 		if(!nd) {
+c8d 	void split(ND* x, ND*& l, ND*& r, int pos, int ra = 0) {
+91e 		if(!x) {
 c77 			l = r = 0;
 505 			return;
-62d 		}
-1d5 		push(nd);
-1c6 		if(pos <= ra + getl(nd)) {
-6fb 			split(v[nd].l, l, r, pos, ra);
-852 			v[nd].l = r;
-ca7 			r = nd;
+d3d 		}
+77d 		x->push();
+bac 		int nra = ra + getl(*x) + 1;
+f4f 		if(pos < nra) {
+f45 			split(x->l, l, r, pos, ra);
+14a 			x->l = r;
+2ec 			r = x;
 9d9 		} else {
-3e3 			split(v[nd].r, l, r, pos, ra + getl(nd) + 1);
-efd 			v[nd].r = l;
-2ac 			l = nd;
-065 		}
-afe 		pull(nd);
-6fa 	}
-    
+6cb 			split(x->r, l, r, pos, nra);
+4b0 			x->r = l;
+954 			l = x;
+544 		}
+c32 		x->pull();
+732 	}
     	// Merges all s and makes them root
-cff 	template <int SZ> void merge(array<int, SZ> s) {
-947 		root = s[0];
-724 		for(int i=1;i<SZ;i++)
-672 			merge(root, s[i], root);
-416 	}
-    
+3da 	template <int SZ>
+6ac 	void merge(array<ND*, SZ> s) {
+815 		root = 0;
+bf7 		for(ND* nd: s)
+abe 			merge(root, nd, root);
+467 	}
     	// Splits root into SZ EXCLUSIVE intervals
     	// [0..s[0]), [s[0]..s[1]), [s[1]..s[2])... [s[SZ-1]..end)
-    	// Example: split<2>({l, r}) gets the exclusive interval [l, r)
-b2c 	template <int SZ> array<int, SZ> split(array<int, SZ-1> s) {
-7c5 		array<int, SZ> res;
+    	// Example: split<3>({l, r}) gets the exclusive interval [l, r)
+3da 	template <int SZ> 
+c7e 	array<ND*, SZ> split(array<int, SZ-1> s) {
+f43 		assert(s.back() <= (root ? root->sz : 0));
+d09 		array<ND*, SZ> res;
 dc9 		split(root, res[0], res[1], s[0]);
-588 		for(int i=1;i<SZ-1;i++) {
+de9 		for(int i=1;i<SZ-1;i++)
 291 			split(res[i], res[i], res[i+1], s[i]-s[i-1]);
-775 		}
 815 		root = 0;
 b50 		return res;
-3a2 	}
-    
+907 	}
 4b4 	void insert(int ind, T info) {
 488 		auto s = split<2>({ind});
-7a1 		merge<3>({s[0], new_node(info), s[1]});
-74e 	}
+974 		merge<3>({s[0], new_ND(info), s[1]});
+517 	}
 97a 	void erase(int ind) {
 4e4 		auto s = split<3>({ind, ind+1});
 e6f 		merge<2>({s[0], s[2]});
 00b 	}
-    	// Inclusive
-8c1 	void reverse(int l, int r) {
-866 		auto s = split<3>({l, r+1});
-390 		v[s[1]].rev ^= 1;
-598 		merge<3>(s);
-518 	}
 420 	T operator[](int ind) {
-fbb 		int nd = root;
-    		//assert(0 <= ind && ind < x->sz);
-1d5 		push(nd);
-b3d 		for(int ra=0, nra=getl(nd); nra != ind; nra = ra + getl(nd)) {
-59f 			if(nra < ind) ra = nra + 1, nd = v[nd].r;
-9ef 			else nd = v[nd].l;
-1d5 			push(nd);
-341 		}
-464 		return v[nd].info;
-567 	}
-634 };
+68b 		assert(0 <= ind && ind < root->sz);
+e88 		ND* x = root;
+77d 		x->push();
+7ce 		for(int ra = 0, nra = getl(*x); nra != ind; nra = ra + getl(*x)) {
+7f3 			if(nra < ind) ra = nra + 1, x = x->r;
+303 			else x = x->l;
+77d 			x->push();
+d19 		}
+79c 		return x->info;
+b5e 	}
+87e };
+
+bf2 struct Node {
+06a 	using T = int;
+247 	T info;
+c17 	Node *l, *r;
+e4d 	int sz;
+5fa 	uint64_t h;
+    	// more fields here
+e19 	Node(T i): info(i), l(0), r(0), sz(1), h(rng()), plus(0) {}
+247 	void push() {}
+48b 	void pull() {
+a26 		sz = 1;
+9f5 		for(auto c: {l, r}) 
+90a 			if(c) sz += c->sz;
+335 	}
+8f0 };
+
+362 struct MyTreap : Treap<Node> {
+0aa 	MyTreap(int max): Treap<Node>(max) {}
+    	// new methods here
+8b8 };
 \end{lstlisting}
 
 \subsection{Iterative Segment Tree}
@@ -920,20 +905,25 @@ b50 	return res;
 
 \subsection{Persistent segment tree.}
 \begin{lstlisting}
-// Complexity: O(logn) memory and time per query/update
+// Complexity: 
+//      Update - O(logn) memory and time
+//      Query - O(logn) time
+// Lazy works, but is very expensive. Every query will need O(logn) memory.
 
 c35 template<class T, int SZ> struct pseg {
 ec3     static const int LIMIT = 1e7; // adjust
-749     int l[LIMIT], r[LIMIT], nex = 0;
-984     T val[LIMIT], lazy[LIMIT];
-        
+6a0     int nex;
+b0a     vector<int> l, r;
+5ea     vector<T> val, lazy;
+9da     pseg () : l (LIMIT), r (LIMIT), val (LIMIT), nex (0) {}
+    
 a69     int copy(int cur) {
 269         int x = nex++;
 5d0         val[x] = val[cur], l[x] = l[cur], r[x] = r[cur]; // lazy[x] = lazy[cur];
 ea5         return x;
 c0e     }
-f57     T comb(T a, T b) { return a+b; }
-c85     void pull(int x) { val[x] = comb(val[l[x]],val[r[x]]); } 
+f57     T comb(T a, T b) { return a + b; }
+c85     void pull(int x) { val[x] = comb (val[l[x]], val[r[x]]); } 
     //  void push(int cur, int L, int R) { 
     //      if (!lazy[cur]) return;
     //      if (L != R) {
@@ -957,7 +947,7 @@ fb1         return comb(query(l[cur],lo,hi,L,M), query(r[cur],lo,hi,M+1,R));
 e5b     }
 14c     int upd(int cur, int pos, T v, int L, int R) {
 b63         if (R < pos || pos < L) return cur;
-            
+    
 dc1         int x = copy(cur);
 7e8         if (pos <= L && R <= pos) { val[x] = v; return x; }
             
@@ -969,20 +959,21 @@ d65         pull(x); return x;
 6a9         int cur = nex++;
 651         if (L == R) {
 d8c             if (L < (int) arr.size ()) val[cur] = arr[L];
+6c5             else val[cur] = T ();
 75e             return cur;
-62d         }
-            
+85d         }
+    
 331         int M = (L+R)/2;
 3a7         l[cur] = build(arr,L,M), r[cur] = build(arr,M+1,R);
 c36         pull(cur); return cur;
-a98     }
+1ba     }
         
         //// PUBLIC
 b3e     vector<int> loc;
-        //void upd(int lo, int hi, T v) { loc.pb(upd(loc.back(),lo,hi,v,0,SZ-1)); }
-        //T query(int ti, int lo, int hi) { return query(loc[ti],lo,hi,0,SZ-1); }
-fa1     void build(vector<T>& arr) { loc.pb(build(arr,0,SZ-1)); }
-e10 };
+4e6     void upd(int pos, T v) { loc.pb (upd (loc.back(), pos, v, 0, SZ-1)); }
+048     T query(int ti, int lo, int hi) { return query (loc[ti], lo, hi ,0 , SZ - 1); }
+fa1     void build(vector<T>& arr) { loc.pb (build(arr, 0, SZ - 1)); }
+554 };
 \end{lstlisting}
 
 \subsection{RMQ}
@@ -1024,6 +1015,71 @@ ec5 		return ops(cur[a], cur[b-(1<<p)+1]);
 %%%%%%%%%%%%%%%%%%%%
 
 \section{flow-and-matching}
+
+\subsection{Blossom}
+\begin{lstlisting}
+// If white[v] = 0 after solve() returns, v is part of every max matching
+//
+// Complexity: O(NM), faster in practice
+
+9f5 struct MaxMatching {
+1a8 	int n;
+903 	vector<vector<int>> adj;
+dfd 	vector<int> mate, first;
+026 	vector<bool> white;
+a6e 	vector<pair<int,int>> label;
+    
+ca0 	MaxMatching(int _n): n(_n), adj(n+1), mate(n+1), first(n+1), white(n+1), label(n+1) {}
+    
+c22 	void add_edge(int u, int v) { adj[u].pb(v); adj[v].pb(u); }
+    
+e8b 	int group(int x) { int &f = first[x]; return white[f] ? f = group(f) : f; }
+    
+761 	void match(int p, int b) {
+3db 		swap(b, mate[p]); if(mate[b] != p) return;
+134 		auto [f, s] = label[p];
+c3c 		if(!s) mate[b] = f, match(f, b); // vertex label
+bef 		else match(f, s), match(s, f); // edge label
+a1f 	}
+    
+b99 	bool augment(int st) { // assert(st);
+3c6 		white[st] = 1; first[st] = 0; label[st] = {0,0};
+132 		queue<int> q; q.push(st);
+14d 		while (!q.empty()) {
+20f 			int a = q.front(); q.pop(); // outer vertex
+bae 			for(auto &b: adj[a]) { // assert(b);
+870 				if (white[b]) { // two outer vertices, form blossom
+a46 					int x = group(a), y = group(b), lca = 0;
+d2c 					while(x || y) {
+2e1 						if(y) swap(x, y);
+791 						if(label[x] == pair<int,int>{a, b}) { lca = x; break; }
+3ff 						label[x] = {a,b}; x = group(label[mate[x]].first);
+068 					}
+77e 					for (int v: {group(a), group(b)}) while (v != lca) {
+    						// assert(!white[v]); // make everything along path white
+908 						q.push(v); white[v] = true; first[v] = lca;
+89b 						v = group(label[mate[v]].first);
+795 					}
+f91 				} else if (!mate[b]) { // found augmenting path
+304 					mate[b] = a; match(a, b); fill(all(white), false); // reset
+8a6 					return true;
+b8d 				} else if (!white[mate[b]]) {
+cac 					white[mate[b]] = true; first[mate[b]] = b;
+66b 					label[b] = {0,0}; label[mate[b]] = {a, 0};
+277 					q.push(mate[b]);
+63f 				}
+247 			}
+a3e 		}
+d1f 		return false;
+4ae 	}
+f5c 	int solve() {
+1a4 		int ans = 0;
+32a 		for(int st=1; st<=n; st++) if(!mate[st]) ans += augment(st);
+    		// for(int st=1; st<=n; st++) if(!mate[st] && !white[st]) assert(!augment(st));
+ba7 		return ans;
+10a 	}
+dfb };
+\end{lstlisting}
 
 \subsection{Dinitz}
 \begin{lstlisting}
@@ -2111,6 +2167,7 @@ dbc         if (x != begin() and !overlap(prev(x))) x = prev(x), update(x);
 4ad     ll query(ll x) {
 229         assert(!empty());
 7d1         auto l = *lower_bound(x);
+d41 #warning cuidado com overflow
 aba         return l.a * x + l.b;
 3f5     }
 8f2 };
@@ -2118,66 +2175,66 @@ aba         return l.a * x + l.b;
 
 
 
-% %%%%%%%%%%%%%%%%%%%%
-% %
-% % extra
-% %
-% %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%
+% extra
+%
+%%%%%%%%%%%%%%%%%%%%
 
-% \section{extra}
+\section{extra}
 
-% \subsection{Clock}
-% \begin{lstlisting}
-% 615 double getCurrentTime() {
-% 7dd 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
-% 0b1 }
-% \end{lstlisting}
+\subsection{Clock}
+\begin{lstlisting}
+615 double getCurrentTime() {
+7dd 	return (double)(clock() - startTime) / CLOCKS_PER_SEC;
+0b1 }
+\end{lstlisting}
 
-% \subsection{hash.sh}
-% \begin{lstlisting}
-% d41 # ./hash.sh arquivo.cpp l1 l2
-% d41 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
-% d41 #
-% d41 # Hash acumulativo, linha por linha:
-% d41 # for i in $(seq $2 $3); do
-% d41 #   echo -n "$i "
-% d41 #   sed -n $2','$i' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
-% d41 # done
-% 58a sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
-% \end{lstlisting}
+\subsection{hash.sh}
+\begin{lstlisting}
+d41 # ./hash.sh arquivo.cpp l1 l2
+d41 # md5sum do hash.sh: 9cd1295ed4344001c20548b1d6eb55b2
+d41 #
+d41 # Hash acumulativo, linha por linha:
+d41 # for i in $(seq $2 $3); do
+d41 #   echo -n "$i "
+d41 #   sed -n $2','$i' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
+d41 # done
+58a sed -n $2','$3' p' $1 | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6
+\end{lstlisting}
 
-% \subsection{Pragmas}
-% \begin{lstlisting}
-% 827 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
-% \end{lstlisting}
+\subsection{Pragmas}
+\begin{lstlisting}
+827 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+\end{lstlisting}
 
-% \subsection{Random}
-% \begin{lstlisting}
-% 836 shuffle(permutation.begin(), permutation.end(), rng);
-% 1ee uniform_int_distribution<int>(a,b)(rng);
-% \end{lstlisting}
+\subsection{Random}
+\begin{lstlisting}
+836 shuffle(permutation.begin(), permutation.end(), rng);
+1ee uniform_int_distribution<int>(a,b)(rng);
+\end{lstlisting}
 
-% \subsection{Template}
-% \begin{lstlisting}
-% ca4 using namespace std;
+\subsection{Template}
+\begin{lstlisting}
+ca4 using namespace std;
 
-% 613 #define all(x) x.begin(), x.end()
-% 5d8 #define int int64_t
-% efe #define pb push_back
+613 #define all(x) x.begin(), x.end()
+5d8 #define int int64_t
+efe #define pb push_back
 
-% 21e void dbg_out() { cerr << endl; }
-% 2dc template <typename H, typename... T>
-% f62 void dbg_out(H h, T... t) { cerr << ' ' << h; dbg_out(t...); }
-% 89a #define dbg(...) { cerr << #__VA_ARGS__ << ':'; dbg_out(__VA_ARGS__); }
+21e void dbg_out() { cerr << endl; }
+2dc template <typename H, typename... T>
+f62 void dbg_out(H h, T... t) { cerr << ' ' << h; dbg_out(t...); }
+89a #define dbg(...) { cerr << #__VA_ARGS__ << ':'; dbg_out(__VA_ARGS__); }
 
-% 63d void solve() {
-% fa9 }
+63d void solve() {
+fa9 }
 
-% 0dd signed main(){
-% 9dd 	ios::sync_with_stdio(false); cin.tie(0);
-% 0f9 	solve();
-% 68e }
-% \end{lstlisting}
+0dd signed main(){
+9dd 	ios::sync_with_stdio(false); cin.tie(0);
+0f9 	solve();
+68e }
+\end{lstlisting}
 
 
 
@@ -2422,6 +2479,64 @@ ff8 	}
 f70 };
 \end{lstlisting}
 
+\subsection{if EDGE is true, the child of the edge represents it}
+\begin{lstlisting}
+4d4 	vector<int> dad, pos, in, out, h;
+	// dad[u]: self-explaining
+	// pos[k]: k-th vertex to be visited in dfs order
+	// in[u], out[u]: time of visit in dfs of vertex u
+	// h[u]: highest ancestor from same hld chain ("head")
+	// 	 two vertices u and v are from the same chain iff h[u] == h[v]
+2ab 	SEG seg;
+
+585 	HLD(int n, vector<int> g[]): dad(n), pos(n), in(n), out(n), h(n), seg(n) {
+1ad 		int t = -1;
+214 		function<void(int)> dfs = [&](int u) {
+3b3 			pos[ in[u] = ++t ] = u;
+c12 			int mx = -1;
+e28 			for(int &v: g[u]) if(v != dad[u]) {
+2e0 				dad[v] = u;
+b3f 				h[v] = g[u][0] == v ? h[u] : v;
+6b4 				dfs(v);
+ca4 				if(out[v] - in[v] > mx) 
+143 					mx = out[v] - in[v], swap(g[u][0], v);
+2f4 			}
+677 			out[u] = t;
+77c 		};
+5b8 		dfs(0); t = -1; dfs(0); // yes, twice 
+d04 	}
+
+	// if EDGE == true, the child of an edge represents it
+67a 	template<typename T>
+930 	void updade(int u, T val) {
+184 		seg.update(in[u] + EDGE, val);
+6be 	}
+
+	// If range update is needed, just replace seg.query with seg.update
+658 	template<typename RES> 
+5fb 	RES query_path(int u, int v) {
+6e5 		RES res = RES();
+2bf 		while(h[u] != h[v]) {
+dee 			if(in[h[u]] < in[h[v]]) swap(u, v);
+6a1 			res = res + seg.query(in[h[u]], in[u]);
+d8a 			u = dad[h[u]];
+e88 		}
+709 		if(in[u] > in[v]) swap(u, v);
+    		// u is now the LCA of u and v
+912 		if(in[u] + EDGE <= in[v]) 
+948 			res = res + seg.query(in[u] + EDGE, in[v]);
+b50 		return res;
+a37 	}
+
+658 	template<typename RES> 
+3ef 	RES query_subtree(int u) {
+d83 		if(in[u] + EDGE <= out[u])
+fbb 			return seg.query(in[u] + EDGE, out[u]);
+4c5 		return RES();
+a28 	}
+ed7 };
+\end{lstlisting}
+
 \subsection{LCA}
 \begin{lstlisting}
 33e struct LCA {
@@ -2547,45 +2662,6 @@ ea9 }
 
 \section{geometry}
 
-\subsection{Circle}
-\begin{lstlisting}
-// only with double numbers since most of the operations of a circle can't be 
-// done with only integers. Therefore, this template depends on point_double.cpp.
-// 
-// All operations' time complexity are O(1)
-
-1d5 const double PI = acos(-1);
-
-aa8 struct circle {
-664     point o; double r;
-d0b     circle() {}
-187     circle(point _o, double _r) : o(_o), r(_r) {}
-223     bool has(point p) { 
-804         return (o - p).norm2() < r*r + EPS;
-003     }
-8b0     vector<point> operator/(circle c) { // Intersection of circles.
-4b4         vector<point> inter;                   // The points in the output are in ccw order.
-6ac         double d = (o - c.o).norm();
-376         if(r + c.r < d - EPS || d + min(r, c.r) < max(r, c.r) - EPS)
-21d             return {};
-ea5         double x = (r*r - c.r*c.r + d*d) / (2*d);
-260         double y = sqrt(r*r - x*x);
-5e0         point v = (c.o - o) / d;
-645         inter.pb(o + v*x + v.rotate(cw90)*y);
-c66         if(y > EPS) inter.pb(o + v*x + v.rotate(ccw90)*y);
-c17         return inter;
-945     }
-196     vector<point> tang(point p){
-903         double d = sqrt((p - o).norm2() - r*r);
-164         return *this / circle(p, d);
-15e     }
-fb6     bool in(circle c){ // non strictly inside
-6ac         double d = (o - c.o).norm();
-ee4         return d + r < c.r + EPS;
-5fd     }
-0f4 };
-\end{lstlisting}
-
 \subsection{Convex Hull}
 \begin{lstlisting}
 // Returns in CCW order (reversed in x in UPPER)
@@ -2701,61 +2777,55 @@ e6c }
 889 	segment() {}
 e93 	segment(point _a, point _b): a(_a), b(_b) {}
     
-988 	point v() { return b - a; }
+3a8 	point vec() { return b - a; }
     
-1d6 };
-
-5db bool contains(segment r, point p) {
-9c1 	return r.a==p || r.b==p || parallel(r.a-p, r.b-p) == -1;
-12b }
+641 	bool contains(point p) {
+969 		return a == p || b == p || parallel(a-p, b-p) == -1;
+e3e 	}
+    
+e82 	point proj(point p) { // projection of p onto segment
+983 		p = p - a;
+382 		point v = vec();
+cdd 		return a + v*((p*v)/(v*v));
+bd9 	}
+    
+c2b };
 
 e58 bool intersects(segment r, segment s) {
-2fb 	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
+19c 	if(r.contains(s.a) || r.contains(s.b) || s.contains(r.a) || s.contains(r.b)) return 1;
 9ff 	return left(r.a, r.b, s.a) != left(r.a, r.b, s.b) && 
 0a2 		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
-3dc }
+99a }
 
 6cc bool parallel(segment r, segment s) {
-260 	return parallel(r.v(), s.v());
-bef }
+3c2 	return parallel(r.vec(), s.vec());
+407 }
 
 737 point line_intersection(segment r, segment s) {
 2de 	if(parallel(r, s)) return point(HUGE_VAL, HUGE_VAL);
-a80 	point vr = r.v(), vs = s.v();
+3b1 	point vr = r.vec(), vs = s.vec();
 68c 	double cr = vr ^ r.a, cs = vs ^ s.a;
 47e 	return (vs*cr - vr*cs) / (vr ^ vs);
-243 }
-
-694 point proj(segment r, point p) {
-3cd 	p = p - r.a;
-1a5 	point v = r.v();
-607 	return r.a + v*((p*v)/(v*v));
-4f2 }
+2d1 }
 
 d2f struct polygon {
 768 	vector<point> vp;
 1a8 	int n;
     
-66a 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {}
+0a4 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {
+732 		if(area2() < -EPS) reverse(all(_vp));
+209 	}
     
 a2f 	int nxt(int i) { return i+1<n ? i+1 : 0; }
 6af 	int prv(int i) { return i ? i-1 : 0; }
     
     	// If positive, the polygon is in ccw order. It is in cw order otherwise.
-720 	double orientation() { // O(n
-745 		int acum = 0;
+0d8 	double area2() { // O(n
+a2e 		double acum = 0;
 830 		for(int i = 0; i < n; i++)
 159 			acum += vp[i] ^ vp[nxt(i)];
 a13 		return acum;
-587 	}
-    
-0d8 	double area2() { // O(n)
-64e 		return abs(orientation());
-355 	}
-    
-9b0 	void turnCcw() { // O(n)
-057 		if(orientation() < -EPS) reverse(all(vp));
-7ba 	}
+704 	}
     
 223 	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
 947 		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
@@ -2773,55 +2843,55 @@ e9c 		double ans = 0;
 1ed 		for(int i = 0, j = 1; i < n; i++) {
 d97 			point v = vp[nxt(i)] - vp[i];
 d5f 			while((v ^ (vp[nxt(j)] - vp[j])) > EPS) j = nxt(j);
+    			// do something with vp[i] and vp[j]
 e88 			ans = max(ans, dist2(vp[i], vp[j])); // Example with polygon diameter squared
 121 		}
 ba7 		return ans;
 63b 	}
     
+    	// returns the maximal point using comparator cmp
+    	// example: 
+    	// 	extreme([&](point p, point q) {return p * v > q * v;});
+    	// 	returns point with maximal dot product with v
 8ff 	int extreme(const function<bool(point, point)> &cmp) {
-9b0 		auto isExtreme = [&](int i, bool& curDir) -> bool {
-a46 			curDir = cmp(vp[nxt(i)], vp[i]);
-f40 			return !cmp(vp[prv(i)], vp[i]) && !curDir;
-cb5 		};
-1a0 		bool lastDir, curDir;
-c7c 		if(isExtreme(0, lastDir)) return 0;
+121 		auto is_extreme = [&](int i, bool& cur_dir) -> bool {
+ec0 			cur_dir = cmp(vp[nxt(i)], vp[i]);
+e14 			return !cmp(vp[prv(i)], vp[i]) && !cur_dir;
+8fc 		};
+63d 		bool last_dir, cur_dir;
+b89 		if(is_extreme(0, last_dir)) return 0;
 a04 		int lo = 0, hi = n; 
 3d1 		while(lo + 1 < hi) {
 591 			int m = (lo + hi) / 2;
-b60 			if(isExtreme(m, curDir)) return m;
-254 			bool relDir = cmp(vp[m], vp[lo]);
-729 			if((!lastDir && curDir) || (lastDir == curDir && relDir == curDir)) {
+dcc 			if(is_extreme(m, cur_dir)) return m;
+983 			bool rel_dir = cmp(vp[m], vp[lo]);
+8ed 			if((!last_dir && cur_dir) || (last_dir == cur_dir && rel_dir == cur_dir)) {
 04a 				lo = m;
-986 				lastDir = curDir;
-58b 			} else hi = m;
-5cb 		}
+1f1 				last_dir = cur_dir;
+8d6 			} else hi = m;
+c26 		}
 253 		return lo;
-298 	}
+1a5 	}
     
 6fb 	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
     		// Finds the indices of the two tangents to an external point q
-f2d 		auto leftTangent = [&](point r, point s) -> bool {
+c71 		auto left_tangent = [&](point r, point s) -> bool {
 f70 			return right(p, r, s);
-5f6 		};
-29e 		auto rightTangent = [&](point r, point s) -> bool {
+854 		};
+b40 		auto right_tangent = [&](point r, point s) -> bool {
 f88 			return left(p, r, s);
-2b2 		};
-f49 		return {extreme(leftTangent), extreme(rightTangent)};
-f00 	}
-    
-a9e 	int maximize(point v) { // O(log n) for convex polygon in ccw orientation
-    		// Finds the extreme point in the direction of the vector
-db6 		return extreme([&](point p, point q) {return p * v > q * v + EPS;});
-f05 	}
+06e 		};
+6b0 		return {extreme(left_tangent), extreme(right_tangent)};
+7b8 	}
     
 df5 	void normalize() { // p[0] becomes the lowest leftmost point 
 b2f 		rotate(vp.begin(), min_element(all(vp)), vp.end());
 7e8 	}
     
 0da 	polygon operator+(polygon& rhs) { // Minkowsky sum
-244 		vector<point> sum;
 335 		normalize();
 61f 		rhs.normalize();
+244 		vector<point> sum;
 ccc 		double dir;
 337 		for(int i = 0, j = 0; i < n || j < rhs.n; i += dir > -EPS, j += dir < EPS) {
 c6f 			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
@@ -2829,8 +2899,56 @@ c6f 			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
 59c 				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
 d98 		}
 6b4 		return polygon(sum);
-e1f 	}
-494 };
+319 	}
+c25 };
+
+// Circle
+//  Basic structure of circle and operations related with it.
+// 
+// All operations' time complexity are O(1)
+
+1d5 const double PI = acos(-1);
+
+aa8 struct circle {
+664 	point o; double r;
+    
+d0b 	circle() {}
+187 	circle(point _o, double _r) : o(_o), r(_r) {}
+    	// CORNER CASE: a, b and c must NOT be collinear
+26a 	circle(point a, point b, point c) {
+f07 		b = b - a;
+0e8 		c = c - a;
+a23 		double B = b.norm2();
+d09 		double C = c.norm2();
+158 		double D = b ^ c;
+d58 		o = a + point( (c.y*B - b.y*C) / (2*D), (b.x * C - c.x * B) / (2*D) );
+5ed 		r = (o-a).norm();
+9ae 	}
+    
+223 	bool has(point p) { 
+804 		return (o - p).norm2() < r*r + EPS;
+003 	}
+8b0 	vector<point> operator/(circle c) { // Intersection of circles.
+4b4 		vector<point> inter;                   // The points in the output are in ccw order.
+6ac 		double d = (o - c.o).norm();
+376 		if(r + c.r < d - EPS || d + min(r, c.r) < max(r, c.r) - EPS)
+21d 			return {};
+ea5 		double x = (r*r - c.r*c.r + d*d) / (2*d);
+260 		double y = sqrt(r*r - x*x);
+5e0 		point v = (c.o - o) / d;
+4be 		inter.pb(o + v*x + v.rotated(cw90)*y);
+428 		if(y > EPS) inter.pb(o + v*x + v.rotated(ccw90)*y);
+c17 		return inter;
+ad5 	}
+196 	vector<point> tang(point p){
+593 		double d = sqrt(dist2(p, o) - r*r);
+164 		return *this / circle(p, d);
+7f7 	}
+641 	bool contains(point p){ // non strictly inside
+fe5 		double d = dist2(o, p);
+765 		return d < r * r + EPS;
+6be 	}
+d11 };
 \end{lstlisting}
 
 \subsection{Half-plane intersection}
@@ -2975,16 +3093,16 @@ e6c }
 // CORNER: a == b
 565 struct segment {
 393 	point a, b;
-    
+    	
 877 	segment(): a(), b() {}
 e93 	segment(point _a, point _b): a(_a), b(_b) {}
     
-988 	point v() { return b - a; }
-a42 };
-
-5db bool contains(segment r, point p) {
-9c1 	return r.a==p || r.b==p || parallel(r.a-p,r.b-p) == -1;
-12b }
+3a8 	point vec() { return b - a; }
+    
+641 	bool contains(point p) {
+969 		return a == p || b == p || parallel(a-p, b-p) == -1;
+e3e 	}
+633 };
 
 e58 bool intersects(segment r, segment s) {
 2fb 	if(contains(r, s.a) || contains(r, s.b) || contains(s, r.a) || contains(s, r.b)) return 1;
@@ -2993,33 +3111,27 @@ e58 bool intersects(segment r, segment s) {
 3dc }
 
 6cc bool parallel(segment r, segment s) {
-260 	return parallel(r.v(), s.v());
-bef }
+3c2 	return parallel(r.vec(), s.vec());
+407 }
 
 d2f struct polygon {
 768 	vector<point> vp;
 1a8 	int n;
     
-66a 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {}
+0a4 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {
+3f5 		if(area2() < 0) reverse(all(_vp));
+256 	}
     
 a2f 	int nxt(int i) { return i+1<n ? i+1 : 0; }
 6af 	int prv(int i) { return i ? i-1 : 0; }
     
     	// If positive, the polygon is in ccw order. It is in cw order otherwise.
-882 	int orientation() { // O(n
+82b 	int area2() { // O(n
 745 		int acum = 0;
 830 		for(int i = 0; i < n; i++)
 159 			acum += vp[i] ^ vp[nxt(i)];
 a13 		return acum;
-ea7 	}
-    
-82b 	int area2() { // O(n)
-64e 		return abs(orientation());
-eb3 	}
-    
-9b0 	void turnCcw() { // O(n)
-3d8 		if(orientation() < 0) reverse(all(vp));
-6b2 	}
+82c 	}
     
 223 	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
 947 		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
@@ -3037,63 +3149,83 @@ be9 	int calipers() { // O(n). The polygon must be convex and in ccw order.
 1ed 		for(int i = 0, j = 1; i < n; i++) {
 d97 			point v = vp[nxt(i)] - vp[i];
 775 			while((v ^ (vp[nxt(j)] - vp[j])) > 0) j = nxt(j);
+    			// do something with vp[i] and vp[j]
 e88 			ans = max(ans, dist2(vp[i], vp[j])); // Example with polygon diameter squared
 c95 		}
 ba7 		return ans;
 e14 	}
     
+    	// returns the maximal point using comparator cmp
+    	// example: 
+    	// 	extreme([&](point p, point q) {return p * v > q * v;});
+    	// 	returns point with maximal dot product with v
 8ff 	int extreme(const function<bool(point, point)> &cmp) {
-9b0 		auto isExtreme = [&](int i, bool& curDir) -> bool {
-a46 			curDir = cmp(vp[nxt(i)], vp[i]);
-f40 			return !cmp(vp[prv(i)], vp[i]) && !curDir;
-cb5 		};
-1a0 		bool lastDir, curDir;
-c7c 		if(isExtreme(0, lastDir)) return 0;
+121 		auto is_extreme = [&](int i, bool& cur_dir) -> bool {
+ec0 			cur_dir = cmp(vp[nxt(i)], vp[i]);
+e14 			return !cmp(vp[prv(i)], vp[i]) && !cur_dir;
+8fc 		};
+63d 		bool last_dir, cur_dir;
+b89 		if(is_extreme(0, last_dir)) return 0;
 a04 		int lo = 0, hi = n; 
 3d1 		while(lo + 1 < hi) {
 591 			int m = (lo + hi) / 2;
-b60 			if(isExtreme(m, curDir)) return m;
-254 			bool relDir = cmp(vp[m], vp[lo]);
-729 			if((!lastDir && curDir) || (lastDir == curDir && relDir == curDir)) {
+dcc 			if(is_extreme(m, cur_dir)) return m;
+983 			bool rel_dir = cmp(vp[m], vp[lo]);
+8ed 			if((!last_dir && cur_dir) || (last_dir == cur_dir && rel_dir == cur_dir)) {
 04a 				lo = m;
-986 				lastDir = curDir;
-58b 			} else hi = m;
-5cb 		}
+1f1 				last_dir = cur_dir;
+8d6 			} else hi = m;
+c26 		}
 253 		return lo;
-298 	}
+1a5 	}
     
 6fb 	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
     		// Finds the indices of the two tangents to an external point q
-f2d 		auto leftTangent = [&](point r, point s) -> bool {
+c71 		auto left_tangent = [&](point r, point s) -> bool {
 f70 			return right(p, r, s);
-5f6 		};
-29e 		auto rightTangent = [&](point r, point s) -> bool {
+854 		};
+b40 		auto right_tangent = [&](point r, point s) -> bool {
 f88 			return left(p, r, s);
-2b2 		};
-f49 		return {extreme(leftTangent), extreme(rightTangent)};
-f00 	}
-    
-a9e 	int maximize(point v) { // O(log n) for convex polygon in ccw orientation
-    		// Finds the extreme point in the direction of the vector
-003 		return extreme([&](point p, point q) {return p * v > q * v;});
-f56 	}
+06e 		};
+6b0 		return {extreme(left_tangent), extreme(right_tangent)};
+7b8 	}
     
 df5 	void normalize() { // p[0] becomes the lowest leftmost point 
 b2f 		rotate(vp.begin(), min_element(all(vp)), vp.end());
 7e8 	}
     
 0da 	polygon operator+(polygon& rhs) { // Minkowsky sum
-244 		vector<point> sum;
 335 		normalize();
 61f 		rhs.normalize();
+244 		vector<point> sum;
 755 		for(int i = 0, j = 0, dir; i < n || j < rhs.n; i += dir >= 0, j += dir <= 0) {
 c6f 			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
 727 			dir = (vp[(i + 1) % n] - vp[i % n]) 
 59c 				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
 520 		}
 6b4 		return polygon(sum);
-f2a 	}
-b14 };
+5df 	}
+223 };
+\end{lstlisting}
+
+\subsection{Minimum Enclosing Circle}
+\begin{lstlisting}
+// Complexity: Randomized O(N), with constant factor of 10
+01f circle mec(vector<point> vp) {
+    	//shuffle(all(vp), rng); NECESSARY IF NOT ALREADY SHUFFLED
+ad9 	circle c(vp[0], 0);
+be9 	auto &[o, r] = c;
+694 	for(int i=0;i<int(vp.size());i++) if (!c.contains(vp[i])) {
+a58 		o = vp[i], r = 0;
+c7c 		for(int j=0;j<i;j++) if (!c.contains(vp[j])) {
+425 			o = (vp[i] + vp[j]) / 2;
+480 			r = dist(o, vp[i]);
+eaf 			for(int k=0;k<j;k++) if(!c.contains(vp[k]))
+11e 				c = circle(vp[i], vp[j], vp[k]);
+fb6 		}
+e19 	}
+807 	return c;
+e95 }
 \end{lstlisting}
 
 \subsection{Nearest Points}
@@ -3149,6 +3281,8 @@ b50 	return res;
 d2a 		ev.emplace_back(seg[i].b, 1, i);
 3d7 	}
 075 	sort(all(ev));
+    	// CORNER CASE: r.a == s.a && collinear(r.a, r,b, s.b) 
+    	// cmp(r, s) == cmp(s, r) => r == s !!!
 2e7 	auto cmp = [](segment r, segment s) -> bool {
 6c3 		if(r.a == s.a) return left(r.a, r.b, s.b);
 4c1 		else if(r.a < s.a) return left(r.a, r.b, s.a);
@@ -3165,14 +3299,14 @@ d2a 		ev.emplace_back(seg[i].b, 1, i);
 9be 			s.insert(at);
 9d9 		} else {
 381 			auto cur = s.find(at);
-a98 			if(cur != s.begin() && cur != s.end() && 
+f0e 			if(cur != s.begin() && next(cur) != s.end() && 
 38b 					intersects(*prev(cur), *next(cur))) 
 6a5 				return 1;
 50d 			s.erase(at);
-a83 		}
-c4b 	}
+481 		}
+94d 	}
 bb3 	return 0;
-107 }
+7d0 }
 \end{lstlisting}
 
 \pagebreak

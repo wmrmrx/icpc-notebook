@@ -14,7 +14,7 @@ string NO_PRINT = "noprint";
 
 string path = "../code/";
 string hash_cmd = "sed -n 1','10000' p' tmp.cpp | sed '/^#w/d' "
-"| cpp-12 -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-";
+"| cpp-13 -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-";
 
 bool print_all = false;
 

@@ -16,7 +16,7 @@ struct SuffixArray {
         int n = s.size(), k = 0, a, b;
         vector<int> x(all(s)+1), y(n), ws(max(n, lim)), rank(n);
         sa = lcp = y; iota(all(sa), 0);
-        for (int j = 0, p = 0; p < n; j = max(1, j * 2), lim = p) {
+        for (int j = 0, p = 0; p < n; j = max<int>(1, j * 2), lim = p) {
             p = j; iota(all(y), n - j);
             for(int i = 0; i < n; i++) if (sa[i] >= j) y[p++] = sa[i] - j;
             fill(all(ws), 0);
