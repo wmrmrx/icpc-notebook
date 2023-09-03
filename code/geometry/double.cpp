@@ -26,6 +26,9 @@ struct point {
 	double norm2() { return *this * *this; }
 	double norm() { return sqrt(norm2()); }
 
+	// dont know, taken from el-vasito
+	double angle(point p) { return acos(*this * p / ( norm() * p.norm() )); }
+
 	bool operator<(const point& rhs) const {
 		return x < rhs.x - EPS || (zero(x-rhs.x) && y < rhs.y - EPS);
 	}
@@ -237,6 +240,10 @@ struct circle {
 	bool has(point p) { 
 		return (o - p).norm2() < r*r + EPS;
 	}
+	bool in(circle c){ // non strict
+		double d=(o-c.o).norm();
+		return d+r<c.r+EPS;
+	}
 	vector<point> operator/(circle c) { // Intersection of circles.
 		vector<point> inter;                   // The points in the output are in ccw order.
 		double d = (o - c.o).norm();
@@ -258,3 +265,42 @@ struct circle {
 		return d < r * r + EPS;
 	}
 };
+
+// Circle Area Intersection
+// O(n^2 log n) (high constant)
+// https://github.com/mhunicken/icpc-team-notebook-el-vasito/blob/master/geometry/circle.cpp
+
+vector<double> intercircles(vector<circle> c){
+	vector<double> r(c.size()+1); // r[k]: area covered by at least k circles
+	for(int i=0;i<int(c.size());i++) {
+		int k=1;
+		auto cmp = [&](point a, point b) {
+			return ang_cmp(a - c[i].o, b - c[i].o);
+		};
+		vector<pair<point,int> > p{
+			{c[i].o + point(1,0) * c[i].r, 0},
+			{c[i].o - point(1,0) * c[i].r, 0}
+		};
+		for(int j=0;j<int(c.size());j++) if(j != i) {
+			bool b0 = c[i].has(c[j]), b1 = c[j].has(c[i]);
+			if( b0 && ( !b1|| i<j ) ) k++;
+			else if( !b0 && !b1 ) {
+				auto v = c[i] / c[j];
+				if(v.size() == 2){
+					p.pb({v[0],1});
+					p.pb({v[1],-1});
+					if(cmp(v[1],v[0])) k++;
+				}
+			}
+		}
+		sort(p.begin(),p.end(),
+			[&](pair<point,int> a, pair<point,int> b){return cmp(a.first, b.first);});
+		for(int j=0;j<int(p.size());j++) {
+			point p0 = p[j ? j-1 : p.size()-1].first, p1 = p[j].first;
+			double a = (p0-c[i].o).angle(p1-c[i].o);
+			r[k] += (p0.x-p1.x) * (p0.y+p1.y) / 2 + c[i].r * c[i].r * (a-sin(a)) / 2;
+			k += p[j].second;
+		}
+	}
+	return r;
+}
