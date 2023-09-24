@@ -72,6 +72,8 @@ bool right(point a, point b, point c) {
 	return area2(a, b, c) < -EPS; // clockwise
 }
 
+// CORNER: BE CAREFUL AROUND PRECISION, 
+// 	IF NEEDED USE DIVISION (ex.: a^b == 0 <=> a.x / b.x - a.y / b.y == 0)
 bool collinear(point a, point b, point c) {
 	return zero(area2(a,b,c));
 }
