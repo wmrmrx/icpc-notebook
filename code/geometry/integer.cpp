@@ -9,7 +9,7 @@ bool zero(int x) {
 struct point {
 	int x, y;
 	
-	point(): x(), y() {}
+	point(): x(0), y(0) {}
 	point(int _x, int _y): x(_x), y(_y) {}
 	
 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }

@@ -11,7 +11,7 @@ bool zero(double x) {
 struct point {
 	double x, y;
 	
-	point(): x(), y() {}
+	point(): x(0), y(0) {}
 	point(double _x, double _y): x(_x), y(_y) {}
 	
 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
