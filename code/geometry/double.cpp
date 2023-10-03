@@ -73,7 +73,7 @@ bool right(point a, point b, point c) {
 }
 
 // CORNER: BE CAREFUL AROUND PRECISION, 
-// 	IF NEEDED USE DIVISION (ex.: a^b == 0 <=> a.x / b.x - a.y / b.y == 0)
+// 	IF NEEDED NORMALIZE (b-a) AND (c-a)
 bool collinear(point a, point b, point c) {
 	return zero(area2(a,b,c));
 }
@@ -81,7 +81,7 @@ bool collinear(point a, point b, point c) {
 // CORNER: a || b == (0, 0)
 int parallel(point a, point b) {
 	a = a / a.norm(); b = b / b.norm();
-	if(!zero(a^b)) return 0;
+	if(!collinear(point(), a, b)) return 0;
 	return zero(a.x - b.x) && zero(a.y - b.y) ? 1 : -1;
 }
 
