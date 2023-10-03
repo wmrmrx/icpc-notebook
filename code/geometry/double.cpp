@@ -80,8 +80,9 @@ bool collinear(point a, point b, point c) {
 
 // CORNER: a || b == (0, 0)
 int parallel(point a, point b) {
-	if(!zero(a.x / b.x - a.y / b.y)) return 0;
-	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
+	a = a / a.norm(); b = b / b.norm();
+	if(!zero(a^b)) return 0;
+	return zero(a.x - b.x) && zero(a.y - b.y) ? 1 : -1;
 }
 
 // CORNER: a == b
