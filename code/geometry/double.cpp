@@ -64,6 +64,8 @@ double area2(point a, point b, point c) { // two times signed area of triangle a
 	return (b - a) ^ (c - a);
 }
 
+// CORNER: BE CAREFUL WITH PRECISION WITH THESE FUNCTIONS, 
+// 	IF NEEDED NORMALIZE (b-a) AND (c-a)
 bool left(point a, point b, point c) {
 	return area2(a, b, c) > EPS; // counterclockwise
 }
@@ -72,8 +74,6 @@ bool right(point a, point b, point c) {
 	return area2(a, b, c) < -EPS; // clockwise
 }
 
-// CORNER: BE CAREFUL AROUND PRECISION, 
-// 	IF NEEDED NORMALIZE (b-a) AND (c-a)
 bool collinear(point a, point b, point c) {
 	return zero(area2(a,b,c));
 }
