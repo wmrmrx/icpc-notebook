@@ -11,7 +11,7 @@ bool zero(double x) {
 struct point {
 	double x, y;
 	
-	point(): x(), y() {}
+	point(): x(0), y(0) {}
 	point(double _x, double _y): x(_x), y(_y) {}
 	
 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
@@ -64,6 +64,8 @@ double area2(point a, point b, point c) { // two times signed area of triangle a
 	return (b - a) ^ (c - a);
 }
 
+// CORNER: BE CAREFUL WITH PRECISION WITH THESE FUNCTIONS, 
+// 	IF NEEDED NORMALIZE (b-a) AND (c-a)
 bool left(point a, point b, point c) {
 	return area2(a, b, c) > EPS; // counterclockwise
 }
@@ -72,16 +74,15 @@ bool right(point a, point b, point c) {
 	return area2(a, b, c) < -EPS; // clockwise
 }
 
-// CORNER: BE CAREFUL AROUND PRECISION, 
-// 	IF NEEDED USE DIVISION (ex.: a^b == 0 <=> a.x / b.x - a.y / b.y == 0)
 bool collinear(point a, point b, point c) {
 	return zero(area2(a,b,c));
 }
 
 // CORNER: a || b == (0, 0)
 int parallel(point a, point b) {
-	if(!zero(a.x / b.x - a.y / b.y)) return 0;
-	return (a.x>0) == (b.x>0) && (a.y > 0) == (b.y > 0) ? 1 : -1;
+	a = a / a.norm(); b = b / b.norm();
+	if(!collinear(point(), a, b)) return 0;
+	return zero(a.x - b.x) && zero(a.y - b.y) ? 1 : -1;
 }
 
 // CORNER: a == b
