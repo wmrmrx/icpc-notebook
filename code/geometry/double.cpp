@@ -284,7 +284,7 @@ vector<double> intercircles(vector<circle> c){
 			{c[i].o - point(1,0) * c[i].r, 0}
 		};
 		for(int j=0;j<int(c.size());j++) if(j != i) {
-			bool b0 = c[i].has(c[j]), b1 = c[j].has(c[i]);
+			bool b0 = c[i].in(c[j]), b1 = c[j].in(c[i]);
 			if( b0 && ( !b1|| i<j ) ) k++;
 			else if( !b0 && !b1 ) {
 				auto v = c[i] / c[j];
