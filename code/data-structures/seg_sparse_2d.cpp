@@ -10,13 +10,13 @@
 //  O(N + UlogNlogM) memory, where U is the number of updates
 //
 //  Possible changes:
-//      - Speed: Use iterative segment tree or BIT on N axis
 //      - O(UlogNlogM) memory: Make N axis sparse too
 //
 
 namespace seg2d {
 	// YOU ONLY NEED TO CHANGE THIS BLOCK
-	const int N = 200'000, M = 200'000;
+	const int N = 200'000, M = N;
+	const bool REPLACE = true;
 	using T = int32_t;
 	const T zero = 0; // INF if maintaining minimum, for example
 	T merge(T a, T b) {
@@ -25,9 +25,10 @@ namespace seg2d {
 
 	struct Node {
 		T s = zero;
-		int32_t l = 0, r = 0;
+		int l = 0, r = 0;
 	};
-	int root[4*N];
+
+	int root[2*N];
 	vector<Node> v;
 
 	void upd(int& no, int l, int r, int pos, T val) {
@@ -36,7 +37,7 @@ namespace seg2d {
 			//assert(no < v.capacity());
 			v.emplace_back();
 		}
-		if(l == r) v[no].s = val; // !!! OR v[no].s = merge(v[no].s, val) !!!
+		if(l == r) v[no].s = REPLACE ? val : merge(v[no].s, val);
 		else {
 			int m = (l+r)/2;
 			auto &[s, nl, nr] = v[no];
@@ -56,45 +57,30 @@ namespace seg2d {
 				qry(nr, m+1, r, ql, qr));
 	}
 
-	void upd(int no, int l, int r, int x, int y, T val) {
-		upd(root[no], 0, M-1, y, val);
-		if(l == r) return;
-		int m = (l+r)/2;
-		if(x <= m) upd(2*no, l, m, x, y, val);
-		else upd(2*no+1, m+1, r, x, y, val);
-	}
-
-	T qry(int no, int l, int r, int lx, int rx, int ly, int ry) {
-		if(rx < l || r < lx) return zero;
-		if(lx <= l && r <= rx) return qry(root[no], 0, M-1, ly, ry);
-		int m = (l+r)/2;
-		return merge( qry(2*no, l, m, lx, rx, ly, ry),
-				qry(2*no+1, m+1, r, lx, rx, ly, ry) );
-	}
-
-	void build(int no, int l, int r) {
-		root[no] = v.size();
-		v.emplace_back();
-		if(l == r) return;
-		int m = (l + r) / 2;
-		build(2*no, l, m);
-		build(2*no+1, m+1, r);
-	}
-
 	void update(int x, int y, T val) {
-		upd(1, 0, N-1, x, y, val);
+		int p = x + N;
+		while(p) {
+			upd(root[p], 0, M-1, y, val);
+			p /= 2;
+		}
 	}
 
-	int query(int lx, int rx, int ly, int ry) {
-		return qry(1, 0, N-1, lx, rx, ly, ry);
+	T query(int lx, int rx, int ly, int ry) {
+		T res = zero;
+		int l = lx, r = rx;
+		r++; // to make query inclusive
+		for(l += N, r += N; l < r; l /= 2, r /= 2) {
+			if(l&1) res = merge(res, qry(root[l++], 0, M-1, ly, ry));
+			if(r&1) res = merge(res, qry(root[--r], 0, M-1, ly, ry));
+		}
+		return res;
 	}
-
+	
 	// receives max number of updates
 	// each update creates at most logN logM nodes
 	// RTE if we reserve less than number of nodes created
 	void init(int maxu) {
 		v.reserve(400*maxu);
 		v.emplace_back();
-		build(1, 0, N-1);
 	}
-}
+};
