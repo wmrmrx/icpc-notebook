@@ -12,6 +12,7 @@
 //  Possible changes:
 //      - O(UlogNlogM) memory: Make N axis sparse too
 //
+// https://codeforces.com/contest/1917/submission/239091648
 
 namespace seg2d {
 	// YOU ONLY NEED TO CHANGE THIS BLOCK
