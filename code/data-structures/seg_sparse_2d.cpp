@@ -59,11 +59,8 @@ namespace seg2d {
 	}
 
 	void update(int x, int y, T val) {
-		int p = x + N;
-		while(p) {
+		for(int p = x + N; p > 0; p /= 2)
 			upd(root[p], 0, M-1, y, val);
-			p /= 2;
-		}
 	}
 
 	T query(int lx, int rx, int ly, int ry) {
