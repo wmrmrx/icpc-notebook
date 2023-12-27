@@ -111,7 +111,7 @@ struct Node {
 	int sz;
 	uint64_t h;
 	// more fields here
-	Node(T i): info(i), l(0), r(0), sz(1), h(rng()), plus(0) {}
+	Node(T i): info(i), l(0), r(0), sz(1), h(rng()) {}
 	void push() {}
 	void pull() {
 		sz = 1;
