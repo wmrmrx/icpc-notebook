@@ -27,10 +27,11 @@ template<typename T> struct Bit {
 		int pos = 0;
 		int logn = 31 - __builtin_clz(bit.size());
 		for(int i=logn;i>=0;i--) {
-			if(pos + (1<<i) <= int(bit.size()) 
-					&& sum + bit[pos + (1<<i) - 1] < val) {
-				sum += bit[pos + (1<<i) - 1];
-				pos += (1<<i);
+			int nxt = pos + (1<<i);
+			if(nxt <= int(bit.size())
+					&& sum + bit[nxt - 1] < val) {
+				sum += bit[nxt - 1];
+				pos = nxt;
 			}
 		}
 		return pos;
