@@ -110,9 +110,18 @@ struct Node {
 	Node *l, *r;
 	int sz;
 	uint64_t h;
-	// more fields here
-	Node(T i): info(i), l(0), r(0), sz(1), h(rng()) {}
-	void push() {}
+	// more fields here - example: reverse interval
+	bool rev;
+	Node(T i): info(i), l(0), r(0), sz(1), h(rng()), rev(false) {}
+	void push() {
+		// example: reverse interval
+		if(rev) {
+			swap(l, r);
+			for(auto c: {l, r})
+				if(c) c->rev = !c->rev;
+			rev = false;
+		}
+	}
 	void pull() {
 		sz = 1;
 		for(auto c: {l, r}) 
@@ -122,5 +131,9 @@ struct Node {
 
 struct MyTreap : Treap<Node> {
 	MyTreap(int max): Treap<Node>(max) {}
-	// new methods here
+	// new methods here - example: reverse interval
+	void reverse(int l, int r) {
+		auto s = split<3>({l, r+1});
+		merge<3>({s[2], s[1], s[0]});
+	}
 };
