@@ -135,6 +135,6 @@ struct MyTreap : Treap<Node> {
 	void reverse(int l, int r) {
 		auto s = split<3>({l, r+1});
 		s[1]->rev = !s[1]->rev;
-		merge<3>({s[0], s[1], s[2]});
+		merge<3>(s):
 	}
 };
