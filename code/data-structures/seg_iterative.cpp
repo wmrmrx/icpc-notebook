@@ -49,6 +49,7 @@ struct SegIt {
 	void update(int pos, T val) {
 		int p = pos + n;
 		t[p] = ND(val);
+#warning Maybe t[p] = t[p] + ND(val)
 		while(p) {
 			p /= 2;
 			t[p] = t[2*p] + t[2*p+1];
