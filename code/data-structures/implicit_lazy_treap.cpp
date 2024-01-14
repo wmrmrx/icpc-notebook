@@ -21,7 +21,7 @@ struct Treap {
 	Treap(int max): root(0) {
 		v.reserve(max);
 	}
-	ND* new_ND(T info) {
+	ND* new_node(T info) {
 		// assert(v.size() != v.capacity());
 		v.emplace_back(info);
 		return &v.back();
@@ -85,7 +85,7 @@ struct Treap {
 	}
 	void insert(int ind, T info) {
 		auto s = split<2>({ind});
-		merge<3>({s[0], new_ND(info), s[1]});
+		merge<3>({s[0], new_node(info), s[1]});
 	}
 	void erase(int ind) {
 		auto s = split<3>({ind, ind+1});
