@@ -72,5 +72,6 @@
     inset: 0.7em,
     it
   )
+  set raw(tab-size: 4)
   raw(content.text, lang: "cpp", block: true)
 }
