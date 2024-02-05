@@ -11,7 +11,7 @@
 //
 // Methods:
 // - add_edge(u, v, cap, cost)
-//   adds a directed edge from u to v with capacity `cap` and cost `cost`.
+//   adds a directed edge from u to v with capacity 'cap' and cost 'cost'.
 // - get_flow()
 //   returns a pair of integers in which the first value is the maximum flow and the
 //   second is the minimum cost to achieve this flow.
