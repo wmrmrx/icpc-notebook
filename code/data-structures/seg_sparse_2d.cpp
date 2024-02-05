@@ -16,7 +16,7 @@
 
 namespace seg2d {
 	// YOU ONLY NEED TO CHANGE THIS BLOCK
-	const int N = 200'000, M = N;
+	const int N = 2e5, M = N;
 	const bool REPLACE = true;
 	using T = int32_t;
 	const T zero = 0; // INF if maintaining minimum, for example
