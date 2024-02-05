@@ -3,6 +3,7 @@
 // Change here
 #show: project.with(
   title: "Codando & Coringando",
+  date: datetime.today().display(),
   authors: (
     "LipArcanjo",
     "nathan_luiz",
