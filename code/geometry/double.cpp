@@ -297,7 +297,7 @@ vector<double> intercircles(vector<circle> c){
 			[&](pair<point,int> a, pair<point,int> b){return cmp(a.first, b.first);});
 		for(int j=0;j<int(p.size());j++) {
 			point p0 = p[j ? j-1 : p.size()-1].first, p1 = p[j].first;
-			double v0 = (p0 - c[i].o), v1 = (p1 - c[i].0);
+			double v0 = (p0 - c[i].o), v1 = (p1 - c[i].o);
 			double a = acos( v0 * v1 / ( v0.norm() * v1.norm() ) );
 			r[k] += (p0.x-p1.x) * (p0.y+p1.y) / 2 + c[i].r * c[i].r * (a-sin(a)) / 2;
 			k += p[j].second;
