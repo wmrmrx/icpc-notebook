@@ -101,7 +101,7 @@ struct polygon {
 	}
 
 	int nxt(int i) { return i+1<n ? i+1 : 0; }
-	int prv(int i) { return i ? i-1 : 0; }
+	int prv(int i) { return i ? i-1 : n-1; }
 
 	// If positive, the polygon is in ccw order. It is in cw order otherwise.
 	int area2() { // O(n
