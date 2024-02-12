@@ -3,7 +3,7 @@
 // If white[v] = 0 after solve() returns, v is part of every max matching
 //
 // Complexity: O(NM), faster in practice
-
+#warning 1-based indexing
 struct MaxMatching {
 	int n;
 	vector<vector<int>> adj;
