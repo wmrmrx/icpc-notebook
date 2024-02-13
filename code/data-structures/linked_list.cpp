@@ -20,7 +20,6 @@ namespace linked_list {
 
 	Node arena[CAP];
 	int arena_cnt = 0;
-	int cnt = 0;
 
 	struct LinkedList {
 		Node* new_node(T info) {
