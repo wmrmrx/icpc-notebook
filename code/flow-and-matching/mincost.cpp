@@ -30,8 +30,7 @@ struct MinCost {
 	vector<bool> queued;
 	vector<edge> g;
 
-	MinCost(int _n, int _s, int _t) : n(_n), s(_s), t(_t),
-		first(n, -1), prev(n), dist(n), queued(n) {};
+	MinCost(int _n) : n(_n), first(n, -1), prev(n), dist(n), queued(n) {};
 
 	void add_edge(int u, int v, int cap, int cost) {
 		int id = g.size();
@@ -66,10 +65,17 @@ struct MinCost {
 		}
 		return dist[t] < INF;
 		//UNCOMMENT FOR MIN COST WITH ANY FLOW (NOT NECESSARILY MAXIMUM)
-		//return dist[t] <= 0;
+		//return dist[t] < 0;
 	}
 
-	pair<int, int> get_flow() {
+	pair<int, int> get_flow(int _s, int _t) {
+		s = _s; t = _t;
+		//if multiple runs are needed (resets flow)
+		//for(int i = 0; i < int(g.size()); i += 2) {
+		//	int cap = g[i].cap + g[i+1].cap;
+		//	g[i].cap = cap;
+		//	g[i + 1].cap = 0;
+		//}
 		int flow = 0, cost = 0;
 		while(augment()) {
 			int cur = t, curf = INF;
