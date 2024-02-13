@@ -7,6 +7,8 @@
 // Functions:
 // 	append(T info): puts node with info in the tail
 // 	remove(Node* nd): removes node in O(1)
+//
+// Tested: https://codeforces.com/contest/1181/submission/246289459
 namespace linked_list {
 	constexpr int CAP = 10'000'000;
 	using T = int;
