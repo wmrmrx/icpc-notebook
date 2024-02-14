@@ -4,69 +4,82 @@
 //
 // Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
 
+bool zero(int x) {
+	return x == 0;
+}
+bool zero(double x) {
+	return abs(x) < (1e-6);
+}
+
+template<typename F>
 struct Dinic {
+	static constexpr F INF = numeric_limits<F>::max();
 	struct edge {
-		int to, cap, flow;
+		int to;
+		F cap, flow;
 	};
 
-	vector<vector<int>> g;
+	int n, s, t;
+	vector<vector<int>> adj;
 	vector<int> lvl;
-	vector<edge> e;
+	vector<edge> g;
 
-	Dinic(int sz): g(sz), lvl(sz) {}
+	Dinic(int sz): n(sz), adj(sz), lvl(sz) {}
 
-	void add_edge(int s, int t, int cap) {
-		int id = e.size();
-		g[s].push_back(id);
-		e.push_back({t, cap, 0});
-		g[t].push_back(++id);
-		e.push_back({s, cap, cap});
+	void add_edge(int u, int v, F cap) {
+		int id = g.size();
+		adj[u].pb(id);
+		adj[v].pb(++id);
+		g.pb({v, cap, 0});
+		g.pb({u, cap, cap});
 	}
 
-	bool bfs(int s, int t) {
-		fill(all(lvl), INF);
+	bool bfs() {
+		fill(all(lvl), n);
 		lvl[s] = 0;
 		queue<int> q;
 		q.push(s);
-		while(!q.empty() && lvl[t] == INF) {
-			int v = q.front();
+		while(!q.empty() && lvl[t] == n) {
+			int u = q.front();
 			q.pop();
-			for(int id: g[v]) {
-				auto [p, cap, flow] = e[id];
-				if(lvl[p] != INF || cap == flow)
+			for(int id: adj[u]) {
+				auto [v, cap, flow] = g[id];
+				if( lvl[v] != n || zero(cap - flow) )
 					continue;
-				lvl[p] = lvl[v] + 1;
-				q.push(p);
+				lvl[v] = lvl[u] + 1;
+				q.push(v);
 			}
 		}
-		return lvl[t] != INF;
+		return lvl[t] != n;
 	}
 
-	int dfs(int v, int pool, int t, vector<int>& st) {
-		if(!pool) return 0;
-		if(v == t) return pool;
-		for(;st[v]<(int)g[v].size();st[v]++) {
-			int id = g[v][st[v]];
-			auto &[p, cap, flow] = e[id];
-			if(lvl[v]+1 != lvl[p] || cap == flow) continue;
-			int f = dfs(p, min(cap-flow, pool) , t, st);
+	F dfs(int u, F pool, vector<size_t>& st) {
+		if(zero(pool)) return 0;
+		if(u == t) return pool;
+		for( ; st[u]<adj[u].size() ; st[u]++) {
+			int id = adj[u][st[u]];
+			auto &[v, cap, flow] = g[id];
+			if( lvl[u] + 1 != lvl[v] || zero(cap - flow) ) continue;
+			int f = dfs(v, min(cap-flow, pool) , st);
 			if(f) {
 				flow += f;
-				e[id^1].flow -= f;
+				g[id^1].flow -= f;
 				return f;
 			}
 		}
 		return 0;
 	}
 
-	int get_flow(int s, int t) {
+	F get_flow(int _s, int _t) {
 		//reset to initial state
 		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;
-		int res = 0;
-		vector<int> start(g.size());
-		while(bfs(s,t)) {
+		s = _s; t = _t;
+		F res = 0;
+		vector<size_t> start(n);
+		while(bfs()) {
 			fill(all(start), 0);
-			while(int f = dfs(s,INF,t,start)) 
+			F f;
+			while( not zero(f = dfs(s, INF, start)) )
 				res += f;
 		}
 		return res;
