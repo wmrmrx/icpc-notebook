@@ -12,3 +12,5 @@ We also recommend taking a look at these notebooks:
 - https://github.com/gustavoM32/caderno-zika
 
 - https://github.com/mhunicken/icpc-team-notebook-el-vasito
+
+- https://github.com/kth-competitive-programming/kactl
