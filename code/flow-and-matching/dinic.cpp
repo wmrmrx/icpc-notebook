@@ -15,28 +15,30 @@ template<typename F>
 struct Dinic {
 	static constexpr F INF = numeric_limits<F>::max();
 	struct edge {
-		int to, nxt;
+		int to;
 		F cap, flow;
 		F f() { return cap - flow; }
 	};
 
 	int n, s, t;
-	vector<int> beg, lvl;
+	vector<vector<int>> adj;
+	vector<int> lvl;
 	vector<edge> g;
 
-	Dinic(int sz): n(sz), beg(sz, -1), lvl(sz) {}
+	Dinic(int sz): n(sz), adj(sz), lvl(sz) {}
 
 	void add_edge(int u, int v, F cap) {
 		int id = g.size();
-		g.pb({v, beg[u], cap, 0});
-		g.pb({u, beg[v], cap, cap});
-		beg[u] = id; 
-		beg[v] = id + 1;
+		g.pb({v, cap, 0});
+		g.pb({u, cap, cap});
+		adj[u].pb(id);
+		adj[v].pb(id+1);
 	}
 
-	F dfs(int u, F pool, vector<int>& ptr) {
+	F dfs(int u, F pool, vector<size_t>& ptr) {
 		if(zero(pool) || u == t) return pool;
-		for(int &id = ptr[u]; ~id; id = g[id].nxt) {
+		for(auto &i = ptr[u]; i < int(adj[u].size()); i++) {
+			int id = adj[u][i];
 			auto &e = g[id];
 			if( lvl[u] + 1 != lvl[e.to] || zero(e.f()) ) continue;
 			F f;
@@ -54,7 +56,7 @@ struct Dinic {
 		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;
 		s = _s; t = _t;
 		F ret = 0;
-		vector<int> ptr, q(n);
+		vector<int> ptr(n), q(n);
 		do {
 			fill(all(lvl), 0);
 			lvl[s] = 1;
@@ -62,14 +64,14 @@ struct Dinic {
 			q[0] = s;
 			while(qi < qe && !lvl[t]) {
 				int u = q[qi++];
-				for(int id = beg[u]; ~id; id = g[id].nxt) {
+				for(int id: adj[u]) {
 					auto &e = g[id];
 					if( !lvl[e.to] && not zero(e.f()) )
 						q[qe++] = e.to, lvl[e.to] = lvl[u] + 1;
 				}
 			}
 			F f;
-			ptr = beg;
+			fill(all(ptr), 0);
 			while(not zero( f = dfs(s, INF, ptr) ) ) 
 				ret += f;
 		} while(lvl[t]);
