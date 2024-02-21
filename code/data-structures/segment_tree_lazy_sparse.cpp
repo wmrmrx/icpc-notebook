@@ -8,6 +8,9 @@
 // Operations:
 //      seg.query(int l, int r)
 //      seg.update(int l, int r, T val)
+//
+// Submission: https://codeforces.com/contest/1591/submission/247673927
+// Complexity: O(log max_coord) all operations
 
 template <typename Info, typename T = typename Info::T, typename Tag = typename Info::Tag>
 struct SegLazySparse {
