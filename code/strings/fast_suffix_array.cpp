@@ -21,7 +21,7 @@ namespace suffix_array {
 		fill(all(sa), -1);
 		for (int i = int(lms.size()) - 1; i >= 0; --i)
 			sa[--r[vec[lms[i]]]] = lms[i];
-		for (int i : sa) if (i && sl[i - 1])
+		for (int i : sa) if (i >= 1 && sl[i - 1])
 			sa[l[vec[i - 1]]++] = i - 1;
 		fill(all(r), 0);
 		for (int c : vec) r[c]++;
