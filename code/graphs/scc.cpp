@@ -19,10 +19,10 @@ struct SCC {
 
 		function<void(int,int)> dfs = [&](int v, int dad) {
 			vis[v] = 1;
-			for(auto [p, e]: g[v]) if(p != dad) {
+			for(auto [p, e]: g[v]) if(e != dad) {
 				if(!vis[p]) {
 					low[p] = prof[p] = prof[v] + 1;
-					dfs(p, v);
+					dfs(p, e);
 					low[v] = min(low[v], low[p]);
 				} else low[v] = min(low[v], prof[p]);
 			}
