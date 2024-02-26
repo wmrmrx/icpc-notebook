@@ -35,7 +35,7 @@ struct Dinic {
 		adj[v].pb(id+1);
 	}
 
-	F dfs(int u, F pool, vector<size_t>& ptr) {
+	F dfs(int u, F pool, vector<int>& ptr) {
 		if(zero(pool) || u == t) return pool;
 		for(auto &i = ptr[u]; i < int(adj[u].size()); i++) {
 			int id = adj[u][i];
