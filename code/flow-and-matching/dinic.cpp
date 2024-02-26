@@ -60,7 +60,7 @@ struct Dinic {
 		do {
 			fill(all(lvl), 0);
 			lvl[s] = 1;
-			int qi = 0, qe = lvl[s] = 1;
+			int qi = 0, qe = 1;
 			q[0] = s;
 			while(qi < qe && !lvl[t]) {
 				int u = q[qi++];
