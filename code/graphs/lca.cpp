@@ -7,16 +7,16 @@ struct LCA {
 	LCA() {}
 	LCA(int sz, vector<int> g[], int root): pre(sz), dep(sz) {
 		vector<pair<int,int>> tour; tour.reserve(2*sz-1);
-		auto dfs = [&](int v, int dad, auto& self) -> void {
-			pre[v] = tour.size();
-			tour.push_back({dep[v],v});
-			for(int p: g[v]) if(p != dad) {
-				dep[p] = dep[v]+1;
-				self(p,v,self);
-				tour.push_back({dep[v],v});
+		function<void(int,int)> dfs = [&](int u, int dad) {
+			pre[u] = tour.size();
+			tour.emplace_back(dep[u], u);
+			for(int v: g[u]) if(v != dad) {
+				dep[v] = dep[u]+1;
+				dfs(v, u);
+				tour.emplace_back(dep[u], u);
 			}
 		};
-		dfs(root, root, dfs);
+		dfs(root, root);
 		rmq = RMQ<pair<int,int>>(tour);
 	}
 
