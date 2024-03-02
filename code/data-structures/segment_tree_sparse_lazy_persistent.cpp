@@ -38,9 +38,8 @@ private:
 	}
 
 	void push(int nid, int l, int r) {
-		// optimization: return if tag[nid] is null
 		info[nid] = tag[nid].apply(info[nid], l, r);
-		if(l != r) for(int &c: ch[nid]) {
+		for(int &c: ch[nid]) {
 			copy(c);
 			tag[c] += tag[nid];
 		}
@@ -97,7 +96,7 @@ public:
 struct Info {
 	using T = int;
 	int mn;
-	Info(): mn(numeric_limits<T>::max()) {}
+	Info(): mn(numeric_limits<T>::max() / 2) {}
 	Info(T val): mn(val) {}
 	friend Info operator+(Info lhs, Info rhs) {
 		Info res(min(lhs.mn, rhs.mn));
