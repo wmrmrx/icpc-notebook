@@ -51,7 +51,7 @@ private:
 		if(ql <= l && r <= qr) return tag[nid].apply(info[nid], l, r);
 		push(nid, l, r);
 		int m = (l + r) / 2;
-		auto &[x, y] = ch[nid];
+		auto [x, y] = ch[nid];
 		return query(x, l, m, ql, qr) + query(y, m+1, r, ql, qr);
 	}
 
@@ -63,7 +63,7 @@ private:
 		}
 		push(nid, l, r);
 		int m = (l + r)/2;
-		auto &[x, y] = ch[nid];
+		auto [x, y] = ch[nid];
 		return info[nid] = update(x, l, m, ql, qr, val) + update(y, m+1, r, ql, qr, val);
 	}
 public:
