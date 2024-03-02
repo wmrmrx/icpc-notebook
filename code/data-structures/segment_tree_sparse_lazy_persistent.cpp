@@ -47,7 +47,7 @@ private:
 		tag[nid] = Tag();
 	}
 
-	Info query(int& nid, int l, int r, int ql, int qr) {
+	Info query(int nid, int l, int r, int ql, int qr) {
 		if(nid == -1 || qr < l || r < ql) return Info();
 		if(ql <= l && r <= qr) return tag[nid].apply(info[nid], l, r);
 		push(nid, l, r);
