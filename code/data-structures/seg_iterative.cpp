@@ -50,7 +50,7 @@ struct SegIt {
 		int p = pos + n;
 		t[p] = ND(val);
 #warning Maybe t[p] = t[p] + ND(val)
-#warning Update does not preserve order, must store index and swap
+		// can merge invalid intervals, but query only merges valid intervals (can ignore bad merges)
 		while(p /= 2) 
 			t[p] = t[2*p] + t[2*p+1];
 	}
