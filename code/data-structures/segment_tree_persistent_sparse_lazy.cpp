@@ -1,8 +1,12 @@
 // Sparse Lazy Persistent Segment Tree 
+//
+// cap: maximum number of nodes created
+// if PERSISTENCE = false, cap can be 2 * n
+//
 // op = 0 is the initial state
 // op = 1 is the state after 1 update call, and so on
 
-template <typename Info, typename T = typename Info::T, typename U = typename Info::U, typename Tag = typename Info::Tag> 
+template <typename Info, bool PERSISTENCE = true, typename T = typename Info::T, typename U = typename Info::U, typename Tag = typename Info::Tag>
 class SegLazy {
 private: 
 	int n, ptr, cap;
@@ -19,7 +23,7 @@ private:
 			info[dst] = Info();
 			tag[dst] = Tag();
 			ch[dst] = {-1, -1};
-		} else {
+		} else if(PERSISTENCE) {
 			// COMMENT TO REMOVE PERSISTENCE
 			dst = ptr++;
 			info[dst] = info[src];

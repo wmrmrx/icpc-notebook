@@ -1,9 +1,13 @@
 // Sparse Persistent Segment Tree
+//
+// cap: maximum number of nodes created
+// if PERSISTENCE = false, cap can be 2 * n
+//
 // op = 0 is the initial state
 // op = 1 is the state after 1 update call, and so on
 // TESTED: https://codeforces.com/contest/837/submission/249393167
 
-template <typename Info, typename T = typename Info::T>
+template <typename Info, bool PERSISTENCE = true, typename T = typename Info::T>
 class Seg {
 private: 
 	int n, ptr, cap;
@@ -18,8 +22,7 @@ private:
 			dst = ++ptr;
 			info[dst] = Info();
 			ch[dst] = {0, 0};
-		} else {
-			// COMMENT TO REMOVE PERSISTENCE
+		} else if(PERSISTENCE) {
 			dst = ++ptr;
 			info[dst] = info[src];
 			ch[dst] = ch[src];
