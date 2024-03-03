@@ -50,10 +50,9 @@ struct SegIt {
 		int p = pos + n;
 		t[p] = ND(val);
 #warning Maybe t[p] = t[p] + ND(val)
-		while(p) {
-			p /= 2;
+#warning Update does not preserve order, must store index and swap
+		while(p /= 2) 
 			t[p] = t[2*p] + t[2*p+1];
-		}
 	}
 
 	ND query(int l, int r) {
