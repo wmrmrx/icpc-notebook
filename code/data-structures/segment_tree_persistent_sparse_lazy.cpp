@@ -24,7 +24,6 @@ private:
 			tag[dst] = Tag();
 			ch[dst] = {-1, -1};
 		} else if(PERSISTENCE) {
-			// COMMENT TO REMOVE PERSISTENCE
 			dst = ptr++;
 			info[dst] = info[src];
 			tag[dst] = tag[src];
@@ -66,18 +65,20 @@ private:
 		push(nid, l, r);
 		int m = (l + r)/2;
 		auto [x, y] = ch[nid];
-		update(x, l, m, ql, qr);
-		update(y, m+1, r, ql, qr);
+		update(x, l, m, ql, qr, val);
+		update(y, m+1, r, ql, qr, val);
 		info[nid] = tag[x].apply(info[x], l, m) + tag[y].apply(info[y], m+1, r);
 	}
 public:
-	SegLazy(vector<T>& v, int cap_): n(v.size()), ptr(0), cap(cap_), info(cap), tag(cap), ch(cap) {
+	SegLazy(vector<T>& v, int cap_ = -1): n(v.size()), ptr(0),
+		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), tag(cap), ch(cap) {
 		root.reserve(cap);
 		root.pb(-1);
 		build(root[0], 0, n-1, v);
 	}
 
-	SegLazy(int n_, int cap_): n(n_), ptr(0), cap(cap_), info(cap), tag(cap), ch(cap) {
+	SegLazy(int n_, int cap_ = -1): n(n_), ptr(0),
+		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), tag(cap), ch(cap) {
 		root.reserve(cap);
 		root.pb(-1);
 	}
