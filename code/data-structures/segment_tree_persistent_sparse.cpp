@@ -58,17 +58,12 @@ private:
 	}
 public:
 	Seg(vector<T>& v, int cap_ = -1): n(v.size()), ptr(0), 
-		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), ch(cap) {
-		root.reserve(cap);
-		root.pb(0);
+		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), ch(cap), root{0} {
 		build(root[0], 0, n-1, v);
 	}
 
 	Seg(int n_, int cap_ = -1): n(n_), ptr(0), 
-		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), ch(cap) {
-		root.reserve(cap);
-		root.pb(0);
-	}
+		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), ch(cap), root{0} {}
 
 	Info query(int ql, int qr, int op = -1) {
 		if(op == -1) op = root.size() - 1;
