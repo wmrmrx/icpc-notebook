@@ -1,6 +1,7 @@
 // Sparse Persistent Segment Tree
 // op = 0 is the initial state
 // op = 1 is the state after 1 update call, and so on
+// TESTED: https://codeforces.com/contest/837/submission/249393167
 
 template <typename Info, typename T = typename Info::T>
 class Seg {
