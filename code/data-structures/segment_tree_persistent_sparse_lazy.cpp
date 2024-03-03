@@ -18,13 +18,14 @@ private:
 
 	void copy(int& dst) {
 		int src = dst;
-		assert(ptr < cap);
 		if(src == -1) {
+			// assert(ptr < cap);
 			dst = ptr++;
 			info[dst] = Info();
 			tag[dst] = Tag();
 			ch[dst] = {-1, -1};
 		} else if(PERSISTENCE) {
+			// assert(ptr < cap);
 			dst = ptr++;
 			info[dst] = info[src];
 			tag[dst] = tag[src];
