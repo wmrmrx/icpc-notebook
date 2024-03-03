@@ -5,6 +5,7 @@
 //
 // op = 0 is the initial state
 // op = 1 is the state after 1 update call, and so on
+// TESTED: https://codeforces.com/contest/526/submission/249394946
 
 template <typename Info, bool PERSISTENCE = true, typename T = typename Info::T, typename U = typename Info::U, typename Tag = typename Info::Tag>
 class SegLazy {
