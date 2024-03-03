@@ -67,14 +67,14 @@ private:
 		return info[nid] = update(x, l, m, ql, qr, val) + update(y, m+1, r, ql, qr, val);
 	}
 public:
-	SegLazy(vector<T>& v, int cap_): n(v.size()), cap(cap_), info(cap), tag(cap), ch(cap) {
-		root.reserve(cap_);
+	SegLazy(vector<T>& v, int cap_): n(v.size()), ptr(0), cap(cap_), info(cap), tag(cap), ch(cap) {
+		root.reserve(cap);
 		root.pb(-1);
 		build(root[0], 0, n-1, v);
 	}
 
-	SegLazy(int n_, int cap_): n(n_), cap(cap_), info(cap), tag(cap), ch(cap) {
-		root.reserve(cap_);
+	SegLazy(int n_, int cap_): n(n_), ptr(0), cap(cap_), info(cap), tag(cap), ch(cap) {
+		root.reserve(cap);
 		root.pb(-1);
 	}
 
