@@ -5,7 +5,7 @@
 //
 // op = 0 is the initial state
 // op = 1 is the state after 1 update call, and so on
-// TESTED: https://codeforces.com/contest/837/submission/249393167
+// TESTED: https://codeforces.com/contest/837/submission/249394518
 
 template <typename Info, bool PERSISTENCE = true, typename T = typename Info::T>
 class Seg {
@@ -57,13 +57,15 @@ private:
 		info[nid] = info[x] + info[y];
 	}
 public:
-	Seg(vector<T>& v, int cap_): n(v.size()), ptr(0), cap(cap_), info(cap), ch(cap) {
+	Seg(vector<T>& v, int cap_ = -1): n(v.size()), ptr(0), 
+		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), ch(cap) {
 		root.reserve(cap);
 		root.pb(0);
 		build(root[0], 0, n-1, v);
 	}
 
-	Seg(int n_, int cap_): n(n_), ptr(0), cap(cap_), info(cap), ch(cap) {
+	Seg(int n_, int cap_ = -1): n(n_), ptr(0), 
+		cap(PERSISTENCE ? cap_ : 2 * n), info(cap), ch(cap) {
 		root.reserve(cap);
 		root.pb(0);
 	}
