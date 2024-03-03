@@ -55,16 +55,15 @@ private:
 		return query(x, l, m, ql, qr) + query(y, m+1, r, ql, qr);
 	}
 
-	Info update(int nid, int l, int r, int ql, int qr, U val) {
-		if(qr < l || r < ql) return tag[nid].apply(info[nid], l, r);
-		if(ql <= l && r <= qr) { 
-			tag[nid] += Tag(val);
-			return tag[nid].apply(info[nid], l, r);
-		}
+	void update(int nid, int l, int r, int ql, int qr, U val) {
+		if(qr < l || r < ql) return;
+		if(ql <= l && r <= qr) return void(tag[nid] += Tag(val));
 		push(nid, l, r);
 		int m = (l + r)/2;
 		auto [x, y] = ch[nid];
-		return info[nid] = update(x, l, m, ql, qr, val) + update(y, m+1, r, ql, qr, val);
+		update(x, l, m, ql, qr);
+		update(y, m+1, r, ql, qr);
+		info[nid] = tag[x].apply(info[x], l, m) + tag[y].apply(info[y], m+1, r);
 	}
 public:
 	SegLazy(vector<T>& v, int cap_): n(v.size()), ptr(0), cap(cap_), info(cap), tag(cap), ch(cap) {
