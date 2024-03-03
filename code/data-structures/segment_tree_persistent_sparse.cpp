@@ -19,6 +19,7 @@ private:
 			info[dst] = Info();
 			ch[dst] = {0, 0};
 		} else {
+			// COMMENT TO REMOVE PERSISTENCE
 			dst = ++ptr;
 			info[dst] = info[src];
 			ch[dst] = ch[src];

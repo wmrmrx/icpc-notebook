@@ -20,6 +20,7 @@ private:
 			tag[dst] = Tag();
 			ch[dst] = {-1, -1};
 		} else {
+			// COMMENT TO REMOVE PERSISTENCE
 			dst = ptr++;
 			info[dst] = info[src];
 			tag[dst] = tag[src];
