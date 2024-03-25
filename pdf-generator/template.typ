@@ -45,7 +45,6 @@
 
   // Table of contents.
   outline(depth: 3, indent: true)
-  pagebreak()
 
   // Main body.
   set par(justify: true)
