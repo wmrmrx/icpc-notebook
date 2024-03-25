@@ -49,7 +49,7 @@
 
   // Main body.
   set par(justify: true)
-  show: columns.with(2, gutter: 1.3em, )
+  show: columns.with(3, gutter: 0.7em, )
 
   body
 }
