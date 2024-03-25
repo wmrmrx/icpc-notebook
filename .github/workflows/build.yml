@@ -15,7 +15,7 @@ jobs:
         run: make
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -23,7 +23,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.date.outputs.date }}
-          release_name: Release ${{ github.sha }}
+          release_name: Release ${{ steps.date.outputs.date }}
           body: |
             Changes in this release:
             - Added output artifacts
