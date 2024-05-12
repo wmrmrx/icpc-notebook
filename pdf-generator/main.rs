@@ -101,13 +101,6 @@ fn codes(codes_dir_path: &str) -> Result<String, std::fmt::Error> {
                     let mut file =
                         fs::File::open(&code).unwrap_or_else(|_| panic!("{code:?} is not a file!"));
 
-                    assert!(
-                        file_name.ends_with(".cpp"),
-                        "{} is not a cpp file!",
-                        file_name
-                    );
-                    let file_name = file_name.trim_end_matches(".cpp");
-
                     let mut content = String::new();
                     file.read_to_string(&mut content).unwrap();
 
