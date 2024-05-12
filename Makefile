@@ -1,3 +1,5 @@
+CODES_DIR_PATH ?= "world_finals/"
+
 docker-pdf: docker-image
 	docker run -v ./output:/app/output icpc-notebook-template-image:dev && cp ./output/main.pdf ./notebook.pdf && rm -f output/*
 .PHONY: docker-pdf
@@ -12,7 +14,7 @@ pdf: typst
 
 typst: compile
 	cp pdf-generator/*.typ ./output
-	output/main >> ./output/main.typ
+	CODES_DIR_PATH=$(CODES_DIR_PATH) output/main >> ./output/main.typ
 .PHONY: typst
 
 compile: pdf-generator/main.rs

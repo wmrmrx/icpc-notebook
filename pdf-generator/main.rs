@@ -73,8 +73,8 @@ fn hashes(lines: &[String], path: &str) -> Vec<String> {
 /// === Code
 /// #cpp(`int main() {
 /// }`, hashes: ("foo", "bar"))
-fn codes() -> Result<String, std::fmt::Error> {
-    let mut sections = fs::read_dir("code/")
+fn codes(codes_dir_path: &str) -> Result<String, std::fmt::Error> {
+    let mut sections = fs::read_dir(codes_dir_path)
         .expect("Path `code/ doesn't exists!")
         .map(|entry| entry.expect("Failed to get entry").path())
         .collect::<Vec<_>>();
@@ -155,6 +155,7 @@ fn codes() -> Result<String, std::fmt::Error> {
 }
 
 fn main() {
-    let codes = codes().unwrap();
+    let codes_path = std::env::var("CODES_DIR_PATH").expect("Set the path of the codes directory as the CODES_DIR_PATH environment variable");
+    let codes = codes(&codes_path).unwrap();
     println!("{codes}");
 }
