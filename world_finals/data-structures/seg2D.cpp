@@ -1,18 +1,4 @@
 //  Segtree 2D
-//  Data structure that makes operation on a grid.
-//
-//  Complexity:
-//      build - O(N)
-//      query - O(logN^2)
-//  
-
-// struct Node {
-//     Node () {}
-//     Node operator + (const Node &o) const{
-//         return Node ();
-//     }
-// };
-
 namespace Seg2D {
     int n,m;
     Node a[MAXN][MAXN], st[2*MAXN][2*MAXN];

@@ -1,12 +1,3 @@
-// Suffix Array
-// 
-// Description: Algorithm that sorts the suffixes of a string.
-//              The last character of the string to be sorted 
-//              must be the smallest!
-// Complexity: O(|s| log(|s|)).
-//
-
-// Suffix Array da KTH
 struct SuffixArray {
     string s;
     vector<int> sa, lcp;

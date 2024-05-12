@@ -1,16 +1,14 @@
 // Virtual Tree
-
 namespace vtree {
 	vector<int> vg[MAX];
-
 	// receives list of vertexes and returns root of virtual tree
 	// v must NOT be empty
 	int build(vector<int> vs, LCA& lca) {
-		auto cmp = [&](int i, int j) {
-			return lca.pre[i] < lca.pre[j];
-		};
+		auto cmp = [&](int i, int j) 
+			{ return lca.pre[i] < lca.pre[j];};
 		sort(all(vs), cmp);
-		for(int i=vs.size()-1; i>0; i--) vs.push_back(lca.query(vs[i-1], vs[i]));
+		for(int i=vs.size()-1; i>0; i--) 
+			vs.push_back(lca.query(vs[i-1], vs[i]));
 		sort(all(vs));
 		vs.resize(unique(all(vs))-vs.begin());
 		sort(all(vs), cmp);

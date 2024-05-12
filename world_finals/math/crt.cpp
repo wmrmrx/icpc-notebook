@@ -1,4 +1,6 @@
 // Extended gcd
+// ADD CRT
+
 // returns X, Y such that a*X + b*Y = gcd(a, b)
 pair<int,int> egcd(int a, int b) {
 	if(b == 0) return {1, 0};

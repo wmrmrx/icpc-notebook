@@ -1,8 +1,5 @@
 // Tarjan for undirected graphs
-// Builds forest of strongly connected components for an UNDIRECTED graph
-// Constructor: SCC(|V|, |E|, [[v, e]; |V|])
-//
-// Complexity: O(N+M)
+// CHANGE API
 
 struct SCC {
 	vector<bool> bridge; // bridge[e]: true if edge e is a bridge

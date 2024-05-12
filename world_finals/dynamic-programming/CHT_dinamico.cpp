@@ -1,17 +1,5 @@
 // CHT - Dynamic Convex Hull Trick
-// Description: Maintain the convex hull of some functions
-// Complexity: 
-//     add - O(logN)
-//     query - O(logN)
-
-// Functions:
-//     add(a, b) - add line (a * x + b) to the convex hull.
-//     query (x) - return the maximum value of any line on point x.
-
-// Details:
-//     If you want to maintain the bottom convex hull, it is
-//     easier to just change the sign. Be careful with overflow
-//     on query. Can use __int128 to avoid.
+// maintains maximum value of any line on point x.
 
 struct Line {
     mutable ll a, b, p;

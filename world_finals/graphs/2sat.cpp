@@ -1,17 +1,4 @@
 // 2-SAT
-// Description: Tells if a system is 2-Satisfiable
-// Complexity: O(|V| + |E|)
-// 
-// Functions:
-//     either (a, b) - (a | b) is true
-//     implies (a, b) - (a -> b) is true
-//     must (x) - x is true
-//     atMostOne (v) - ensure that at most one of these
-//                     variables is true
-//     solve () - returns the answer if system is possible.
-// 
-// Details:
-//      Not x is equivalente to ~x on this template.
 
 struct SCC {
     int N, ti = 0; vector<vector<int>> adj;

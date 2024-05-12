@@ -1,24 +1,4 @@
 // Mincost Max-Flow
-// Solves the minimum-cost maximum-flow problem using spfa for the finding the incremental
-// shortest paths. Useful when the edges costs are negative. 
-// Infinite loop if there's a negative cycle.
-//
-// Constructor:
-// MinCost(n, s, t)
-// n - number of nodes in the flow graph.
-// s - source of the flow graph.
-// t - sink of the flow graph.
-//
-// Methods:
-// - add_edge(u, v, cap, cost)
-//   adds a directed edge from u to v with capacity 'cap' and cost 'cost'.
-// - get_flow()
-//   returns a pair of integers in which the first value is the maximum flow and the
-//   second is the minimum cost to achieve this flow.
-//
-// Complexity: There are two upper bounds to the time complexity of getFlow
-//              - O(max_flow * (E log V))
-//              - O(V * E * (E log V))
 
 struct MinCost {
 	static constexpr int INF = 1e18;

@@ -1,15 +1,7 @@
 // Dinitz
-// add_edge(s, t, cap): Adds a directed edge from s to t with capacity cap
-// get_flow(s, t): Returns max flow with source s and sink t
-//
-// Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
 
-bool zero(int x) {
-	return x == 0;
-}
-bool zero(double x) {
-	return abs(x) < (1e-6);
-}
+bool zero(int x) {return x == 0;}
+bool zero(double x) {return abs(x) < (1e-6);}
 
 template<typename F>
 struct Dinic {
@@ -19,7 +11,6 @@ struct Dinic {
 		F cap, flow;
 		F f() { return cap - flow; }
 	};
-
 	int n, s, t;
 	vector<vector<int>> adj;
 	vector<int> lvl;
