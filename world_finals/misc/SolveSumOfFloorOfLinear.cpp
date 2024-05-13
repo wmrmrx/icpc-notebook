@@ -1,11 +1,3 @@
-//nao faco ideia como funciona
-//https://github.com/yosupo06/library-checker-problems/ blob/master/math/sum_of_floor_of_linear /sol/correct.cpp
-/**
- * a / b, a // b : 
- * sum_{i = 0..n-1} floor((ai + b) //
- * 
- * y = (ax + b) / m, (0 <= x <= n)
- */
 ll sum_of_floor(ll n, ll m, ll a, ll b) {
     ll ans = 0;
     if (a >= m) {
