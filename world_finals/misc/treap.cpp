@@ -1,7 +1,3 @@
-/*
-ecnerwala's code , from https://codeforces.com/contest/1558/submission/126874038
-*/
-
 static const uint64_t FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();
 std::mt19937 mt(FIXED_RANDOM);
 struct treap_node {
@@ -24,9 +20,6 @@ struct treap_node {
 	}
 };
 
-/*
-this code just merge if max(a) <= min(b), don't deal with complex merges
-*/
 treap_node* merge(treap_node* a, treap_node* b) {
 	if (!b) return a;
 	if (!a) return b;

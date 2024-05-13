@@ -1,7 +1,3 @@
-/*
-cp-algorithms
-
-*/
 struct state {
     int len, link;
     map<char, int> next;
@@ -13,11 +9,8 @@ state st[MAXN*2];
 int sz, last;
 
 void sa_init() {
-    st[0].len = 0;
-    st[0].link = -1;
-	st[0].cnt = 1;
-    sz++;
-    last = 0;
+    st[0].len = 0; st[0].link = -1;
+	st[0].cnt = 1; sz++; last = 0;
 }
 
 void sa_extend(char c) {
