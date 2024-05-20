@@ -20,8 +20,8 @@ template<typename SEG, bool EDGE> struct HLD {
 		}; dfs(0); t = -1; dfs(0); // yes, twice 
 	}
 	template<typename T>
-	void updade(int u, T val) {
-		seg.update(in[u] + EDGE, val);
+	void update(int u, T val) {
+		seg.update(in[u], val);
 	}
 	template<typename RES> 
 	RES query_path(int u, int v) {

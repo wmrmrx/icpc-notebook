@@ -29,8 +29,8 @@ template<typename SEG, bool EDGE> struct HLD {
 
 	// if EDGE == true, the child of an edge represents it
 	template<typename T>
-	void updade(int u, T val) {
-		seg.update(in[u] + EDGE, val);
+	void update(int u, T val) {
+		seg.update(in[u], val);
 	}
 
 	// If range update is needed, just replace seg.query with seg.update
