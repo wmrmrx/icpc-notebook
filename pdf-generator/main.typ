@@ -8,6 +8,7 @@
     "nathan_luiz",
     "wnmrmr",
   ),
+  logo: "phik.jpg"
 )
 
 = Template hashing

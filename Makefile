@@ -13,7 +13,7 @@ pdf: typst
 .PHONY: pdf
 
 typst: compile
-	cp pdf-generator/*.typ ./output
+	cp pdf-generator/* ./output
 	CODES_DIR_PATH=$(CODES_DIR_PATH) output/main >> ./output/main.typ
 .PHONY: typst
 
