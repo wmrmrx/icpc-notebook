@@ -21,19 +21,23 @@ bool shamos_hoey(vector<segment> seg) {
 		else if(r.a < s.a) return left(r.a, r.b, s.a);
 		else return !left(s.a, s.b, r.a);
 	};
+	auto inter = [&](segment r, segment s) {
+		// here decide if endpoints count as intersection
+		return intersects(r, s);
+	};
 	set<segment, decltype(cmp)> s(cmp);
 	for(auto [_, b, id]: ev) {
 		segment at = seg[id];
 		if(!b) {
 			auto nxt = s.lower_bound(at);
-			if((nxt != s.end() && intersects(*nxt, at))
-				|| (nxt != s.begin() && intersects(*prev(nxt), at)))
+			if((nxt != s.end() && inter(*nxt, at))
+				|| (nxt != s.begin() && inter(*prev(nxt), at)))
 					return 1;
 			s.insert(at);
 		} else {
 			auto cur = s.find(at);
 			if(cur != s.begin() && next(cur) != s.end() && 
-					intersects(*prev(cur), *next(cur))) 
+					inter(*prev(cur), *next(cur))) 
 				return 1;
 			s.erase(at);
 		}

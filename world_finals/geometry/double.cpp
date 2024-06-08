@@ -1,83 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define all(v) (v).begin(), (v).end()
+
 // Double geometry
+// For integer replace EPS with 0
 // WARNING: INPUT IN DOUBLE IS SLOW, IF POSSIBLE READ WITH INTEGER
 
 constexpr double EPS = 1e-10;
 
-bool zero(double x) {
-	return abs(x) <= EPS;
-}
+bool zero(double x) { return abs(x) <= EPS; }
 
 // CORNER: point = (0, 0)
 struct point {
 	double x, y;
-	
 	point(): x(0), y(0) {}
 	point(double _x, double _y): x(_x), y(_y) {}
-	
 	point operator+(point rhs) { return point(x+rhs.x, y+rhs.y); }
 	point operator-(point rhs) { return point(x-rhs.x, y-rhs.y); }
 	point operator*(double k) { return point(x*k, y*k); }
 	point operator/(double k) { return point(x/k, y/k); }
 	double operator*(point rhs) { return x*rhs.x + y*rhs.y; }
 	double operator^(point rhs) { return x*rhs.y - y*rhs.x; }
-
 	point rotated(point polar) { return point(*this^polar,*this*polar); }
 	point rotated(double ang) { return (*this).rotated(point(sin(ang),cos(ang))); }
 	double norm2() { return *this * *this; }
 	double norm() { return sqrt(norm2()); }
-
-	bool operator<(const point& rhs) const {
-		return x < rhs.x - EPS || (zero(x-rhs.x) && y < rhs.y - EPS);
-	}
-
-	bool operator==(const point& rhs) const {
-		return zero(x-rhs.x) && zero(y-rhs.y);
-	}
+	bool operator<(const point& rhs) const { return x < rhs.x - EPS || (zero(x-rhs.x) && y < rhs.y - EPS); }
+	bool operator==(const point& rhs) const { return zero(x-rhs.x) && zero(y-rhs.y); }
 };
-
 const point ccw90(1, 0), cw90(-1, 0);
 
 // angular comparison in [0, 2pi)
-// smallest is (1, 0)
-// CORNER: a || b == (0, 0)
+// CORNER: a == (0, 0) or b == (0, 0)
 bool ang_cmp(point a, point b) {
 	auto quad = [](point p) -> bool {
 		// 0 if ang in [0, pi), 1 if in [pi, 2pi)
-		return p.y < 0 || (p.y == 0 && p.x < 0);
+		return p.y < 0 || (p.y == 0 && p.x < 0); 
 	};
-	using tup = tuple<bool, double>;
-	return tup{quad(a), 0} < tup{quad(b), a^b};
+	using t = pair<bool, double>;
+	return t(quad(a), 0) < t(quad(b), a^b);
 }
 
-double dist2(point p, point q) { // squared distance
-    return (p - q)*(p - q);
-}
+// squared distance
+double dist2(point p, point q) { return (p - q)*(p - q); }
+double dist(point p, point q) { return sqrt(dist2(p, q)); }
 
-double dist(point p, point q) {
-    return sqrt(dist2(p, q));
-}
+// two times signed area of triangle abc
+double area2(point a, point b, point c) { return (b - a) ^ (c - a); }
+bool left(point a, point b, point c) { return area2(a, b, c) > EPS; }
+bool right(point a, point b, point c) { return area2(a, b, c) < -EPS; }
+bool collinear(point a, point b, point c) { return zero(area2(a,b,c)); }
 
-double area2(point a, point b, point c) { // two times signed area of triangle abc
-	return (b - a) ^ (c - a);
-}
-
-// CORNER: BE CAREFUL WITH PRECISION WITH THESE FUNCTIONS, 
-// 	IF NEEDED NORMALIZE (b-a) AND (c-a)
-bool left(point a, point b, point c) {
-	return area2(a, b, c) > EPS; // counterclockwise
-}
-
-bool right(point a, point b, point c) {
-	return area2(a, b, c) < -EPS; // clockwise
-}
-
-bool collinear(point a, point b, point c) {
-	return zero(area2(a,b,c));
-}
-
-// CORNER: a || b == (0, 0)
+// CORNER: a == (0, 0) b == (0, 0)
 int parallel(point a, point b) {
-	a = a / a.norm(); b = b / b.norm();
+	// if precision is a concern
+	// a = a / a.norm(); b = b / b.norm(); 
 	if(!collinear(point(), a, b)) return 0;
 	return zero(a.x - b.x) && zero(a.y - b.y) ? 1 : -1;
 }
@@ -85,36 +63,26 @@ int parallel(point a, point b) {
 // CORNER: a == b
 struct segment {
 	point a, b;
-
 	segment() {}
 	segment(point _a, point _b): a(_a), b(_b) {}
-
 	point vec() { return b - a; }
-
-	bool contains(point p) {
-		return a == p || b == p || parallel(a-p, b-p) == -1;
+	bool contains(point p) { return a == p || b == p || parallel(a-p, b-p) == -1; }
+	// if line extension intercepts s
+	bool intercepts(segment s) {
+		return (!left(a, b, s.a) || !left(a, b, s.b)) && 
+			(!right(a, b, s.a) || !right(a, b, s.b));
 	}
-
 	point proj(point p) { // projection of p onto segment
 		p = p - a;
 		point v = vec();
-		return a + v*((p*v)/(v*v));
+		return a + v*( (p*v) / (v*v) );
 	}
-
 };
 
-bool intersects(segment r, segment s) {
-	if(r.contains(s.a) || r.contains(s.b) || s.contains(r.a) || s.contains(r.b)) return 1;
-	return left(r.a, r.b, s.a) != left(r.a, r.b, s.b) && 
-		left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
-}
-
-bool parallel(segment r, segment s) {
-	return parallel(r.vec(), s.vec());
-}
-
+bool parallel(segment r, segment s) { return parallel(r.vec(), s.vec()); }
+bool intersects(segment r, segment s) { return r.intercepts(s) && s.intercepts(r); }
 point line_intersection(segment r, segment s) {
-	if(parallel(r, s)) return point(HUGE_VAL, HUGE_VAL);
+	// assert( not parallel(r, s) );
 	point vr = r.vec(), vs = s.vec();
 	double cr = vr ^ r.a, cs = vs ^ s.a;
 	return (vs*cr - vr*cs) / (vr ^ vs);
@@ -123,23 +91,22 @@ point line_intersection(segment r, segment s) {
 struct polygon {
 	vector<point> vp;
 	int n;
-
 	polygon(vector<point>& _vp): vp(_vp), n(vp.size()) {
 		if(area2() < -EPS) reverse(all(_vp));
 	}
-
 	int nxt(int i) { return i+1<n ? i+1 : 0; }
 	int prv(int i) { return i ? i-1 : n-1; }
 
-	// If positive, the polygon is in ccw order. It is in cw order otherwise.
-	double area2() { // O(n
+	// O(n). If positive, the polygon is in ccw order. It is in cw order otherwise.
+	double area2() {
 		double acum = 0;
 		for(int i = 0; i < n; i++)
 			acum += vp[i] ^ vp[nxt(i)];
 		return acum;
 	}
 
-	bool has(point p) { // O(log n). The polygon must be convex and in ccw order
+	// O(log n). The polygon must be convex and in ccw order
+	bool has(point p) { 		
 		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
 		int lo = 1, hi = n;
 		while(lo + 1 < hi) {
@@ -150,7 +117,8 @@ struct polygon {
 		return hi != n ? !right(vp[lo], vp[hi], p) : dist2(vp[0], p) < dist2(vp[0], vp[n-1]) + EPS;
 	}
 
-	double calipers() { // O(n). The polygon must be convex and in ccw order.
+	// O(n). The polygon must be convex and in ccw order.
+	double calipers() { 
 		double ans = 0;
 		for(int i = 0, j = 1; i < n; i++) {
 			point v = vp[nxt(i)] - vp[i];
@@ -170,7 +138,7 @@ struct polygon {
 			cur_dir = cmp(vp[nxt(i)], vp[i]);
 			return !cmp(vp[prv(i)], vp[i]) && !cur_dir;
 		};
-		bool last_dir, cur_dir;
+		bool last_dir = false, cur_dir = false;
 		if(is_extreme(0, last_dir)) return 0;
 		int lo = 0, hi = n; 
 		while(lo + 1 < hi) {
@@ -206,7 +174,7 @@ struct polygon {
 		vector<point> sum;
 		double dir;
 		for(int i = 0, j = 0; i < n || j < rhs.n; i += dir > -EPS, j += dir < EPS) {
-			sum.push_back(vp[i % n] + rhs.vp[j % rhs.n]);
+			sum.pb(vp[i % n] + rhs.vp[j % rhs.n]);
 			dir = (vp[(i + 1) % n] - vp[i % n]) 
 				^ (rhs.vp[(j + 1) % rhs.n] - rhs.vp[j % rhs.n]);
 		}
@@ -218,12 +186,10 @@ struct polygon {
 //  Basic structure of circle and operations related with it.
 // 
 // All operations' time complexity are O(1)
-
 const double PI = acos(-1);
 
 struct circle {
 	point o; double r;
-
 	circle() {}
 	circle(point _o, double _r) : o(_o), r(_r) {}
 	// CORNER CASE: a, b and c must NOT be collinear
@@ -237,12 +203,10 @@ struct circle {
 		r = (o-a).norm();
 	}
 
-	bool has(point p) { 
-		return (o - p).norm2() < r*r + EPS;
-	}
-	bool in(circle c){ // non strict
-		double d=(o-c.o).norm();
-		return d+r<c.r+EPS;
+	bool has(point p) { return (o - p).norm2() < r*r + EPS; }
+	bool inside(circle c){ // non strict
+		double d =(o-c.o).norm();
+		return d + r < c.r + EPS;
 	}
 	vector<point> operator/(circle c) { // Intersection of circles.
 		vector<point> inter;                   // The points in the output are in ccw order.
@@ -269,7 +233,6 @@ struct circle {
 // Circle Area Intersection
 // O(n^2 log n) (high constant)
 // https://github.com/mhunicken/icpc-team-notebook-el-vasito/blob/master/geometry/circle.cpp
-
 vector<double> intercircles(vector<circle> c){
 	vector<double> r(c.size()+1); // r[k]: area covered by at least k circles
 	for(int i=0;i<int(c.size());i++) {
@@ -282,13 +245,13 @@ vector<double> intercircles(vector<circle> c){
 			{c[i].o - point(1,0) * c[i].r, 0}
 		};
 		for(int j=0;j<int(c.size());j++) if(j != i) {
-			bool b0 = c[i].in(c[j]), b1 = c[j].in(c[i]);
-			if( b0 && ( !b1|| i<j ) ) k++;
+			bool b0 = c[i].inside(c[j]), b1 = c[j].inside(c[i]);
+			if( b0 && ( !b1 || i < j ) ) k++;
 			else if( !b0 && !b1 ) {
 				auto v = c[i] / c[j];
 				if(v.size() == 2){
-					p.pb({v[0],1});
-					p.pb({v[1],-1});
+					p.pb({v[0], 1});
+					p.pb({v[1], -1});
 					if(cmp(v[1],v[0])) k++;
 				}
 			}
