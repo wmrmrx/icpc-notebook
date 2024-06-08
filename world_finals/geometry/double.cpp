@@ -1,8 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-#define all(v) (v).begin(), (v).end()
-
 // Double geometry
 // For integer replace EPS with 0
 // WARNING: INPUT IN DOUBLE IS SLOW, IF POSSIBLE READ WITH INTEGER
