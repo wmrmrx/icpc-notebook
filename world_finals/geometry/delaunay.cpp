@@ -2,8 +2,8 @@
 // How to use: 
 //   vector<pair<int,int>> edges = Delaunay(vector_of_points, big_value).edges;
 //   where big_value is a value greater that all coordinates
+double sweepx;
 struct Delaunay {
-	static double sweepx;
 	struct arc {
 	    mutable point p, q;
 	    mutable int id = 0, i;
