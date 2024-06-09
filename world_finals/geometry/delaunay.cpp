@@ -24,8 +24,8 @@ struct Delaunay {
 	struct event {
 	    double x;
 	    int id;
-	    bit it;
-	    event(double _x, int _id, bit _it) : x(_x), id(_id), it(_it) {}
+	    bit* it;
+	    event(double _x, int _id, bit* _it) : x(_x), id(_id), it(_it) {}
 	    bool operator<(const event &e) const {
 		return x > e.x;
 	    }
@@ -45,7 +45,7 @@ struct Delaunay {
 		line.insert(arc(point(-big, -big), point(-big, big), -1));
 		line.insert(arc(point(-big, big), point(HUGE_VAL, HUGE_VAL), -1));
 		for(int i=0;i<n;i++) {
-			Q.push(event(v[i].first.x, i, line.end()));
+			Q.push(event(v[i].first.x, i, nullptr));
 		}
 		ti = 0;
 		valid.assign(1, false);
@@ -53,7 +53,10 @@ struct Delaunay {
 			event e = Q.top(); Q.pop();
 			sweepx = e.x;
 			if(e.id >= 0) add(e.id);
-			else if(valid[-e.id]) remove(e.it);
+			else if(valid[-e.id]) {
+				remove(*e.it);
+				delete e.it;
+			}
 		}
 	}
 	void upd(bit it) {
@@ -66,7 +69,7 @@ struct Delaunay {
 		point c = circle(it->p, it->q, a->p).o;
 		double x = c.x + (c - it->p).norm();
 		if(x > sweepx - EPS && a->gety(x) + EPS > it->gety(x)) {
-			Q.push(event(x, it->id, it));
+			Q.push(event(x, it->id, new bit(it)));
 		}
 	}
 	void add_edge(int i, int j) {
