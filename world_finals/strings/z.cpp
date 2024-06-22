@@ -5,7 +5,7 @@ vector<int> zfunc(string s) {
 	vector<int> z(n);
 	for(int l = -1, r = -1, i = 1; i < n; i++) {
 		z[i] = i >= r ? 0 : min(r - i, z[i - l]);
-		while( i + z[i] < n && s[i + z[i]] == s[z[i]]i ) z[i]++;
+		while( i + z[i] < n && s[i + z[i]] == s[z[i]] ) z[i]++;
 		if( i + z[i] > r ) l = i, r = i + z[i];
 	}
 	return z;
