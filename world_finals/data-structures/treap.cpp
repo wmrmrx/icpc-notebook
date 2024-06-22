@@ -1,5 +1,4 @@
-static const uint64_t FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();
-std::mt19937 mt(FIXED_RANDOM);
+std::mt19937 mt(123);
 struct treap_node {
 	std::array<treap_node*, 2> c{nullptr, nullptr};
 	std::mt19937::result_type pri = mt();
