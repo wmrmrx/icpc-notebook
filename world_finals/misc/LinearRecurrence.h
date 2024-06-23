@@ -12,25 +12,28 @@
  * Time: O(n^2 \log k)
  * Status: bruteforce-tested mod 5 for n <= 5
  */
-#pragma once
 
-const ll mod = 5; /** exclude-line */
+template<typename T>
+T linearRec(vector<T> S, vector<T> tr, ll k) {
+	int n = tr.size();
 
-typedef vector<ll> Poly;
-ll linearRec(Poly S, Poly tr, ll k) {
-	int n = sz(tr);
-
-	auto combine = [&](Poly a, Poly b) {
-		Poly res(n * 2 + 1);
-		rep(i,0,n+1) rep(j,0,n+1)
-			res[i + j] = (res[i + j] + a[i] * b[j]) % mod;
-		for (int i = 2 * n; i > n; --i) rep(j,0,n)
-			res[i - 1 - j] = (res[i - 1 - j] + res[i] * tr[j]) % mod;
+	auto combine = [&](vector<T> a, vector<T> b) {
+		vector<T> res(n * 2 + 1);
+		for(int i = 0; i < n+1; i++){
+			for(int j = 0; j < n+1; j++){
+				res[i+j] = res[i+j] + a[i]*b[j];
+			}
+		}
+		for (int i = 2 * n; i > n; --i){ 
+			for(int j = 0; j < n; j++){
+				res[i-1-j] = res[i-1-j] + res[i]*tr[j];
+			}
+		}
 		res.resize(n + 1);
 		return res;
 	};
 
-	Poly pol(n + 1), e(pol);
+	vector<T> pol(n + 1), e(pol);
 	pol[0] = e[1] = 1;
 
 	for (++k; k; k /= 2) {
@@ -38,7 +41,9 @@ ll linearRec(Poly S, Poly tr, ll k) {
 		e = combine(e, e);
 	}
 
-	ll res = 0;
-	rep(i,0,n) res = (res + pol[i + 1] * S[i]) % mod;
+	T res = 0;
+	for(int i = 0; i < n; i++){
+		res = res + pol[i+1]*S[i];
+	}
 	return res;
 }

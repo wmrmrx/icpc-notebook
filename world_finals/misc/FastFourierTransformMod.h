@@ -11,26 +11,28 @@
  * Details: An in-depth examination of precision for both FFT and FFTMod can be found
  * here (https://github.com/simonlindholm/fft-precision/blob/master/fft-precision.md)
  */
-#pragma once
 
-#include "FastFourierTransform.h"
-
-typedef vector<ll> vl;
-template<int M> vl convMod(const vl &a, const vl &b) {
+template<int M> vector<ll> convMod(const vector<ll> &a, const vector<ll> &b) {
 	if (a.empty() || b.empty()) return {};
-	vl res(sz(a) + sz(b) - 1);
-	int B=32-__builtin_clz(sz(res)), n=1<<B, cut=int(sqrt(M));
+	int sza = a.size();
+	int szb = b.size();
+	vector<ll> res(sza+szb-1);
+	int B=32-__builtin_clz(sza+szb-1), n=1<<B, cut=int32_t(sqrt(M));
 	vector<C> L(n), R(n), outs(n), outl(n);
-	rep(i,0,sz(a)) L[i] = C((int)a[i] / cut, (int)a[i] % cut);
-	rep(i,0,sz(b)) R[i] = C((int)b[i] / cut, (int)b[i] % cut);
+	for(int i = 0; i < sza; i++){
+		L[i] = C((int32_t)a[i] / cut, (int32_t)a[i] % cut);
+	}
+	for(int i = 0; i < szb; i++){
+		R[i] = C((int32_t)b[i] / cut, (int32_t)b[i] % cut);
+	}
 	fft(L), fft(R);
-	rep(i,0,n) {
+	for(int i = 0; i < n; i++){
 		int j = -i & (n - 1);
 		outl[j] = (L[i] + conj(L[j])) * R[i] / (2.0 * n);
 		outs[j] = (L[i] - conj(L[j])) * R[i] / (2.0 * n) / 1i;
 	}
 	fft(outl), fft(outs);
-	rep(i,0,sz(res)) {
+	for(int i = 0; i < sza+szb-1; i++){
 		ll av = ll(real(outl[i])+.5), cv = ll(imag(outs[i])+.5);
 		ll bv = ll(imag(outl[i])+.5) + ll(real(outs[i])+.5);
 		res[i] = ((av % M * cut + bv) % M * cut + cv) % M;
