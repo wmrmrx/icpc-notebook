@@ -20,10 +20,8 @@ struct Dinic {
 
 	void add_edge(int u, int v, F cap) {
 		int id = g.size();
-		g.pb({v, cap, 0});
-		g.pb({u, cap, cap});
-		adj[u].pb(id);
-		adj[v].pb(id+1);
+		g.pb({v, cap, 0}); g.pb({u, cap, cap});
+		adj[u].pb(id); adj[v].pb(id+1);
 	}
 
 	F dfs(int u, F pool, vector<int>& ptr) {

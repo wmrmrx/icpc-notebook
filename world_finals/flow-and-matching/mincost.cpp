@@ -1,10 +1,7 @@
 // Mincost Max-Flow
-
 struct MinCost {
 	static constexpr int INF = 1e18;
-	struct edge {
-		int to, next, cap, cost;
-	};
+	struct edge { int to, next, cap, cost; };
 	int n, s, t;
 	vector<int> first, prev, dist;
 	vector<bool> queued;
@@ -14,32 +11,22 @@ struct MinCost {
 
 	void add_edge(int u, int v, int cap, int cost) {
 		int id = g.size();
-		g.pb({v, first[u], cap, cost});
-		first[u] = id;
-		g.pb({u, first[v], 0, -cost});
-		first[v] = ++id;
+		g.pb({v, first[u], cap, cost}); first[u] = id;
+		g.pb({u, first[v], 0, -cost}); first[v] = ++id;
 	}
 
 	bool augment() {
 		fill(all(dist), INF);
-		dist[s] = 0;
-		queued[s] = 1;
-		queue<int> q;
-		q.push(s);
+		dist[s] = 0; queued[s] = 1;
+		queue<int> q; q.push(s);
 		while(!q.empty()) {
-			int u = q.front(); 
-			q.pop();
+			int u = q.front(); q.pop();
 			queued[u] = 0;
 			for(int e = first[u]; e != -1; e = g[e].next) {
-				int v = g[e].to;
-				int ndist = dist[u] + g[e].cost;
+				int v = g[e].to, ndist = dist[u] + g[e].cost;
 				if(g[e].cap > 0 && ndist < dist[v]) {
-					dist[v] = ndist;
-					prev[v] = e;
-					if(!queued[v]) {
-						q.push(v);
-						queued[v] = 1;
-					}
+					dist[v] = ndist; prev[v] = e;
+					if(!queued[v]) q.push(v), queued[v] = 1;
 				}
 			}
 		}
@@ -47,7 +34,6 @@ struct MinCost {
 		//UNCOMMENT FOR MIN COST WITH ANY FLOW (NOT NECESSARILY MAXIMUM)
 		//return dist[t] < 0;
 	}
-
 	pair<int, int> get_flow(int _s, int _t) {
 		s = _s; t = _t;
 		//if multiple runs are needed (resets flow)
