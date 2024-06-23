@@ -112,10 +112,10 @@ fn codes(codes_dir_path: &str) -> Result<String, std::fmt::Error> {
 
                     code_send
                         .send(format!(
-                            "=== {name}\n#cpp(`{}`, hashes: ({}))\n",
+                            "=== {name}\n#cpp(`{all_lines}`, hashes: ({all_hashes}))\n",
                             name = file_name.trim_end_matches(".cpp"),
-                            &lines.join("\n"),
-                            &hashes(&lines, &code.as_path().to_string_lossy())
+                            all_lines = &lines.join("\n"),
+                            all_hashes = &hashes(&lines, &code.as_path().to_string_lossy())
                                 .into_iter()
                                 .map(|s| format!("\"{s}\""))
                                 .collect::<Vec<_>>()
@@ -149,7 +149,8 @@ fn codes(codes_dir_path: &str) -> Result<String, std::fmt::Error> {
 }
 
 fn main() {
-    let codes_path = std::env::var("CODES_DIR_PATH").expect("Set the path of the codes directory as the CODES_DIR_PATH environment variable");
+    let codes_path = std::env::var("CODES_DIR_PATH")
+        .expect("Set the path of the codes directory as the CODES_DIR_PATH environment variable");
     let codes = codes(&codes_path).unwrap();
     println!("{codes}");
 }
