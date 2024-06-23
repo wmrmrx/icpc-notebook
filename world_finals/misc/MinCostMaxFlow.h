@@ -8,9 +8,9 @@
  * Status: Tested on kattis:mincostmaxflow, stress-tested against another implementation
  * Time: $O(F E \log(V))$ where F is max flow. $O(VE)$ for setpi.
  */
-#pragma once
 
-// #include <bits/extc++.h> /// include-line, keep-include
+//INSERT RIGHT AFTER THE INCLUDE BELOW <bits/stdc++.h>
+//#include <bits/extc++.h> /// include-line, keep-include
 
 const ll INF = numeric_limits<ll>::max() / 4;
 
@@ -21,16 +21,18 @@ struct MCMF {
 	};
 	int N;
 	vector<vector<edge>> ed;
-	vi seen;
+	vector<int> seen;
 	vector<ll> dist, pi;
 	vector<edge*> par;
 
-	MCMF(int N) : N(N), ed(N), seen(N), dist(N), pi(N), par(N) {}
+	MCMF(int _N) : N(_N), ed(_N), seen(_N), dist(_N), pi(_N), par(_N) {}
 
 	void addEdge(int from, int to, ll cap, ll cost) {
 		if (from == to) return;
-		ed[from].push_back(edge{ from,to,sz(ed[to]),cap,cost,0 });
-		ed[to].push_back(edge{ to,from,sz(ed[from])-1,0,-cost,0 });
+		int id_to = ed[to].size();
+		int id_from = ed[from].size();
+		ed[from].push_back(edge{ from,to,id_to,cap,cost,0 });
+		ed[to].push_back(edge{ to,from,id_from,0,-cost,0 });
 	}
 
 	void path(int s) {
@@ -57,7 +59,9 @@ struct MCMF {
 				}
 			}
 		}
-		rep(i,0,N) pi[i] = min(pi[i] + dist[i], INF);
+		for(int i = 0; i < N; i++){
+			pi[i] = min(pi[i] + dist[i], INF);
+		}
 	}
 
 	pair<ll, ll> maxflow(int s, int t) {
@@ -73,7 +77,9 @@ struct MCMF {
 				ed[x->to][x->rev].flow -= fl;
 			}
 		}
-		rep(i,0,N) for(edge& e : ed[i]) totcost += e.cost * e.flow;
+		for(int i = 0; i < N; i++) for(edge& e : ed[i]){
+			totcost += e.cost * e.flow;
+		}
 		return {totflow, totcost/2};
 	}
 
@@ -82,7 +88,7 @@ struct MCMF {
 		fill(all(pi), INF); pi[s] = 0;
 		int it = N, ch = 1; ll v;
 		while (ch-- && it--)
-			rep(i,0,N) if (pi[i] != INF)
+			for(int i = 0; i < N; i++) if (pi[i] != INF)
 			  for (edge& e : ed[i]) if (e.cap)
 				  if ((v = pi[i] + e.cost) < pi[e.to])
 					  pi[e.to] = v, ch = 1;
