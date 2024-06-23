@@ -112,7 +112,8 @@ fn codes(codes_dir_path: &str) -> Result<String, std::fmt::Error> {
 
                     code_send
                         .send(format!(
-                            "=== {file_name}\n#cpp(`{}`, hashes: ({}))\n",
+                            "=== {name}\n#cpp(`{}`, hashes: ({}))\n",
+                            name = file_name.trim_end_matches(".cpp"),
                             &lines.join("\n"),
                             &hashes(&lines, &code.as_path().to_string_lossy())
                                 .into_iter()
