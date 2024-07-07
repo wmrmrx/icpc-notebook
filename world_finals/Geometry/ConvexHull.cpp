@@ -23,3 +23,11 @@ vector<point> hull(vector<point> v) {
 	if(UPPER) for(auto& p: res) p.x = -p.x, p.y = -p.y;
 	return res;
 }
+
+vector<point> convex_hull(vector<point> v) {
+	auto upper = hull<true>(v);
+	auto lower = hull<false>(v);
+	for(point p: lower) if(p != upper.back() && p != upper[0])
+		upper.pb(p);
+	return upper;
+}
