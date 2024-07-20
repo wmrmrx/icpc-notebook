@@ -1,4 +1,5 @@
 namespace delaunay {
+	constexpr int INF = 2e9;
 	typedef struct QuadEdge* Q;
 	struct QuadEdge {
 		int id;
@@ -46,8 +47,8 @@ namespace delaunay {
 	}
 
 	bool in_c(point a, point b, point c, point p) { // p ta na circunf. (a, b, c) ?
-		__int128 p2 = p*p, A = a*a - p2, B = b*b - p2, C = c*c - p2;
-		return area2(p, a, b) * C + area2(p, b, c) * A + area2(p, c, a) * B > 0;
+		__int128_t p2 = p*p, A = a*a - p2, B = b*b - p2, C = c*c - p2;
+		return (__int128_t) area2(p, a, b) * C + area2(p, b, c) * A + area2(p, c, a) * B > 0;
 	}
 
 	pair<Q, Q> build_tr(vector<point>& p, int l, int r) {
@@ -105,7 +106,7 @@ namespace delaunay {
 		}
 		Q e = build_tr(v, 0, n-1).first;
 		vector<Q> edg = {e};
-		for (int i = 0; i < edg.size(); e = edg[i++]) {
+		for (int i = 0; i < (int) edg.size(); e = edg[i++]) {
 			for (Q at = e; !at->used; at = at->next()) {
 				at->used = true;
 				g[idx[at->id]].push_back(idx[at->rev()->id]);
