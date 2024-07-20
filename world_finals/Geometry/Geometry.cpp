@@ -48,10 +48,10 @@ bool right(point a, point b, point c) { return area2(a, b, c) < -EPS; }
 bool collinear(point a, point b, point c) { return zero(area2(a,b,c)); }
 
 // CORNER: a == (0, 0) b == (0, 0)
+// Has precision issues
 int parallel(point a, point b) {
 	if(!collinear(point(), a, b)) return 0;
-	a = a / a.norm(); b = b / b.norm(); 
-	return zero(a.x - b.x) && zero(a.y - b.y) ? 1 : -1;
+	return (a.x > -EPS) == (b.x > -EPS) && (a.y > -EPS) == (b.y > -EPS) ? 1 : -1;
 }
 
 // CORNER: a == b
@@ -62,11 +62,6 @@ struct segment {
 	point vec() { return b - a; }
 	bool contains(point p) { return a == p || b == p || parallel(a-p, b-p) == -1; }
 	// if line extension intercepts s
-	bool intercepts(segment s) {
-		if(contains(s.a) || contains(s.b)) return true;
-		return (!left(a, b, s.a) || !left(a, b, s.b)) && 
-			(!right(a, b, s.a) || !right(a, b, s.b));
-	}
 	point proj(point p) { // projection of p onto segment
 		p = p - a;
 		point v = vec();
@@ -75,7 +70,11 @@ struct segment {
 };
 
 bool parallel(segment r, segment s) { return parallel(r.vec(), s.vec()); }
-bool intersects(segment r, segment s) { return r.intercepts(s) && s.intercepts(r); }
+bool intersects(segment r, segment s) {
+	if(r.contains(s.a) || r.contains(s.b) || s.contains(r.a) || s.contains(r.b)) return true;
+	return left(r.a, r.b, s.a) != left(r.a, r.b, s.b) && left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
+}
+
 point line_intersection(segment r, segment s) {
 	// assert( not parallel(r, s) );
 	point vr = r.vec(), vs = s.vec();
