@@ -63,6 +63,7 @@ struct segment {
 	bool contains(point p) { return a == p || b == p || parallel(a-p, b-p) == -1; }
 	// if line extension intercepts s
 	bool intercepts(segment s) {
+		if(contains(s.a) || contains(s.b)) return true;
 		return (!left(a, b, s.a) || !left(a, b, s.b)) && 
 			(!right(a, b, s.a) || !right(a, b, s.b));
 	}
