@@ -49,9 +49,8 @@ bool collinear(point a, point b, point c) { return zero(area2(a,b,c)); }
 
 // CORNER: a == (0, 0) b == (0, 0)
 int parallel(point a, point b) {
-	// if precision is a concern
-	// a = a / a.norm(); b = b / b.norm(); 
 	if(!collinear(point(), a, b)) return 0;
+	a = a / a.norm(); b = b / b.norm(); 
 	return zero(a.x - b.x) && zero(a.y - b.y) ? 1 : -1;
 }
 
