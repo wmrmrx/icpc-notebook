@@ -3,7 +3,7 @@ template<class T> struct Point3D {
 	typedef Point3D P;
 	typedef const P& R;
 	T x, y, z;
-	explicit Point3D(T x=0, T y=0, T z=0) : x(x), y(y), z(z) {}
+	explicit Point3D(T _x=0, T _y=0, T _z=0) : x(_x), y(_y), z(_z) {}
 	bool operator<(R p) const {
 		return tie(x, y, z) < tie(p.x, p.y, p.z); }
 	bool operator==(R p) const {

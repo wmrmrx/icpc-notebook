@@ -1,5 +1,6 @@
 namespace DominatorTree{
 	//fill g and rg, dominator tree will be store in tree
+	const int MAXN = 2e5+5;
 	vector<int> g[MAXN],tree[MAXN],rg[MAXN],bucket[MAXN];
 	int sdom[MAXN],par[MAXN],dom[MAXN],dsu[MAXN],label[MAXN];
 	int arr[MAXN],rev[MAXN],T;
