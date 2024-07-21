@@ -1,4 +1,7 @@
 #import "template.typ": *
+
+#import sym
+
 // Change here
 #show: project.with(
   title: "Codando & Coringando",
