@@ -1,10 +1,9 @@
 #import "template.typ": *
 
 #import sym
-
 // Change here
 #show: project.with(
-  title: "Codando & Coringando",
+  title: "Universidade de São Paulo - Codando & Coringando",
   date: datetime.today().display(),
   authors: (
     "LipArcanjo",
@@ -26,6 +25,7 @@ Write the one liner above without line breaks and save it as `hash.sh`, and run
 chmod +x hash.sh
 ``` 
 to make it executable.
+vai luan
 
 To get the hash in `file.cpp` between lines `<l1>` and `<l2>`, run
 ```sh
@@ -39,6 +39,17 @@ The empty hash is
 while
 the `m5dsum` of `hash.sh` is
 `9cd12`.
+
+== Burnside Lemma
+
+Let $G$ be a finite group that acts on set $X$. Let $X^g := { x in X | g.x = x }$. The number of orbits $|X slash G|$ is
+
+$|X slash G| = 1/(|G|) sum_(g in G) |X^g| $
+
+== Lucas' Theorem
+
+For prime p,
+$binom(n, m) = product_(i=0)^n binom(n_i, m_i) space (mod p)$
 
 == Catalan
 
@@ -83,11 +94,11 @@ $z = r cos sym(theta)$ | $sym(phi) =$ atan2 $(y,x)$
 
 == series and sums
 
-$1/(1-x) = sum_(k=0) x^k$ |
-$e^x = sum_(k=0) x^k/k!$ |
+$1/(1-x) = sum_(k=0) x^k$ | 
+$e^x = sum_(k=0) x^k/k!$ | 
 $ln(1+x) = sum_(k=1) (-1)^(k+1) x^k/k$
 
-$sqrt(1+x) = 1 + sum_(k=1) (-1)^(k+1)x^k/2^(2k-1)$ |
+$sqrt(1+x) = 1 + sum_(k=1) (-1)^(k+1)x^k/2^(2k-1)$ | 
 $1/(sqrt(1-x)) = sum_(k=0) x^k/4^k mat(2k;k)$
 
 $sin x = sum_(k=0) (-1)^(k) (x)^(2k+1)/(2k+1)!$ |
