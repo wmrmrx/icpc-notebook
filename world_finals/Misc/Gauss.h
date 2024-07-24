@@ -1,12 +1,8 @@
 /**
- * Author: Per Austrin, Simon Lindholm
- * Date: 2004-02-08
- * License: CC0
- * Description: Solves $A * x = b$. If there are multiple solutions, an arbitrary one is returned.
- *  Returns rank, or -1 if no solutions. Data in $A$ and $b$ is lost.
- * Time: O(n^2 m)
- * Status: tested on kattis:equationsolver, and bruteforce-tested mod 3 and 5 for n,m <= 3
- */
+Solves $A * x = b$. If there are multiple solutions, an arbitrary one is returned.
+Returns rank, or -1 if no solutions. Data in $A$ and $b$ is lost.
+Time: O(n^2 m)
+*/
 typedef vector<double> vd;
 const double eps = 1e-12;
 
