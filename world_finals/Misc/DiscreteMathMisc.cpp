@@ -1,5 +1,5 @@
 int mul(int a, int b, int mod){
-	return a*b%mod;
+	return ( __int128(a)*b)%mod;
 }
 
 int pw(int a, int n, int mod){
