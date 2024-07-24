@@ -27,7 +27,7 @@ bool isPrime(int n){
 
 int pollard(int n){
 	int x = 0, y = 0, t = 30, prd = 2, i = 1, q;
-	auto f = [&](int x) { return modmul(x, x, n) + i; };
+	auto f = [&](int x) { return mul(x, x, n) + i; };
 	while (t++ % 40 || __gcd(prd, n) == 1) {
 		if (x == y) x = ++i, y = f(x);
 		if ((q = mul(prd, max(x,y) - min(x,y), n))) prd = q;
@@ -48,7 +48,7 @@ vector<int> factor(int n){
 int sqrt(int a, int p){
 	a %= p; if (a < 0) a += p;
 	if (a == 0) return 0;
-	assert(pw(a, (p-1)/2, p) == 1); // else no solution
+	if(pw(a, (p-1)/2, p) != 1) return -1; //no solution
 	if (p % 4 == 3) return pw(a, (p+1)/4, p);
 	int s = p - 1, n = 2;
 	int r = 0, m;
