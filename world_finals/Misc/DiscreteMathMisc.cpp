@@ -27,7 +27,7 @@ bool isPrime(int n){
 
 int pollard(int n){
 	int x = 0, y = 0, t = 30, prd = 2, i = 1, q;
-	auto f = [&](int x) { return mul(x, x, n) + i; };
+	auto f = [&](int z) { return mul(z, z, n) + i; };
 	while (t++ % 40 || __gcd(prd, n) == 1) {
 		if (x == y) x = ++i, y = f(x);
 		if ((q = mul(prd, max(x,y) - min(x,y), n))) prd = q;
