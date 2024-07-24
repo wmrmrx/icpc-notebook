@@ -4,7 +4,6 @@
  */
 
 typedef complex<double> C;
-typedef vector<double> vd;
 void fft(vector<C>& a) {
 	int n = a.size(), L = 31 - __builtin_clz(n);
 	static vector<complex<long double>> R(2, 1);
@@ -34,11 +33,11 @@ void fft(vector<C>& a) {
 
 			}
 }
-vd conv(const vd& a, const vd& b) {
+vector<double> conv(const vector<double>& a, const vector<double>& b) {
 	if (a.empty() || b.empty()) return {};
 	int sza = a.size();
 	int szb = b.size();
-	vd res(sza + szb - 1);
+	vector<double> res(sza + szb - 1);
 	int L = 32 - __builtin_clz(sza+szb-1), n = 1 << L;
 	vector<C> in(n), out(n);
 	copy(all(a), begin(in));
