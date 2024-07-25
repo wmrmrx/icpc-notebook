@@ -40,13 +40,22 @@ while
 the `m5dsum` of `hash.sh` is
 `9cd12`.
 
+== Matrix Inverse 2x2
+
+$A = mat(a,b;c,d)$, $A^(-1) = 1/(a d-b c)mat(d,-b;-c,a)$
+
+== Pick Theorem
+
+$A = i + b/2 -1$, where i is the number of lattice points inside the polygon
+and b is the number on boundary. Work for simple polygon.
+
 == Burnside Lemma
 
 Let $G$ be a finite group that acts on set $X$. Let $X^g := { x in X | g.x = x }$. The number of orbits $|X slash G|$ is
 
 $|X slash G| = 1/(|G|) sum_(g in G) |X^g| $
 
-== Lucas' Theorem
+== Lucas Theorem
 
 For prime p,
 $binom(n, m) = product_(i=0)^n binom(n_i, m_i) space (mod p)$
@@ -78,7 +87,7 @@ $vec(0,0,delim: "[") = 1, vec(n,0,delim: "[") = vec(0,n,delim: "[") = 1$
 
 == Planar Graph
 
-If G has k connected components, then $n-m+f=k+1$.
+If G has k connected components, then $n-m+f=k+1$. 
 
 $m <= 3n - 6$. If G has no triangles, $m ≤ 2n − 4$.
 
@@ -111,3 +120,4 @@ $1^3+2^3+.. = (n^2(n+1)^2)/4$ | $1^4+2^4+... = (n(n+1)(2n+1)(3n^2+3n+1))/30$
 = Code
 
 // Script will be used to insert code here
+
