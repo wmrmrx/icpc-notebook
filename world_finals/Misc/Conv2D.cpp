@@ -16,7 +16,7 @@ vector<int> multiply(vector<vector<int>> a, vector<vector<int>> b){
 			B[i*M*2+j] = b[i][j];
 		}
 	}
-	vector<int> C = convMOD(A,B);
+	vector<int> C = conv(A,B);
 	int n = na+nb-1;
 	int m = ma+mb-1;
 	vector<<vector<int>> ret(n, vector<int>(m));
