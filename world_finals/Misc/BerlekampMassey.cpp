@@ -25,5 +25,6 @@ vector<T> berlekampMassey(vector<T> s) {
 		L = i + 1 - L; B = V; b = d; m = 0;
 	}
 	C.resize(L + 1); C.erase(C.begin());
+	for(auto &x : C) x *= T(-1);
 	return C;
 }
