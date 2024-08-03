@@ -23,8 +23,9 @@ vector<vector<int>> multiply(vector<vector<int>> a, vector<vector<int>> b){
 	for(int i = 0; i < n; i++){
 		for(int j = 0; j < m; j++){
 			int pos = i*M*2+j;
-			ret[i][j] = D[pos];
+			ret[i][j] = D[pos]+.5;
 		}
 	}
 	return ret;
 }
+
