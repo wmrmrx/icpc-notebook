@@ -47,3 +47,34 @@ T linearRec(vector<T> S, vector<T> tr, ll k) {
 	}
 	return res;
 }
+
+//S is the first k terms and C is the coeficients
+// 4.5 seg for 10^5, pretty heavy in practice
+template <typename T>
+T LinearRecurrence(vector<T>& S, vector<T> &C, long long n) {
+	if (C.empty()) return 0;
+	int k = (int)C.size();
+	assert((int)S.size() == k);
+	if (n < k) return S[n];
+	auto Q = C;
+	for (auto &x: Q) x *= T(-1);
+	Q.insert(Q.begin(), 1);
+	auto P = multiply(S, Q); //poly multiplication
+	P.resize(k);
+	while(n) {
+		auto Qminus = Q;
+		for(int i = 1; i < (int)Qminus.size(); i += 2) Qminus[i] *= T(-1);
+		auto Si = multiply(P, Qminus); //poly multiplication
+		auto Ti = multiply(Q, Qminus); //poly multiplication
+		if(n & 1) {
+			for(int i = 1 ; i < (int)Si.size() ; i += 2) P[i>>1] = Si[i];
+			for(int i = 0 ; i < (int)Ti.size() ; i += 2) Q[i>>1] = Ti[i];
+		} else {
+			for(int i = 0 ; i < (int)Si.size() ; i += 2) P[i>>1] = Si[i];
+			for(int i = 0 ; i < (int)Ti.size() ; i += 2) Q[i>>1] = Ti[i];
+		}
+		n >>= 1;
+	}
+	return P[0];
+}
+
