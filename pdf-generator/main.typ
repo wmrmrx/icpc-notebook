@@ -10,7 +10,7 @@
     "nathan_luiz",
     "wnmrmr",
   ),
-  logo: "phik.jpg"
+  logo: image("phik.jpg", width: 200pt)
 )
 
 = Template hashing
