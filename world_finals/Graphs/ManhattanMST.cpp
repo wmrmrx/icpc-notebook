@@ -11,10 +11,9 @@
 vector<pair<ll, pair<int, int>> > E;
 
 void manhattan_mst(vector<ll> xs, vector<ll> ys){
-	int n = sz(xs);
+	int n = xs.size();
 	vector<int> ord(n);
-	for(int i = 0; i < n; i++)
-		ord[i]=i;
+	for(int i = 0; i < n; i++) ord[i] = i;
 	for(int s = 0; s < 2; s++) {
 		for(int t = 0; t < 2; t++) {
 			auto cmp = [&](int i, int j) -> bool {
@@ -25,15 +24,14 @@ void manhattan_mst(vector<ll> xs, vector<ll> ys){
 			map<int, int> id;
 			for(int i: ord) {
 				for(auto it = id.lower_bound(-ys[i]); it != id.end(); it = id.erase(it)) {
-					int j = it->ss;
+					int j = it->second;
 					if(xs[j] - ys[j] > xs[i] - ys[i]) break;
-					E.pb(mp(abs(xs[i] - xs[j]) + abs(ys[i] - ys[j]), mp(i, j)));
+					E.pb(pair(abs(xs[i] - xs[j]) + abs(ys[i] - ys[j]), pair(i, j)));
 				}
 				id[-ys[i]] = i;
 			}
 			swap(xs,ys);
 		}
-		for(int i = 0; i < n; i++)
-			xs[i] *= -1;
+		for(int i = 0; i < n; i++) xs[i] *= -1;
 	}
 }
