@@ -6,9 +6,9 @@
   title: "Universidade de São Paulo - Codando & Coringando",
   date: datetime.today().display(),
   authors: (
-    "LipArcanjo",
-    "nathan_luiz",
-    "wnmrmr",
+    "Luan I. P. Arcanjo",
+    "Nathan L. B. Martins",
+    "Willian M. Mori",
   ),
   logo: "phik.jpg"
 )
