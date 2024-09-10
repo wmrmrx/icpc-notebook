@@ -1,8 +1,5 @@
-/**
-   Rounding is safe if $(\sum a_i^2 + \sum b_i^2)\log_2{N} < 9\cdot10^{14}$
-   (in practice $10^{16}$; higher for random inputs).
- */
-
+// Rounding is safe if $(\sum a_i^2 + \sum b_i^2)\log_2{N} < 9\cdot10^{14}$
+// (in practice $10^{16}$; higher for random inputs).
 typedef complex<double> C;
 void fft(vector<C>& a) {
 	int n = a.size(), L = 31 - __builtin_clz(n);

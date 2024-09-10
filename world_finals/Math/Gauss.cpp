@@ -1,11 +1,8 @@
 // Gauss
-//
 // Resolve sistema linear
 // Retornar um par com o numero de solucoes
 // e alguma solucao, caso exista
-//
 // O(n^2 * m)
-
 template<typename T>
 pair<int, vector<T>> gauss(vector<vector<T>> a, vector<T> b) {
 	const double eps = 1e-6;
@@ -20,7 +17,6 @@ pair<int, vector<T>> gauss(vector<vector<T>> a, vector<T> b) {
 		for (int i = col; i <= m; i++)
 			swap(a[sel][i], a[row][i]);
 		where[col] = row;
-
 		for (int i = 0; i < n; i++) if (i != row) {
 			T c = a[i][col] / a[row][col];
 			for (int j = col; j <= m; j++)

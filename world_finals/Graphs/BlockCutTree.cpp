@@ -8,13 +8,11 @@ struct BlockCutTree {
 	vector<int> comp; // comp[e]: component of edge e
 	vector<vector<int>> gart; // gart[v]: list of components an articulation point v is adjacent to
 			          // if v is NOT an articulation point, then gart[v] is empty
-				
 	// assumes auto [neighbor_vertex, edge_id] = g[current_vertex][i]
 	BlockCutTree(int n, int m, vector<pair<int,int>> g[]): ncomp(0), comp(m), gart(n) {
 		vector<bool> vis(n), vise(m);
 		vector<int> low(n), prof(n);
 		stack<pair<int,int>> st;
-
 		function<void(int,bool)> dfs = [&](int v, bool root) {
 			vis[v] = 1;
 			int arb = 0; // arborescences
@@ -45,7 +43,6 @@ struct BlockCutTree {
 		for(int v=0;v<n;v++) if(!vis[v]) dfs(v, 1);
 	}
 };
-
 struct LuanTree: BlockCutTree {
 	vector<vector<int>> blocks, tree; // nodes in block, blockcuttree
 	vector<vector<pair<int,int>>> edgblocks; // edges on  the blocks

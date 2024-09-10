@@ -2,7 +2,6 @@
 // Finds the lexicographically smallest rotation of a string in O(N)
 // Usage:
 // rotate(v.begin(), v.begin()+min_rotation(v), v.end());
-//
 // template <typename T> int min_rotation(basic_string<T> s) {
 int min_rotation(string s) {
 	int a = 0, n = s.size(); s += s;

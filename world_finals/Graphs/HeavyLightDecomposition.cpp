@@ -1,6 +1,5 @@
 // Heavy Light Decomposition
 // if EDGE is true, the child of the edge represents it
-
 template<typename SEG, bool EDGE> struct HLD {
 	vector<int> dad, pos, in, out, h;
 	SEG seg;

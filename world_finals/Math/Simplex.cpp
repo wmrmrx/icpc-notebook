@@ -13,20 +13,16 @@
  * Time: O(NM * \#pivots), where a pivot may be e.g. an edge relaxation. O(2^n) in the general case.
  * Status: seems to work?
  */
-
 typedef double T; // long double, Rational, double + mod<P>...
 typedef vector<T> vd;
 typedef vector<vd> vvd;
-
 const T eps = 1e-8, inf = 1/.0;
 #define MP make_pair
 #define ltj(X) if(s == -1 || MP(X[j],N[j]) < MP(X[s],N[s])) s=j
-
 struct LPSolver {
 	int m, n;
 	vector<int> N, B;
 	vvd D;
-
 	LPSolver(const vvd& A, const vd& b, const vd& c) :
 		m(b.size()), n(c.size()), N(n+1), B(m), D(m+2, vd(n+2)) {
 			for(int i = 0; i < m; i++){
@@ -42,7 +38,6 @@ struct LPSolver {
 			}
 			N[n] = -1; D[m+1][n] = 1;
 		}
-
 	void pivot(int r, int s) {
 		T *a = D[r].data(), inv = 1 / a[s];
 		for(int i = 0; i < m+2; i++){
@@ -63,7 +58,6 @@ struct LPSolver {
 		D[r][s] = inv;
 		swap(B[r], N[s]);
 	}
-
 	bool simplex(int phase) {
 		int x = m + phase - 1;
 		for (;;) {
@@ -82,7 +76,6 @@ struct LPSolver {
 			pivot(r, s);
 		}
 	}
-
 	T solve(vd &x) {
 		int r = 0;
 		for(int i = 1; i < m; i++){

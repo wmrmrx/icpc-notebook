@@ -1,7 +1,6 @@
 // Nearest Points
 // Returns minimum distance SQUARED between two points
 // Complexity: O(NlogN)
-
 template <typename C_T>
 C_T nearest_points(vector<point> v) {
 	using lim = numeric_limits<C_T>;

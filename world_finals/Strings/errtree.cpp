@@ -1,16 +1,11 @@
 //  Err Tree - Palindromic Tree
-
 //  Description: A tree such that each node represents a 
 //               palindrome of string s. It is possible to append
 //               a character.
 //  Complexity: Amortized O(|s|)
-//
-
 struct palindromic_tree {
-    // node info
     vector<int> len, link, freq;
     vector<map<char, int>> to;
-
     int cur, cnt;
     palindromic_tree (int N): cur(1), cnt(2), len (N), link (N), to (N), freq (N) { len[0] = -1; }
     void add(int i, string& s) {

@@ -1,21 +1,16 @@
 // Hungarian
-//
 // Resolve o problema de assignment (matriz n x n)
 // Colocar os valores da matriz em 'a' (pode < 0)
 // assignment() retorna um par com o valor do
 // assignment minimo, e a coluna escolhida por cada linha
-//
 // O(n^3)
-
 template<typename T> struct Hungarian {
 	static constexpr T INF = numeric_limits<T>::max() / 10000;
 	int n;
 	vector<vector<T>> a;
 	vector<T> u, v;
 	vector<int> p, way;
-
 	Hungarian(int n_) : n(n_), a(n, vector<T>(n)), u(n+1), v(n+1), p(n+1), way(n+1) {}
-
 	void set(int i, int j, T w) { a[i][j] = w; }
 	pair<T, vector<int>> assignment() {
 		for (int i = 1; i <= n; i++) {

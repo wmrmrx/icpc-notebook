@@ -1,15 +1,10 @@
-static const uint64_t FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();
+static const uint64_t FIXED_RANDOM = 12341231;
 std::mt19937 mt(FIXED_RANDOM);
 struct treap_node {
 	std::array<treap_node*, 2> c{nullptr, nullptr};
 	std::mt19937::result_type pri = mt();
-	int lazy = 0;
-	int lazyf = 0;
-	int flip = 0;
-	ll soma = 0;
-	ll eu = 0;
-	int v;
- 
+	int lazy = 0, lazyf = 0, flip = 0, v;
+	ll soma = 0, eu = 0;
 	void apply(int a, int b) {
 		if(b){
 			swap(c[0],c[1]);
@@ -17,16 +12,13 @@ struct treap_node {
 			lazy *= -1;
 			lazyf ^= 1;
 		}
-		v += a;
-		lazy += a;
+		v += a; lazy += a;
 	}
- 
 	void downdate() {
 		if (lazy) {
 			if (c[0]) c[0]->apply(lazy, lazyf);
 			if (c[1]) c[1]->apply(lazy, lazyf);
-			lazy = 0;
-			lazyf = 0;
+			lazy = lazyf = 0;
 		}
 	}
 	void update() {
@@ -35,10 +27,7 @@ struct treap_node {
 		if(c[1]) soma += c[1]->soma;
 	}
 };
- 
-/*
-this code just merge if max(a) <= min(b), don't deal with complex merges
-*/
+// this code just merge if max(a) <= min(b), don't deal with complex merges
 treap_node* merge(treap_node* a, treap_node* b) {
 	if (!b){
 		a->update();
@@ -48,7 +37,6 @@ treap_node* merge(treap_node* a, treap_node* b) {
 		b->update();
 		return b;
 	}
- 
 	treap_node* r;
 	if (a->pri < b->pri) {
 		r = a;
@@ -78,7 +66,6 @@ std::pair<treap_node*, treap_node*> split(treap_node* r, int y) {
 	if(b) b->update();
 	return {a, b};
 }
- 
 treap_node* add(treap_node* a, treap_node* node, int y, int eu){
 	node->v = y;
 	node->eu = eu;
@@ -88,25 +75,20 @@ treap_node* add(treap_node* a, treap_node* node, int y, int eu){
 	ROOT = merge(ROOT, r);
 	return ROOT;
 }
-
 //reverte L to R, a is a tree where the keys 
 //are from 1 to N, 1 <= L <= R <= N
 treap_node* reverte(treap_node *a, int L, int R){
 	if(!a) return a;
 	int tam = R-L+1;
-	treap_node*x;
-	treap_node*y;
-	treap_node*z;
+	treap_node*x,*y,*z;
 	tie(x,y) = split(a,L);
 	tie(y,z) = split(y,R+1);
 	if(y && tam >= 2){
 		y->apply(R+L,1);
 	}
-	a = merge(x,y);
-	a = merge(a,z);
+	a = merge(x,y); a = merge(a,z);
 	return a;
 }
- 
 treap_node* find(treap_node *a, int y){
 	if(!a) return nullptr;
 	a->downdate();
@@ -121,4 +103,3 @@ treap_node* find(treap_node *a, int y){
 	b->update();
 	return b;
 }
-

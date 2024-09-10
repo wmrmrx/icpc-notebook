@@ -1,4 +1,3 @@
-// https://github.com/kth-competitive-programming/kactl/blob/main/content/strings/Zfunc.h
 // Description: z[i] computes the length of the longest common prefix of s[i:] and s in O(N)
 vector<int> zfunc(string s) {
 	int n = s.size();

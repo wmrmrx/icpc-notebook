@@ -12,16 +12,13 @@ struct Line{
 		return a*x+b;
 	}
 };
-
 struct LiChaoTree{
 	vector<Line> seg;
 	int n;
-
 	LiChaoTree(int _n){
 		n = _n;
 		seg = vector<Line>(4*(n+1));
 	}
-
 	void add_line(int r, int i, int j, Line nw){
 		int m = (i+j)/2;
 		bool left = nw.eval(i) < seg[r].eval(i);
@@ -36,7 +33,6 @@ struct LiChaoTree{
 			add_line(2*r+1,m+1,j,nw);
 		}
 	}
-
 	int get(int r, int i, int j, int x){
 		int m = (i+j)/2;
 		if(i == j){
@@ -48,6 +44,3 @@ struct LiChaoTree{
 		return min(ret, seg[r].eval(x));
 	}
 };
-
-
-

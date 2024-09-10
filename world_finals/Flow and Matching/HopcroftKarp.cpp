@@ -1,13 +1,8 @@
 // Maximum matching in a X-Y bipartite graph
-// 
 // Builder:
 // 	HopcroftKarp match(|X|, |Y|, edges: X x Y)
-//
 // u is matched with match.l[u]
 // match.ans is the size of the maximum matching
-//
-// Taken from fastest submission on yosupo:
-// https://judge.yosupo.jp/submission/154408
 struct HopcroftKarp {
 	vector<int> g, l, r;
 	int ans;
@@ -16,7 +11,6 @@ struct HopcroftKarp {
 		for (auto &[x, y] : e) deg[x]++;
 		for (int i = 1; i <= n; i++) deg[i] += deg[i - 1];
 		for (auto &[x, y] : e) g[--deg[x]] = y;
-
 		vector<int> q(n);
 		while(true) {
 			vector<int> a(n, -1), p(n, -1);

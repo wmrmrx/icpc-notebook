@@ -1,11 +1,8 @@
 // Double geometry
 // For integer replace EPS with 0
 // WARNING: INPUT IN DOUBLE IS SLOW, IF POSSIBLE READ WITH INTEGER
-
 constexpr double EPS = 1e-10;
-
 bool zero(double x) { return abs(x) <= EPS; }
-
 // CORNER: point = (0, 0)
 struct point {
 	double x, y;
@@ -25,7 +22,6 @@ struct point {
 	bool operator==(const point& rhs) const { return zero(x-rhs.x) && zero(y-rhs.y); }
 };
 const point ccw90(1, 0), cw90(-1, 0);
-
 // angular comparison in [0, 2pi)
 // CORNER: a == (0, 0) or b == (0, 0)
 bool ang_cmp(point a, point b) {
@@ -36,24 +32,20 @@ bool ang_cmp(point a, point b) {
 	using t = pair<bool, double>;
 	return t(quad(a), 0) < t(quad(b), a^b);
 }
-
 // squared distance
 double dist2(point p, point q) { return (p - q)*(p - q); }
 double dist(point p, point q) { return sqrt(dist2(p, q)); }
-
 // two times signed area of triangle abc
 double area2(point a, point b, point c) { return (b - a) ^ (c - a); }
 bool left(point a, point b, point c) { return area2(a, b, c) > EPS; }
 bool right(point a, point b, point c) { return area2(a, b, c) < -EPS; }
 bool collinear(point a, point b, point c) { return zero(area2(a,b,c)); }
-
 // CORNER: a == (0, 0) b == (0, 0)
 // Has precision issues
 int parallel(point a, point b) {
 	if(!collinear(point(), a, b)) return 0;
 	return (a.x > -EPS) == (b.x > -EPS) && (a.y > -EPS) == (b.y > -EPS) ? 1 : -1;
 }
-
 // CORNER: a == b
 struct segment {
 	point a, b;
@@ -68,20 +60,17 @@ struct segment {
 		return a + v*( (p*v) / (v*v) );
 	}
 };
-
 bool parallel(segment r, segment s) { return parallel(r.vec(), s.vec()); }
 bool intersects(segment r, segment s) {
 	if(r.contains(s.a) || r.contains(s.b) || s.contains(r.a) || s.contains(r.b)) return true;
 	return left(r.a, r.b, s.a) != left(r.a, r.b, s.b) && left(s.a, s.b, r.a) != left(s.a, s.b, r.b);
 }
-
 point line_intersection(segment r, segment s) {
 	// assert( not parallel(r, s) );
 	point vr = r.vec(), vs = s.vec();
 	double cr = vr ^ r.a, cs = vs ^ s.a;
 	return (vs*cr - vr*cs) / (vr ^ vs);
 }
-
 struct polygon {
 	vector<point> vp;
 	int n;
@@ -90,7 +79,6 @@ struct polygon {
 	}
 	int nxt(int i) { return i+1<n ? i+1 : 0; }
 	int prv(int i) { return i ? i-1 : n-1; }
-
 	// O(n). If positive, the polygon is in ccw order. It is in cw order otherwise.
 	double area2() {
 		double acum = 0;
@@ -98,7 +86,6 @@ struct polygon {
 			acum += vp[i] ^ vp[nxt(i)];
 		return acum;
 	}
-
 	// O(log n). The polygon must be convex and in ccw order
 	bool has(point p) { 		
 		if(right(vp[0], vp[1], p) || left(vp[0], vp[n-1], p)) return 0;
@@ -110,7 +97,6 @@ struct polygon {
 		}
 		return hi != n ? !right(vp[lo], vp[hi], p) : dist2(vp[0], p) < dist2(vp[0], vp[n-1]) + EPS;
 	}
-
 	// O(n). The polygon must be convex and in ccw order.
 	double calipers() { 
 		double ans = 0;
@@ -122,7 +108,6 @@ struct polygon {
 		}
 		return ans;
 	}
-
 	// returns the maximal point using comparator cmp
 	// example: 
 	// 	extreme([&](point p, point q) {return p * v > q * v;});
@@ -146,7 +131,6 @@ struct polygon {
 		}
 		return lo;
 	}
-
 	pair<int, int> tangent(point p) { // O(log n) for convex polygon in ccw orientation
 		// Finds the indices of the two tangents to an external point q
 		auto left_tangent = [&](point r, point s) -> bool {
@@ -157,11 +141,9 @@ struct polygon {
 		};
 		return {extreme(left_tangent), extreme(right_tangent)};
 	}
-
 	void normalize() { // p[0] becomes the lowest leftmost point 
 		rotate(vp.begin(), min_element(all(vp)), vp.end());
 	}
-
 	polygon operator+(polygon& rhs) { // Minkowsky sum
 		normalize();
 		rhs.normalize();
@@ -175,13 +157,11 @@ struct polygon {
 		return polygon(sum);
 	}
 };
-
 // Circle
 //  Basic structure of circle and operations related with it.
 // 
 // All operations' time complexity are O(1)
 const double PI = acos(-1);
-
 struct circle {
 	point o; double r;
 	circle() {}
@@ -196,7 +176,6 @@ struct circle {
 		o = a + point( (c.y*B - b.y*C) / (2*D), (b.x * C - c.x * B) / (2*D) );
 		r = (o-a).norm();
 	}
-
 	bool has(point p) { return (o - p).norm2() < r*r + EPS; }
 	bool inside(circle c){ // non strict
 		double d =(o-c.o).norm();
@@ -223,10 +202,8 @@ struct circle {
 		return d < r * r + EPS;
 	}
 };
-
 // Circle Area Intersection
 // O(n^2 log n) (high constant)
-// https://github.com/mhunicken/icpc-team-notebook-el-vasito/blob/master/geometry/circle.cpp
 vector<double> intercircles(vector<circle> c){
 	vector<double> r(c.size()+1); // r[k]: area covered by at least k circles
 	for(int i=0;i<int(c.size());i++) {

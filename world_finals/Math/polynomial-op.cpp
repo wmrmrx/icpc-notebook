@@ -2,13 +2,10 @@
 // Polynomial division: O(n*log(n))
 // Multi-point polynomial evaluation: O(n*log^2(n))
 // Polynomial interpolation: O(n*log^2(n))
- 
 // Works with NTT. For FFT, just replace the type.
-
 #define SZ(s) int(s.size())
 using Z = mint<998244353>;
 typedef vector<Z> poly;
-
 poly add(poly &a, poly &b) {
     int n = SZ(a), m = SZ(b);
     poly ans(max(n, m));
@@ -21,7 +18,6 @@ poly add(poly &a, poly &b) {
     while (SZ(ans) > 1 && !ans.back().x) ans.pop_back();
     return ans;
 }
-
 poly invert(poly &b, int d) {
     poly c = {b[0].inv ()};
     while (SZ(c) <= d) {
@@ -37,11 +33,9 @@ poly invert(poly &b, int d) {
     c.resize(d + 1);
     return c;
 }
-
 pair<poly, poly> divslow(poly &a, poly &b) {
     poly q, r = a;
-    while (SZ(r) >= SZ(b))
-    {
+    while (SZ(r) >= SZ(b)) {
         q.pb(r.back() * b.back().inv ());
         if (q.back().x)
             for (int i = 0; i < SZ(b); i++)
@@ -53,7 +47,6 @@ pair<poly, poly> divslow(poly &a, poly &b) {
     reverse(all(q));
     return {q, r};
 }
-
 pair<poly, poly> divide(poly &a, poly &b) { // returns {quotient,remainder}
     int m = SZ(a), n = SZ(b), MAGIC = 750;
     if (m < n)
@@ -71,9 +64,7 @@ pair<poly, poly> divide(poly &a, poly &b) { // returns {quotient,remainder}
     poly r = add(a, bq);
     return {q, r};
 }
-
 vector<poly> tree;
-
 void filltree(vector<Z> &x) {
     int k = SZ(x);
     tree.resize(2 * k);
@@ -81,7 +72,6 @@ void filltree(vector<Z> &x) {
     for (int i = k - 1; i; i--)
         tree[i] = NTT::multiply(tree[2 * i], tree[2 * i + 1]);
 }
-
 vector<Z> evaluate(poly &a, vector<Z> &x) {
     filltree(x);
     int k = SZ(x);
@@ -92,13 +82,11 @@ vector<Z> evaluate(poly &a, vector<Z> &x) {
     for (int i = 0; i < k; i++) r.pb(ans[i + k][0]);
     return r;
 }
-
 poly derivate(poly &p) {
     poly ans(SZ(p) - 1);
     for (int i = 1; i < SZ(p); i++) ans[i - 1] = p[i] * i;
     return ans;
 }
-
 poly interpolate(vector<Z> &x, vector<Z> &y) {
     filltree(x);
     poly p = derivate(tree[1]);

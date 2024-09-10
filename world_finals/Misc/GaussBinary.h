@@ -1,15 +1,8 @@
-/**
- * Author: Simon Lindholm
- * Date: 2016-08-27
- * License: CC0
- * Source: own work
- * Description: Solves $Ax = b$ over $\mathbb F_2$. If there are multiple solutions, one is returned arbitrarily.
- *  Returns rank, or -1 if no solutions. Destroys $A$ and $b$.
- * Time: O(n^2 m)
- * Status: bruteforce-tested for n, m <= 4
- */
+// Description: Solves $Ax = b$ over $\mathbb F_2$. If there are multiple solutions, one is returned arbitrarily.
+// Returns rank, or -1 if no solutions. Destroys $A$ and $b$.
+// Time: O(n^2 m)
+// Status: bruteforce-tested for n, m <= 4
 typedef bitset<1000> bs;
-
 int solveLinear(vector<bs>& A, vector<int>& b, bs& x, int m) {
 	int n = A.size(), rank = 0, br;
 	assert(m <= int32_t(x.size()));

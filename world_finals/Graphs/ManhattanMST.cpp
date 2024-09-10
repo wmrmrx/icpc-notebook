@@ -1,5 +1,4 @@
 typedef point<int> P;
-
 vector<array<int, 3>> manhattanMST(vector<P> ps) {
 	vector<int> id(ps.size());
 	iota(all(id), 0);

@@ -11,7 +11,6 @@
 // polygons (such as a point, line, segment or half-line).
 //
 // Time complexity: O(n logn)
-
 struct halfplane: public segment {
 	double ang;
 	halfplane() {}
@@ -30,7 +29,6 @@ struct halfplane: public segment {
 		return right(a, b, r);
 	}
 };
-
 constexpr double INF = 1e19;
 vector<point> hp_intersect(vector<halfplane> h) {
 	array<point, 4> box = {
@@ -44,9 +42,7 @@ vector<point> hp_intersect(vector<halfplane> h) {
 	sort(all(h));
 	h.resize(unique(all(h)) - h.begin());
 	deque<halfplane> dq;
-
 	auto sz = [&]() -> int { return dq.size(); };
-
 	for(auto hp: h) {
 		while(sz() > 1 && hp.out(line_intersection(dq.back(), dq[sz() - 2])))
 			dq.pop_back();

@@ -1,7 +1,6 @@
 int mul(int a, int b, int mod){
 	return ( __int128(a)*b)%mod;
 }
-
 int pw(int a, int n, int mod){
 	int ret = 1;
 	while(n > 0){
@@ -11,7 +10,6 @@ int pw(int a, int n, int mod){
 	}
 	return ret;
 }
-
 bool isPrime(int n){
 	if (n < 2 || n % 6 % 4 != 1) return (n | 1) == 3;
 	int A[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
@@ -24,7 +22,6 @@ bool isPrime(int n){
 	}
 	return true;
 }
-
 int pollard(int n){
 	int x = 0, y = 0, t = 30, prd = 2, i = 1, q;
 	auto f = [&](int z) { return mul(z, z, n) + i; };
@@ -35,7 +32,6 @@ int pollard(int n){
 	}
 	return __gcd(prd, n);
 }
-
 vector<int> factor(int n){
 	if (n == 1) return {};
 	if (isPrime(n)) return {n};

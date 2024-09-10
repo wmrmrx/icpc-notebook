@@ -21,7 +21,6 @@ struct Delaunay {
 		bool operator<(const double &y) const { return gety(sweepx) < y; }
 		bool operator<(const arc &o) const { return gety(sweepx) < o.gety(sweepx); }
 	};
-
 	using beach = multiset<arc, less<>>;
 	using bit = beach::iterator;
 	struct event {
@@ -31,7 +30,6 @@ struct Delaunay {
 		event(double _x, int _id, bit* _it) : x(_x), id(_id), it(_it) {}
 		bool operator<(const event &e) const { return x > e.x; }
 	};
-
 	int n, ti;
 	beach line;
 	vector<pair<point, int>> v;

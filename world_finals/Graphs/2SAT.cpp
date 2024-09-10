@@ -1,5 +1,4 @@
 // 2-SAT
-
 struct SCC {
     int N, ti = 0; vector<vector<int>> adj;
     vector<int> disc, comp, st, comps;
@@ -27,7 +26,6 @@ struct SCC {
         reverse(all(comps));
     }
 };
- 
 struct TwoSAT {
     int N = 0; vector<pair<int, int>> edges;
     void init (int _N) { N = _N; }
@@ -36,12 +34,8 @@ struct TwoSAT {
         x = max(2 * x, -1 - 2 * x), y = max(2 * y, -1 - 2 * y);
         edges.push_back ({x, y}); 
     }
-    void implies (int x, int y) { 
-        either (~x,y); 
-    }
-    void must (int x) { 
-        either (x,x); 
-    }
+    void implies (int x, int y) { either (~x,y); }
+    void must (int x) { either (x,x); }
     void atMostOne (const vector<int>& li) {
         if (li.size () <= 1) return;
         int cur = ~li[0];

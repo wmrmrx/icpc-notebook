@@ -6,16 +6,13 @@ namespace delaunay {
 		point o;
 		Q rot, nxt;
 		bool used;
-
 		QuadEdge(int id_ = -1, point o_ = point(INF, INF)) :
 			id(id_), o(o_), rot(0), nxt(0), used(false) {}
-
 		Q rev() const { return rot->rot; }
 		Q next() const { return nxt; }
 		Q prev() const { return rot->next()->rot; }
 		point dest() const { return rev()->o; }
 	};
-
 	Q edge(point from, point to, int id_from, int id_to) {
 		Q e1 = new QuadEdge(id_from, from);
 		Q e2 = new QuadEdge(id_to, to);
@@ -25,12 +22,10 @@ namespace delaunay {
 		tie(e1->nxt, e2->nxt, e3->nxt, e4->nxt) = {e1, e2, e4, e3};
 		return e1;
 	}
-
 	void splice(Q a, Q b) {
 		swap(a->nxt->rot->nxt, b->nxt->rot->nxt);
 		swap(a->nxt, b->nxt);
 	}
-
 	void del_edge(Q& e, Q ne) { // delete e and assign e <- ne
 		splice(e, e->prev());
 		splice(e->rev(), e->rev()->prev());
@@ -38,19 +33,16 @@ namespace delaunay {
 		delete e->rot; delete e;
 		e = ne;
 	}
-
 	Q conn(Q a, Q b) {
 		Q e = edge(a->dest(), b->o, a->rev()->id, b->id);
 		splice(e, a->rev()->prev());
 		splice(e->rev(), b);
 		return e;
 	}
-
 	bool in_c(point a, point b, point c, point p) { // p ta na circunf. (a, b, c) ?
 		__int128_t p2 = p*p, A = a*a - p2, B = b*b - p2, C = c*c - p2;
 		return (__int128_t) area2(p, a, b) * C + area2(p, b, c) * A + area2(p, c, a) * B > 0;
 	}
-
 	pair<Q, Q> build_tr(vector<point>& p, int l, int r) {
 		if (r-l+1 <= 3) {
 			Q a = edge(p[l], p[l+1], l, l+1), b = edge(p[l+1], p[r], l+1, r);
@@ -87,7 +79,6 @@ namespace delaunay {
 		}
 		return {la, rb};
 	}
-
 	vector<vector<int>> delaunay(vector<point> v) {
 		int n = v.size();
 		auto tmp = v;

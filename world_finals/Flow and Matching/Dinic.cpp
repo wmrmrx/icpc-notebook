@@ -2,7 +2,6 @@
 
 bool zero(int x) {return x == 0;}
 bool zero(double x) {return abs(x) < (1e-6);}
-
 template<typename F>
 struct Dinic {
 	static constexpr F INF = numeric_limits<F>::max();
@@ -15,15 +14,12 @@ struct Dinic {
 	vector<vector<int>> adj;
 	vector<int> lvl;
 	vector<edge> g;
-
 	Dinic(int sz): n(sz), adj(sz), lvl(sz) {}
-
 	void add_edge(int u, int v, F cap) {
 		int id = g.size();
 		g.pb({v, cap, 0}); g.pb({u, cap, cap});
 		adj[u].pb(id); adj[v].pb(id+1);
 	}
-
 	F dfs(int u, F pool, vector<int>& ptr) {
 		if(zero(pool) || u == t) return pool;
 		for(auto &i = ptr[u]; i < int(adj[u].size()); i++) {
@@ -39,7 +35,6 @@ struct Dinic {
 		}
 		return 0;
 	}
-
 	F get_flow(int _s, int _t) {
 		//reset to initial state
 		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;

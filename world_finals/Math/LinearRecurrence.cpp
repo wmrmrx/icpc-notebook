@@ -1,8 +1,4 @@
 /**
- * Author: Lucian Bicsi
- * Date: 2018-02-14
- * License: CC0
- * Source: Chinese material
  * Description: Generates the $k$'th term of an $n$-order
  * linear recurrence $S[i] = \sum_j S[i-j-1]tr[j]$,
  * given $S[0 \ldots \ge n-1]$ and $tr[0 \ldots n-1]$.
@@ -12,7 +8,6 @@
  * Time: O(n^2 \log k)
  * Status: bruteforce-tested mod 5 for n <= 5
  */
-
 template<typename T>
 T linearRec(vector<T> S, vector<T> tr, ll k) {
 	int n = tr.size();
@@ -32,22 +27,18 @@ T linearRec(vector<T> S, vector<T> tr, ll k) {
 		res.resize(n + 1);
 		return res;
 	};
-
 	vector<T> pol(n + 1), e(pol);
 	pol[0] = e[1] = 1;
-
 	for (++k; k; k /= 2) {
 		if (k % 2) pol = combine(pol, e);
 		e = combine(e, e);
 	}
-
 	T res = 0;
 	for(int i = 0; i < n; i++){
 		res = res + pol[i+1]*S[i];
 	}
 	return res;
 }
-
 //S is the first k terms and C is the coeficients
 // 4.5 seg for 10^5, pretty heavy in practice
 template <typename T>
@@ -77,4 +68,3 @@ T LinearRecurrence(vector<T>& S, vector<T> &C, long long n) {
 	}
 	return P[0];
 }
-

@@ -1,8 +1,5 @@
 // Push-Relabel / fast flow
 // Description: Quickly calculate max flow in O(V^2 E)
-// Source: https://gist.github.com/Chillee/ad2110fc17af453fb6fc3357a78cfd28#file-hlpp-cpp
-// Verification: https://www.spoj.com/problems/FASTFLOW/
- 
 
 struct HLPP {
     using F = ll; // flow type
@@ -12,18 +9,14 @@ struct HLPP {
         Edge (int to, int rev, F f) : to (to), rev (rev), f (f) {}
     };
     const F INF = numeric_limits<F>::max();
-
     int N,s,t;
     vector<vector<Edge>> adj;
-
     HLPP (int N) : N (N), adj (N), lst (N), gap (N), excess (N), height (N), cnt (N), highest (0) {}
-    
     void add_edge(int u, int v, F cap) {
         assert(cap >= 0); // don't try smth dumb
         Edge a(v, (int) adj[v].size (), cap), b(u, (int) adj[u].size (), 0);
         adj[u].pb(a), adj[v].pb(b);
     }
-
     vector<vector<int>> lst, gap;
     vector<F> excess;
     int highest, work;

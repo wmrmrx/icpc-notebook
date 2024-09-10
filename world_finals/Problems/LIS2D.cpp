@@ -10,18 +10,13 @@
 //      the biggest sequence ending in i.
 //  0eb0fc
 //
-
 const int N = 2e5 + 10;
-
 int n, memo[N];
 pair<int, int> a[N];
-
 struct segTree {
     int n;
     vector<ll> st;
-    ll combine(ll a, ll b) {
-        return max (a, b); // TODO define merge operator
-    }
+    ll combine(ll a, ll b) { return max (a, b); }
     segTree() {}
     segTree(int n) : n (n), st (2 * n, -1) {}
     void update(int i, ll x) {
@@ -41,15 +36,11 @@ struct segTree {
         return combine(resl, resr);
     }
 };
-
-
 void divide_conquer (int l, int r) {
     if (l == r) return;
     int m = (l + r) / 2;
     divide_conquer (l, m); // calculamos o valor para esquerda
-
-    // propagamos para a direita
-    // temos que comprimir coordenadas
+    // propagamos para a direita e temos que comprimir coordenadas
     vector<int> M;
     for (int j = l; j <= m; j++) {
         M.push_back (a[j].first + 1);
@@ -59,12 +50,10 @@ void divide_conquer (int l, int r) {
         M.push_back (a[j].first);
         M.push_back (a[j].second);
     }
-    sort (all (M));
-    unique (all (M));
+    sort (all (M)); M.resize(unique(all(M)) - M.begin());
     auto find_pos = [&] (int x) {
         return (int) (lower_bound (all (M), x) - M.begin ());
     };
-
     vector<array<int, 4>> events;
     // coord_x, L/R, coord_y, memo/ind
     for (int j = l; j <= m; j++)
@@ -72,7 +61,6 @@ void divide_conquer (int l, int r) {
     for (int j = m + 1; j <= r; j++)
         events.pb ({find_pos(a[j].first), 1, find_pos(a[j].second), j});
     sort (all (events));
-
     segTree st (M.size () + 1);
     for (auto [x, op, y, M] : events) {
         if (op == 0) st.update (y, M);

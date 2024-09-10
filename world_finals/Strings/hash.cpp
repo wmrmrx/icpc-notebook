@@ -18,9 +18,7 @@ template<int MOD> int str_hash<MOD>::P = 1234; // l > |sigma|
 struct Hash {
     str_hash<mod1> H1;
     str_hash<mod2> H2;
- 
     Hash (string s) : H1(str_hash<mod1>(s)), H2(str_hash<mod2>(s)) {}
- 
     ll operator()(int l, int r) {
         ll ret1 = H1(l, r), ret2 = H2(l, r);
         return (ret1 << 30) ^ (ret2);
