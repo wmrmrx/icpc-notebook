@@ -117,6 +117,12 @@ $1+2+... = (n(n+1))/2$ | $1^2+2^2+.. = (n(2n+1)(n+1))/6$
 
 $1^3+2^3+.. = (n^2(n+1)^2)/4$ | $1^4+2^4+... = (n(n+1)(2n+1)(3n^2+3n+1))/30$
 
+== Erdos-Gallai Theorem
+
+A sequence of non-negative integers $d_1 \geq ... \geq d_n$ can be represented as the degree sequence of a finite simple graph on $n$ vertices if and only if $d_1 + ... + d_n$ is even and
+$\sum_{i=1}^{k} d_i \,\, \leq \,\, k(k-1) + \sum_{i=k+1}^{n} min(d_i, k)$
+holds for every $k$ in 1 $\leq k \leq n$.
+
 = Code
 
 // Script will be used to insert code here
