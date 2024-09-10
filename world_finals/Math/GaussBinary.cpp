@@ -31,7 +31,6 @@ int solveLinear(vector<bs>& A, vector<int>& b, bs& x, int m) {
 		}
 		rank++;
 	}
-
 	x = bs();
 	for (int i = rank; i--;) {
 		if (!b[i]) continue;
