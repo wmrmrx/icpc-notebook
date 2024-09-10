@@ -123,6 +123,14 @@ A sequence of non-negative integers $d_1 >= ... >= d_n$ can be represented as th
 $sum_(i=1)^(k) d_i <= k(k-1) + sum_(i=k+1)^(n) min(d_i, k)$
 holds for every $k$ in 1 $<= k <= n$.
 
+== Prufer sequence
+
+The Prüfer sequence is a bijection between labeled trees with $n$ vertices and sequences with $n-2$ numbers from 1 to $n$.
+To get the sequence from the tree:
+- While there are more than 2 vertices, remove the leaf with smallest label and append it's neighbour to the end of the sequence.
+To get the tree from the sequence:
+- The degree of each vertex is 1 more than the number of occurrences of that vertex in the sequence. Compute the degree $d$, then do the following: for every value $x$ in the sequence (in order), find the vertex with smallest label $y$ such that $d(y) = 1$ and add an edge between $x$ and $y$, and also decrease their degrees by 1. At the end of this procedure, there will be two vertices left with degree 1; add an edge between them.
+
 = Code
 
 // Script will be used to insert code here
