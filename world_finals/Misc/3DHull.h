@@ -1,9 +1,7 @@
-/*
-Computes all faces of the 3-dimension hull of a point set.
-*No four points must be coplanar*, or else random results will be returned.
-All faces will point outwards.
-Time: O(n^2)
-*/
+// Computes all faces of the 3-dimension hull of a point set.
+// *No four points must be coplanar*, or else random results will be returned.
+// All faces will point outwards.
+// Time: O(n^2)
 typedef Point3D<double> P3;
 struct PR {
 	void ins(int x) { (a == -1 ? a : b) = x; }

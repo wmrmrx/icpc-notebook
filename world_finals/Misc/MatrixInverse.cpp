@@ -1,7 +1,4 @@
-// Author: Max Bennedich
-// Date: 2004-02-08
 // Description: Invert matrix $A$. Returns rank; result is stored in $A$ unless singular (rank < n).
-// Time: O(n^3)
 int matInv(vector<vector<double>>& A) {
 	int n = A.size(); vector<int> col(n);
 	vector<vector<double>> tmp(n, vector<double>(n));

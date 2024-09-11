@@ -1,5 +1,4 @@
-//nao faco ideia como funciona
-//	finds min k s.t. L <= (k * A) % M <= R (or -1 if it does not exist
+//finds min k s.t. L <= (k * A) % M <= R (or -1 if it does not exist
 ll solve4(ll A, ll M, ll L, ll R) {
 	if (L == 0) return 0;
 	A %= M;

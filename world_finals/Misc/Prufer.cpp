@@ -1,10 +1,6 @@
-// Prufer code
-// Traduz de lista de arestas para prufer code
-// e vice-versa
-// Os vertices tem label de 0 a n-1
-// Todo array com n-2 posicoes e valores de
-// 0 a n-1 sao prufer codes validos
-// O(n)
+// Traduz de lista de arestas para prufer code e vice-versa
+// Os vertices tem label de 0 a n-1 Todo array com n-2 
+// posicoes e valores de 0 a n-1 sao prufer codes validos O(n)
 vector<int> to_prufer(vector<pair<int, int>> tree) {
 	int n = tree.size()+1;
 	vector<int> d(n, 0);

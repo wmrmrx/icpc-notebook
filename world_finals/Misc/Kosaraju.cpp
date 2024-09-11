@@ -1,4 +1,3 @@
-// Kosaraju
 // comp[u]: component of vertex u
 // The graph of components is a DAG where
 // there is only edges i -> j where i < j

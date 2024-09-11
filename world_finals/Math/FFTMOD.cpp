@@ -1,8 +1,6 @@
-/**
- * Description: Higher precision FFT, can be used for convolutions modulo arbitrary integers
- * as long as $N\log_2N\cdot \text{mod} < 8.6 \cdot 10^{14}$ (in practice $10^{16}$ or higher).
- * Inputs must be in $[0, \text{mod})$.
- */
+// Description: Higher precision FFT, can be used for convolutions modulo arbitrary integers
+// as long as $N\log_2N\cdot \text{mod} < 8.6 \cdot 10^{14}$ (in practice $10^{16}$ or higher).
+// Inputs must be in $[0, \text{mod})$.
 template<int M> vector<ll> convMod(const vector<ll> &a, const vector<ll> &b) {
 	if (a.empty() || b.empty()) return {};
 	int sza = a.size();
