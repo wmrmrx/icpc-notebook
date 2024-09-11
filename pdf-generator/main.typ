@@ -101,7 +101,7 @@ $y = r sin sym(theta) sin sym(phi)$ | $sym(theta) = $acos$ (z/r)$
 
 $z = r cos sym(theta)$ | $sym(phi) =$ atan2 $(y,x)$
 
-== series and sums
+== Series and sums
 
 $1/(1-x) = sum_(k=0) x^k$ | 
 $e^x = sum_(k=0) x^k/k!$ | 
@@ -131,7 +131,32 @@ To get the sequence from the tree:
 To get the tree from the sequence:
 - The degree of each vertex is 1 more than the number of occurrences of that vertex in the sequence. Compute the degree $d$, then do the following: for every value $x$ in the sequence (in order), find the vertex with smallest label $y$ such that $d(y) = 1$ and add an edge between $x$ and $y$, and also decrease their degrees by 1. At the end of this procedure, there will be two vertices left with degree 1; add an edge between them.
 
+== Tutte Matrix
+
+The Tutte Matrix $A$ of a graph $G = (V, E)$ is a matrix where its determinant is non-zero if and only if a perfect matching exists. If |V| = n, then $A$ is a $n$-by-$n$ matrix where
+
+$ A_(i j) = cases(
+  x_(i j) "if" (i, j) in E "and" i < j,
+  -x_(j i) "if" (i, j) in E "and" i > j,
+  0 "otherwise"
+)  $
+
+where the $x_(i j)$ are indeterminates (can be anything).
+
+== Laplacian Matrix
+
+The Laplacian matrix $L$ of a graph $G = (V, E)$ where $|V| = n$ is a $n$-by-$n$ matrix where 
+
+$ L_(i j) = cases(
+  deg(v_i) "if" i = j,
+  -1 "if" i != j "and" (i, j) in E,
+  0 "otherwise"
+)  $
+
+If we delete one row and one column from the matrix, the determinant of the resulting $(n-1)$-by-$(n-1)$ matrix will be equal to the number of distinct spanning trees.
+
 = Code
 
 // Script will be used to insert code here
+
 

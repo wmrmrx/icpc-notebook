@@ -48,7 +48,7 @@
   ])
   show: columns.with(3, gutter: 0.7em, )
   // Table of contents.
-  outline(depth: 2, indent: true)
+  outline(depth: 3, indent: 2em)
 
   // Main body.
   set par(justify: true)
