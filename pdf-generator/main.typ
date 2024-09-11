@@ -155,6 +155,12 @@ $ L_(i j) = cases(
 
 If we delete one row and one column from the matrix, the determinant of the resulting $(n-1)$-by-$(n-1)$ matrix will be equal to the number of distinct spanning trees.
 
+== Kőnig's theorem
+
+To find a vertex cover equal to the maximum matching of a $(A, B)$-bipartite graph, let $U$ be the set of unmatched vertices in $A$, and let $Z$ be the set of vertices that are either in $U$ or are connected to $U$ by alternating paths (paths that alternate between edges that are in the matching and edges that are not in the matching). Then the vertex cover is
+
+$ K = (A backslash Z) union (B sect Z)  $
+
 = Code
 
 // Script will be used to insert code here
