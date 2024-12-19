@@ -27,6 +27,6 @@ struct Kosaraju {
 				paint(v, c);
 		};
 		for(int u: ord) if(comp[u] == -1)
-			dfs(u, ncomp++);
+			paint(u, ncomp++);
 	}
 };
