@@ -20,7 +20,7 @@
   // The page can contain a logo if you pass one with `logo: "logo.png"`.
   v(0.6fr)
   if logo != none {
-    align(right, image(logo, width: 90%))
+    align(right, image(logo, height: 80%))
   }
   v(9.6fr)
 
