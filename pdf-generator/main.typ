@@ -1,12 +1,12 @@
 #import "template.typ": *
-
 #import sym
+
 // Change here
 #show: project.with(
-  title: "Universidade de São Paulo - Codando & Coringando",
+  title: "Universidade de São Paulo - Faça o WM",
   date: datetime.today().display(),
   authors: (
-    "Luan I. P. Arcanjo",
+    "Antonio M. S. A. Hachisuca",
     "Nathan L. B. Martins",
     "Willian M. Mori",
   ),
@@ -164,5 +164,3 @@ $ K = (A backslash Z) union (B sect Z)  $
 = Code
 
 // Script will be used to insert code here
-
-
