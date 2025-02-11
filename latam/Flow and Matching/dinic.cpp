@@ -1,80 +1,43 @@
-// Dinitz
-// add_edge(s, t, cap): Adds a directed edge from s to t with capacity cap
-// get_flow(s, t): Returns max flow with source s and sink t
-//
-// Complexity: O(E*V^2). If unit edges only: O(E*sqrt(V))
-
-bool zero(int x) {
-	return x == 0;
-}
-bool zero(double x) {
-	return abs(x) < (1e-6);
-}
-
-template<typename F>
+// https://github.com/kth-competitive-programming/kactl/blob/main/content/graph/Dinic.h
 struct Dinic {
-	static constexpr F INF = numeric_limits<F>::max();
 	struct edge {
-		int to;
-		F cap, flow;
-		F f() { return cap - flow; }
+		int to, rev;
+		ll c, oc;
+		ll flow() { return max(oc - c, 0LL); } // if you need flows
 	};
-
-	int n, s, t;
-	vector<vector<int>> adj;
-	vector<int> lvl;
-	vector<edge> g;
-
-	Dinic(int sz): n(sz), adj(sz), lvl(sz) {}
-
-	void add_edge(int u, int v, F cap) {
-		int id = g.size();
-		g.pb({v, cap, 0});
-		g.pb({u, cap, cap});
-		adj[u].pb(id);
-		adj[v].pb(id+1);
+	vector<int> lvl, ptr, q;
+	vector<vector<edge>> adj;
+	Dinic(int n) : lvl(n), ptr(n), q(n), adj(n) {}
+	void add_edge(int a, int b, ll c, ll rcap = 0) {
+		adj[a].push_back({b, (int) adj[b].size(), c, c});
+		adj[b].push_back({a, (int) adj[a].size() - 1, rcap, rcap});
 	}
-
-	F dfs(int u, F pool, vector<int>& ptr) {
-		if(zero(pool) || u == t) return pool;
-		for(auto &i = ptr[u]; i < int(adj[u].size()); i++) {
-			int id = adj[u][i];
-			auto &e = g[id];
-			if( lvl[u] + 1 != lvl[e.to] || zero(e.f()) ) continue;
-			F f;
-			if(not zero( f = dfs(e.to, min(e.f(), pool), ptr) )) {
-				g[id].flow += f;
-				g[id^1].flow -= f;
-				return f;
-			}
+	ll dfs(int v, int t, ll f) {
+		if (v == t || !f) return f;
+		for (int& i = ptr[v]; i < adj[v].size(); i++) {
+			edge& e = adj[v][i];
+			if (lvl[e.to] == lvl[v] + 1)
+				if (ll p = dfs(e.to, t, min(f, e.c))) {
+					e.c -= p, adj[e.to][e.rev].c += p;
+					return p;
+				}
 		}
 		return 0;
 	}
-
-	F get_flow(int _s, int _t) {
-		//reset to initial state
-		//for(int i=0;i<e.size();i++) e[i].flow = (i&1) ? e[i].cap : 0;
-		s = _s; t = _t;
-		F ret = 0;
-		vector<int> ptr(n), q(n);
-		do {
-			fill(all(lvl), 0);
-			lvl[s] = 1;
-			int qi = 0, qe = 1;
-			q[0] = s;
-			while(qi < qe && !lvl[t]) {
-				int u = q[qi++];
-				for(int id: adj[u]) {
-					auto &e = g[id];
-					if( !lvl[e.to] && not zero(e.f()) )
-						q[qe++] = e.to, lvl[e.to] = lvl[u] + 1;
-				}
+	ll get_flow(int s, int t) {
+		ll flow = 0; q[0] = s;
+		for(int L=0; L < 31; L++) do { // 'int L=30' maybe faster for random data
+			lvl = ptr = vector<int>(q.size());
+			int qi = 0, qe = lvl[s] = 1;
+			while (qi < qe && !lvl[t]) {
+				int v = q[qi++];
+				for (edge e : adj[v])
+					if (!lvl[e.to] && e.c >> (30 - L))
+						q[qe++] = e.to, lvl[e.to] = lvl[v] + 1;
 			}
-			F f;
-			fill(all(ptr), 0);
-			while(not zero( f = dfs(s, INF, ptr) ) ) 
-				ret += f;
-		} while(lvl[t]);
-		return ret;
+			while (ll p = dfs(s, t, LLONG_MAX)) flow += p;
+		} while (lvl[t]);
+		return flow;
 	}
+	bool left_of_min_cut(int a) { return lvl[a] != 0; }
 };
