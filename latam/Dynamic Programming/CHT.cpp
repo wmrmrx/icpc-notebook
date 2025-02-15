@@ -46,6 +46,7 @@ struct LineContainer : multiset<Line, less<>> { // comment for Optimization
         assert(!empty());
         auto l = *lower_bound(x); // comment for Optimization
         // auto l = *lower_bound(begin(), end(), x);
+#warning can overflow
         return l.k * x + l.m;
     }
 };
