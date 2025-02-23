@@ -29,20 +29,20 @@ struct Treap {
 	int getl(ND& nd) {
 		return nd.l ? nd.l->sz : 0;
 	}
-	void merge(ND* l, ND* r, ND*& res) {
+	void merge(ND* l, ND* r, ND*& ret) {
 		if(!l || !r) {
-			res = l ? l : r;
+			ret = l ? l : r;
 			return;
 		}
 		l->push(); r->push();
 		if(l->h > r->h) {
-			res = l;
+			ret = l;
 			merge(l->r, r, l->r);
 		} else {
-			res = r;
+			ret = r;
 			merge(l, r->l, r->l);
 		}
-		res->pull();
+		ret->pull();
 	}
 	// left treap has size pos
 	void split(ND* x, ND*& l, ND*& r, int pos, int ra = 0) {
@@ -76,12 +76,12 @@ struct Treap {
 	template <int SZ> 
 	array<ND*, SZ> split(array<int, SZ-1> s) {
 		assert(s.back() <= (root ? root->sz : 0));
-		array<ND*, SZ> res;
-		split(root, res[0], res[1], s[0]);
+		array<ND*, SZ> ret;
+		split(root, ret[0], ret[1], s[0]);
 		for(int i=1;i<SZ-1;i++)
-			split(res[i], res[i], res[i+1], s[i]-s[i-1]);
+			split(ret[i], ret[i], ret[i+1], s[i]-s[i-1]);
 		root = 0;
-		return res;
+		return ret;
 	}
 	void insert(int ind, T info) {
 		auto s = split<2>({ind});
@@ -91,7 +91,7 @@ struct Treap {
 		auto s = split<3>({ind, ind+1});
 		merge<2>({s[0], s[2]});
 	}
-	T operator[](int ind) {
+	T find_by_order(int ind) {
 		assert(0 <= ind && ind < root->sz);
 		ND* x = root;
 		x->push();
@@ -101,6 +101,19 @@ struct Treap {
 			x->push();
 		}
 		return x->info;
+	}
+	// only works if inserted ordered by info
+	int order_of_key(T info) {
+		int ret = 0;
+		ND* x = root;
+		int ra = 0, nra;
+		while(x) {
+			x->push();
+			nra = ra + getl(*x);
+			if(x->info < info) ra = ret = nra + 1, x = x->r;
+			else x = x->l;
+		}
+		return ret;
 	}
 };
 
