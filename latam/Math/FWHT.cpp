@@ -32,7 +32,7 @@ namespace FWHT {
     }
     // a, b are two polynomials and n is size which is power of two
     template <typename T>
-    vector<Z> convolution(vector<T> &a, vector<T> &b, ll n) {
+    vector<T> convolution(vector<T> &a, vector<T> &b, ll n) {
         fwht<T>(a, n), fwht<T>(b, n);
         for (ll i = 0; i < n; i++)
             a[i] = a[i]*b[i];
