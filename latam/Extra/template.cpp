@@ -2,8 +2,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+using ll = long long;
+
 #define all(x) x.begin(), x.end()
-#define int int64_t
+#define int ll
 #define pb push_back
 
 void dbg_out() { cerr << endl; }
