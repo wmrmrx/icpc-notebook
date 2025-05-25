@@ -36,7 +36,7 @@ template<class T, int SZ> struct pseg {
     //// MAIN FUNCTIONS
     T query(int cur, int lo, int hi, int L, int R) {  
         if (lo <= L && R <= hi) return val[cur];
-        if (R < lo || hi < L) return 0;
+        if (R < lo || hi < L) return T();
         int M = (L+R)/2;
         return comb(query(l[cur],lo,hi,L,M), query(r[cur],lo,hi,M+1,R));
     }
@@ -54,7 +54,7 @@ template<class T, int SZ> struct pseg {
         int cur = nex++;
         if (L == R) {
             if (L < (int) arr.size ()) val[cur] = arr[L];
-            else val[cur] = T ();
+            else val[cur] = T();
             return cur;
         }
 
