@@ -1,4 +1,4 @@
-CODES_DIR_PATH ?= "latam/"
+CODES_DIR_PATH ?= "world_finals/"
 
 docker-pdf: docker-image
 	docker run -v ./output:/app/output icpc-notebook-template-image:dev && cp ./output/main.pdf ./notebook.pdf && rm -f output/*
