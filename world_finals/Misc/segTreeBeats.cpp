@@ -1,5 +1,4 @@
 // SegTree Beats
-//
 // query(a, b) - {{min(v[a..b]), max(v[a..b])}, sum(v[a..b])}
 // updatemin(a, b, x) faz com que v[i] <- min(v[i], x),
 // para i em [a, b]
@@ -11,12 +10,9 @@
 // query - O(log(n))
 // update - O(log^2 (n)) amortizado
 // (se nao usar updatesum, fica log(n) amortizado)
-
 #define f first
 #define s second
-
 #define MAX 1e5+5
-
 namespace beats {
 	struct node {
 		int tam;

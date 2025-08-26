@@ -1,4 +1,3 @@
-//  Segtree 2D
 template <typename Node>
 struct Seg2D {
     int n,m;

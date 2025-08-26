@@ -1,5 +1,3 @@
-// Binary Indexed Tree 2D
-
 // 0-indexed
 // update(x, y, val): m[row][col] += val
 // query(x, y): returns sum m[0..=x][0..=y]

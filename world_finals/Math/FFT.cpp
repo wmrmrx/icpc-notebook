@@ -13,15 +13,13 @@ void fft(vector<C>& a) {
 		}
 	}
 	vector<int> rev(n);
-	for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++)
 		rev[i] = (rev[i / 2] | (i & 1) << L) / 2;
-	}
-	for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++)
 		if (i < rev[i]) swap(a[i], a[rev[i]]);
-	}
 	for (int k = 1; k < n; k *= 2)
 		for (int i = 0; i < n; i += 2 * k)
-			for(int j = 0; j < k; j++){
+			for(int j = 0; j < k; j++) {
 				// C z = rt[j+k] * a[i+j+k]; // (25% faster if hand-rolled)  /// include-line
 				auto x = (double *)&rt[j+k], y = (double *)&a[i+j+k];        /// exclude-line
 				C z(x[0]*y[0] - x[1]*y[1], x[0]*y[1] + x[1]*y[0]);           /// exclude-line

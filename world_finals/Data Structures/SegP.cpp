@@ -1,7 +1,6 @@
 // Persistent segment tree.
 // Lazy works, but is very expensive. Every upd/qry will need O(logn) memory.
 // Need to push everytime enters a function.
-
 template<class T, int SZ> struct pseg {
     static const int LIMIT = 1e7; // adjust
     int nex;

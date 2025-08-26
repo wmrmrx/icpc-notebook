@@ -1,4 +1,3 @@
-// Binary Indexed Tree
 // !! zero indexed !!
 template<typename T> struct Bit {
 	vector<T> bit;
