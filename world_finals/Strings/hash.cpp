@@ -1,4 +1,3 @@
-//  String Hashing
 template<int MOD> 
 struct str_hash {
     static int P;

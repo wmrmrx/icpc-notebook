@@ -1,4 +1,3 @@
-//  Err Tree - Palindromic Tree
 //  Description: A tree such that each node represents a 
 //               palindrome of string s. It is possible to append
 //               a character.

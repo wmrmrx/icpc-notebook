@@ -1,4 +1,3 @@
-// KMP
 template <typename T> vector<int> kmp(int sz, const T s[]) {
 	vector<int> pi(sz);
 	for(int i=1;i<sz;i++) {
