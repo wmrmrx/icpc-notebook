@@ -1,4 +1,3 @@
-// Hungarian
 // Resolve o problema de assignment (matriz n x n)
 // Colocar os valores da matriz em 'a' (pode < 0)
 // assignment() retorna um par com o valor do

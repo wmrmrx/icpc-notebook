@@ -1,4 +1,3 @@
-// Blossom
 // 1-based indexing
 // If white[v] = 0 after solve() returns, v is part of every max matching
 // ans is the size of the maximum matching

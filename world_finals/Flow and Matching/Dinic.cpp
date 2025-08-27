@@ -1,6 +1,3 @@
-// Dinitz
-
-bool zero(int x) {return x == 0;}
 bool zero(double x) {return abs(x) < (1e-6);}
 template<typename F>
 struct Dinic {

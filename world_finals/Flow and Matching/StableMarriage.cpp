@@ -1,4 +1,3 @@
-// Stable Marriage
 // Emparelha todos os elementos de A com elementos de B 
 // de forma que nao exista um par x \in A, y \in B 
 // e x nao pareado com y tal que x prefira parear com y
